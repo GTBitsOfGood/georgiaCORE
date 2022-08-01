@@ -1,0 +1,74 @@
+{
+  "name": "nextjs-starter",
+  "version": "2.0.0",
+  "description": "A NextJS starter with API routes using MongoDB",
+  "author": "Bits of Good <hello@bitsofgood.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GTBitsOfGood/nextjs-starter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GTBitsOfGood/nextjs-starter/issues"
+  },
+  "homepage": "https://github.com/GTBitsOfGood/nextjs-starter#readme",
+  "scripts": {
+    "dev": "next -p 3000",
+    "build": "next build",
+    "start": "next build && next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "secrets:linux": "echo Enter Bitwarden Password: && read BW_PASSWORD && (bw logout || exit 0) && export BW_SESSION=`bw login product@bitsofgood.org $BW_PASSWORD --raw` && npm run secrets:get",
+    "secrets:windows": "set /p BW_PASSWORD=Enter Bitwarden Password:&& (bw logout || VER>NUL) && npm run secrets:login",
+    "secrets:login": "FOR /F %a IN ('bw login product@bitsofgood.org %BW_PASSWORD% --raw') DO SET BW_SESSION=%a && npm run secrets:get",
+    "secrets:get": "bw sync && bw get item [ID_OR_NAME_FROM_STEP_2] | fx .notes > \".env\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint"
+    ],
+    "*.{js,jsx,css}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "focus-visible": "^5.2.0",
+    "iron-session": "^6.0.5",
+    "isomorphic-unfetch": "^3.1.0",
+    "mongodb": "^4.0.0",
+    "mongoose": "^6.1.6",
+    "next": "^12.0.8",
+    "next-images": "^1.8.1",
+    "normalize.css": "^8.0.1",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "swr": "^1.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
+    "@bitwarden/cli": "^1.17.1",
+    "@next/eslint-plugin-next": "^12.0.8",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.7.0",
+    "eslint-config-next": "^12.0.8",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "fx": "^20.0.2",
+    "husky": "^7.0.1",
+    "lint-staged": "^12.1.7",
+    "prettier": "2.5.1",
+    "prettier-eslint": "^13.0.0",
+    "vercel": "^23.1.2"
+  }
+}
