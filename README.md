@@ -1,4 +1,8 @@
-# nextjs-starter
+# GeorgiaCORE
+
+GeorgiaCORE is a state-wide 501c3 whose mission is to promote cancer research, detect cancer earlier, and help conduct more clinical trials for cancer. They have thousands of actively-diagnosed cancer patients, survivors, doctors, and other cancer-related specialists use their [website](https://www.georgiacancerinfo.org/). Unfortunately, over time the website has become bloated and hard to navigate. We aim to create a solution that makes the website easier to navigate.
+
+# Resources for Developers
 
 ## Stack
 
