@@ -4,10 +4,7 @@
   "description": "A NextJS starter with API routes using MongoDB",
   "author": "Bits of Good <hello@bitsofgood.org>",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GTBitsOfGood/nextjs-starter.git"
-  },
+  "repository": "git+https://github.com/GTBitsOfGood/nextjs-starter.git",
   "bugs": {
     "url": "https://github.com/GTBitsOfGood/nextjs-starter/issues"
   },
@@ -54,7 +51,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/eslint-parser": "^7.16.5",
-    "@bitwarden/cli": "^1.17.1",
+    "@bitwarden/cli": "^2022.8.0",
     "@next/eslint-plugin-next": "^12.0.8",
     "cross-env": "^7.0.3",
     "eslint": "^8.7.0",
@@ -69,6 +66,7 @@
     "lint-staged": "^12.1.7",
     "prettier": "2.5.1",
     "prettier-eslint": "^13.0.0",
-    "vercel": "^23.1.2"
-  }
+    "vercel": "^28.2.2"
+  },
+  "main": "index.js"
 }
