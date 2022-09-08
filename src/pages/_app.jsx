@@ -9,6 +9,7 @@ import fetchJson from "src/utils/lib/fetchJson";
 import "focus-visible/dist/focus-visible.min.js";
 import "normalize.css";
 import "public/static/styles/App.css";
+import { ChakraProvider } from "@chakra-ui/react";
 
 const MyApp = ({ Component, pageProps }) => (
   <SWRConfig
@@ -17,15 +18,17 @@ const MyApp = ({ Component, pageProps }) => (
       onError: (e) => console.error(e),
     }}
   >
-    <Head>
-      <title>Next.js-Starter</title>
-    </Head>
-    <div className="App">
-      <Header />
-      <div className="Content">
-        <Component {...pageProps} />
+    <ChakraProvider>
+      <Head>
+        <title>Next.js-Starter</title>
+      </Head>
+      <div className="App">
+        <Header />
+        <div className="Content">
+          <Component {...pageProps} />
+        </div>
       </div>
-    </div>
+    </ChakraProvider>
   </SWRConfig>
 );
 
