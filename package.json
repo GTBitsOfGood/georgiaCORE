@@ -34,8 +34,12 @@
     ]
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.3.2",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
     "bcryptjs": "^2.4.3",
     "focus-visible": "^5.2.0",
+    "framer-motion": "^6",
     "iron-session": "^6.0.5",
     "isomorphic-unfetch": "^3.1.0",
     "mongodb": "^4.0.0",
