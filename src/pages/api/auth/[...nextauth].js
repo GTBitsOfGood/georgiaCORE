@@ -9,6 +9,13 @@ export const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async signIn({ email }) {
+      const allowedEmails = process.env.ALLOWED_EMAILS.split("+");
+      if (allowedEmails.includes(email)) return true;
+      return false;
+    },
+  },
 };
 
 export default NextAuth(authOptions);
