@@ -1,6 +1,13 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 
+/** Configuration for NextAuth
+ * SignIn callback only allows emails specfied in environment
+ * variables to log in
+ */
+
+const allowedEmails = process.env.ALLOWED_EMAILS.split("+");
+
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -11,7 +18,6 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ email }) {
-      const allowedEmails = process.env.ALLOWED_EMAILS.split("+");
       if (allowedEmails.includes(email)) return true;
       return false;
     },
