@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import Head from "next/head";
 import { SWRConfig } from "swr";
-import {ChakraProvider} from "@chakra-ui/react"
+import { ChakraProvider} from "@chakra-ui/react"
 
 import Header from "src/components/Header";
 import fetchJson from "src/utils/lib/fetchJson";
@@ -16,26 +16,26 @@ const MyApp = ({ Component, pageProps }) => {
   const renderHeader = !PAGES_WITH_NO_HEADER.has(Component.name);
 
   return (
-  <SWRConfig
-    value={{
-      fetcher: fetchJson,
-      onError: (e) => console.error(e),
-    }}
-  >
-    <Head>
-      <title>Next.js-Starter</title>
-    </Head>
-    <div className="App">
-      {renderHeader && <Header />}
-      <div className="Content">
-        <ChakraProvider>
-          <Component {...pageProps} />
-        </ChakraProvider>
+    <SWRConfig
+      value={{
+        fetcher: fetchJson,
+        onError: (e) => console.error(e),
+      }}
+    >
+      <Head>
+        <title>Next.js-Starter</title>
+      </Head>
+      <div className="App">
+        {renderHeader && <Header />}
+        <div className="Content">
+          <ChakraProvider>
+            <Component {...pageProps} />
+          </ChakraProvider>
+        </div>
       </div>
-    </div>
-  </SWRConfig>
+    </SWRConfig>
   );
-  };
+};
 
 MyApp.propTypes = {
   Component: PropTypes.any.isRequired,
