@@ -3,6 +3,17 @@ import {Box, Flex, Stack, Text, Image} from "@chakra-ui/react"
 
 const LoginPage = () => {
   const [resSuccess, setResSuccess] = React.useState(false)
+  /**
+   * Login page UI
+   * Creates a main green background with a white box in the middle
+   * Then creates a stack to hold "Sign In", login button stack, and logo
+   * Login button stack holds login button and authentication success/error message
+   * Login button is a blue box with button contents inside as a stack: Google icon and login message
+   * Authentication message appears as an error in red if login success fails and does not appear otherwise
+   * Success/failure is determined by resSuccess state which is currently set to false (success failed)
+   * ResSuccess will be updated later with login functionality
+   * Logo is at the bottom of the stack for the white box
+   */
   return (
     <Flex 
       bg='#5b794e' 
