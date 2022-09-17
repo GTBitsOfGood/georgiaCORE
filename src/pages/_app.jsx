@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import Head from "next/head";
 import { SWRConfig } from "swr";
-import { ChakraProvider} from "@chakra-ui/react"
+import { ChakraProvider } from "@chakra-ui/react"
 
 import Header from "src/components/Header";
 import fetchJson from "src/utils/lib/fetchJson";
