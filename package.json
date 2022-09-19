@@ -34,6 +34,7 @@
     ]
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.3.2",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
@@ -47,9 +48,10 @@
     "next": "^12.0.8",
     "next-images": "^1.8.1",
     "normalize.css": "^8.0.1",
-    "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-flow-renderer": "^10.3.16",
     "swr": "^1.1.2"
   },
   "devDependencies": {
