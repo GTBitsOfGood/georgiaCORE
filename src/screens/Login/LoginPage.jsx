@@ -39,7 +39,7 @@ const LoginPage = () => {
           >
             <Box 
               fontWeight="bold" 
-              fontSize="2xl" 
+              fontSize="3xl" 
               fontFamily="sans-serif"
             >
               Sign In
