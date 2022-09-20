@@ -1,8 +1,9 @@
 import React from "react";
 import {Box, Flex, Stack, Text, Image} from "@chakra-ui/react"
+import { getProviders, signIn } from "next-auth/react"
 
-const LoginPage = () => {
-  const [resSuccess, setResSuccess] = React.useState(false)
+const LoginPage = ({ providers }) => {
+  const [resSuccess, setResSuccess] = React.useState(true);
   /**
    * Login page UI
    * Creates a main green background with a white box in the middle
@@ -45,33 +46,39 @@ const LoginPage = () => {
               Sign In
             </Box>
             <Stack direction="column">
-              <Box
-                bgColor="#4285F4"
-                color="white"
-                fontFamily="sans-serif"
-                padding={1.5}
-                width="100%"
-                rounded="md"
-              >
-                <Stack direction="row" spacing={4} paddingLeft={4}>
-                  <Box
-                    bgColor="#ffffff"
-                    rounded="100%"
-                    width="10%"
-                  >
-                    <Flex justifyContent="center" paddingTop={.5}>
-                      <Image
-                        boxSize="20px"
-                        src="https://freesvg.org/img/1534129544.png"
-                        alt="Google Image"
-                      />
-                    </Flex>
+                <>
+                 {Object.values(providers).map((provider) => (
+                      <Box
+                        bgColor="#4285F4"
+                        color="white"
+                        fontFamily="sans-serif"
+                        padding={1.5}
+                        width="100%"
+                        rounded="md"
+                        onClick={() => signIn(provider.id)}
+                        cursor="pointer"
+                      >
+                      <Stack direction="row" spacing={4} paddingLeft={4} paddingRight={4}>
+                      <Box
+                        bgColor="#ffffff"
+                        rounded="100%"
+                        width="%"
+                      >
+                        <Flex justifyContent="center" paddingTop={.5}>
+                          <Image
+                            boxSize="20px"
+                            src="https://freesvg.org/img/1534129544.png"
+                            alt="Google Image"
+                          />
+                        </Flex>
+                      </Box>
+                      <Text>
+                        Continue with {provider.name}
+                      </Text>
+                    </Stack>
                   </Box>
-                  <Text>
-                    Continue with Google
-                  </Text>
-                </Stack>
-              </Box>
+                 ))}
+                </>
               {!resSuccess && (
                   <Text fontFamily="sans-serif" color="red">
                     *Authentication failed. Please try again.
@@ -91,5 +98,6 @@ const LoginPage = () => {
     </Flex>
   )
 }
+
 
 export default LoginPage;

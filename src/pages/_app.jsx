@@ -12,7 +12,7 @@ import "normalize.css";
 import "public/static/styles/App.css";
 
 const MyApp = ({ Component, pageProps }) => {
-  const PAGES_WITH_NO_HEADER = new Set(["LoginPage"]);
+  const PAGES_WITH_NO_HEADER = new Set(["Login"]);
   const renderHeader = !PAGES_WITH_NO_HEADER.has(Component.name);
 
   return (
