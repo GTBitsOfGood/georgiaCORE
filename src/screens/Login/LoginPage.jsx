@@ -1,89 +1,103 @@
 import React from "react";
-import { login, signUp } from "src/actions/User";
-import urls from "src/utils/urls";
-import classes from "./LoginPage.module.css";
-import useUser from "src/utils/lib/useUser";
+import {Box, Flex, Stack, Text, Image} from "@chakra-ui/react"
+import { getProviders, signIn } from "next-auth/react"
 
-const LoginPage = () => {
-  const { mutateUser } = useUser({
-    redirectIfFound: true,
-    redirectTo: urls.pages.app.home,
-  });
-
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isRegistering, setIsReg] = React.useState(false);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    if (isRegistering) {
-      return mutateUser(
-        signUp(username, password).catch((error) => window.alert(error.message))
-      );
-    }
-
-    return mutateUser(
-      login(username, password).catch((error) => window.alert(error.message))
-    );
-  };
-
+const LoginPage = ({ providers }) => {
+  const [resSuccess, setResSuccess] = React.useState(true);
+  /**
+   * Login page UI
+   * Creates a main green background with a white box in the middle
+   * Then creates a stack to hold "Sign In", login button stack, and logo
+   * Login button stack holds login button and authentication success/error message
+   * Login button is a blue box with button contents inside as a stack: Google icon and login message
+   * Authentication message appears as an error in red if login success fails and does not appear otherwise
+   * Success/failure is determined by resSuccess state which is currently set to false (success failed)
+   * ResSuccess will be updated later with login functionality
+   * Logo is at the bottom of the stack for the white box
+   */
   return (
-    <div className={classes.root}>
-      <form className={classes.form} onSubmit={handleSubmit}>
-        <h2 className={classes.welcomeText}>Welcome!</h2>
-        <h3 className={classes.infoText}>
-          {isRegistering
-            ? "Register a new account and use our app today!"
-            : "Login to an existing account."}
-        </h3>
-        <div className={classes.inputContainer}>
-          <label htmlFor="username" className={classes.inputLabel}>
-            Username
-          </label>
-          <input
-            className={classes.input}
-            required
-            id="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </div>
-        <div className={classes.inputContainer}>
-          <label htmlFor="password" className={classes.inputLabel}>
-            Password
-          </label>
-          <input
-            className={classes.input}
-            required
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
-        <button className={classes.bttn} type="submit">
-          {isRegistering ? "Register" : "Login"}
-        </button>
-        {isRegistering ? (
-          <p className={classes.switchText}>
-            Already have an account?
-            <a className={classes.buttonText} onClick={() => setIsReg(false)}>
-              Login now
-            </a>
-          </p>
-        ) : (
-          <p className={classes.switchText}>
-            {"Don't have an account?"}
-            <a className={classes.buttonText} onClick={() => setIsReg(true)}>
-              Register now
-            </a>
-          </p>
-        )}
-      </form>
-      <div className={classes.image} />
-    </div>
-  );
-};
+    <Flex 
+      bg='#5b794e' 
+      w='100%' 
+      h='100%' 
+      justifyContent="center" 
+      alignItems="center" 
+      margin="auto" 
+      padding="0px"
+    >
+      
+        <Box 
+          bgColor="#ffffff" 
+          width="50%" 
+          height="60%"
+          rounded="3xl"
+        >
+          <Stack 
+            direction="column" 
+            alignItems="center" 
+            padding={28} 
+            spacing={4}
+          >
+            <Box 
+              fontWeight="bold" 
+              fontSize="3xl" 
+              fontFamily="sans-serif"
+            >
+              Sign In
+            </Box>
+            <Stack direction="column">
+                <>
+                 {Object.values(providers).map((provider) => (
+                      <Box
+                        bgColor="#4285F4"
+                        color="white"
+                        fontFamily="sans-serif"
+                        padding={1.5}
+                        width="100%"
+                        rounded="md"
+                        onClick={() => signIn(provider.id)}
+                        cursor="pointer"
+                      >
+                      <Stack direction="row" spacing={4} paddingLeft={4} paddingRight={4}>
+                      <Box
+                        bgColor="#ffffff"
+                        rounded="100%"
+                        width="%"
+                      >
+                        <Flex justifyContent="center" paddingTop={.5}>
+                          <Image
+                            boxSize="20px"
+                            src="https://freesvg.org/img/1534129544.png"
+                            alt="Google Image"
+                          />
+                        </Flex>
+                      </Box>
+                      <Text>
+                        Continue with {provider.name}
+                      </Text>
+                    </Stack>
+                  </Box>
+                 ))}
+                </>
+              {!resSuccess && (
+                  <Text fontFamily="sans-serif" color="red">
+                    *Authentication failed. Please try again.
+                  </Text>
+              )}
+            </Stack>
+            <Flex justifyContent="center" padding={20}>
+            <Image
+              boxSize="40%"
+              src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/gacore-logo-2020-md.png"
+              alt="Logo"
+            />
+          </Flex>
+          </Stack>
+        </Box>
+      
+    </Flex>
+  )
+}
+
 
 export default LoginPage;
