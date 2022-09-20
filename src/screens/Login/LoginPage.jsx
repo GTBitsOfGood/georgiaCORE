@@ -1,9 +1,11 @@
 import React from "react";
-import {Box, Flex, Stack, Text, Image} from "@chakra-ui/react"
-import { getProviders, signIn } from "next-auth/react"
+import { Box, Flex, Stack, Text, Image } from "@chakra-ui/react";
+import { signIn } from "next-auth/react";
+import PropTypes from "prop-types";
 
 const LoginPage = ({ providers }) => {
   const [resSuccess, setResSuccess] = React.useState(true);
+  setResSuccess(true);
   /**
    * Login page UI
    * Creates a main green background with a white box in the middle
@@ -16,88 +18,75 @@ const LoginPage = ({ providers }) => {
    * Logo is at the bottom of the stack for the white box
    */
   return (
-    <Flex 
-      bg='#5b794e' 
-      w='100%' 
-      h='100%' 
-      justifyContent="center" 
-      alignItems="center" 
-      margin="auto" 
+    <Flex
+      bg="#5b794e"
+      w="100%"
+      h="100%"
+      justifyContent="center"
+      alignItems="center"
+      margin="auto"
       padding="0px"
     >
-      
-        <Box 
-          bgColor="#ffffff" 
-          width="50%" 
-          height="60%"
-          rounded="3xl"
-        >
-          <Stack 
-            direction="column" 
-            alignItems="center" 
-            padding={28} 
-            spacing={4}
-          >
-            <Box 
-              fontWeight="bold" 
-              fontSize="3xl" 
-              fontFamily="sans-serif"
-            >
-              Sign In
-            </Box>
-            <Stack direction="column">
-                <>
-                 {Object.values(providers).map((provider) => (
-                      <Box
-                        bgColor="#4285F4"
-                        color="white"
-                        fontFamily="sans-serif"
-                        padding={1.5}
-                        width="100%"
-                        rounded="md"
-                        onClick={() => signIn(provider.id)}
-                        cursor="pointer"
-                      >
-                      <Stack direction="row" spacing={4} paddingLeft={4} paddingRight={4}>
-                      <Box
-                        bgColor="#ffffff"
-                        rounded="100%"
-                        width="%"
-                      >
-                        <Flex justifyContent="center" paddingTop={.5}>
-                          <Image
-                            boxSize="20px"
-                            src="https://freesvg.org/img/1534129544.png"
-                            alt="Google Image"
-                          />
-                        </Flex>
-                      </Box>
-                      <Text>
-                        Continue with {provider.name}
-                      </Text>
-                    </Stack>
-                  </Box>
-                 ))}
-                </>
-              {!resSuccess && (
-                  <Text fontFamily="sans-serif" color="red">
-                    *Authentication failed. Please try again.
-                  </Text>
-              )}
-            </Stack>
-            <Flex justifyContent="center" padding={20}>
+      <Box bgColor="#ffffff" width="50%" height="60%" rounded="3xl">
+        <Stack direction="column" alignItems="center" padding={28} spacing={4}>
+          <Box fontWeight="bold" fontSize="3xl" fontFamily="sans-serif">
+            Sign In
+          </Box>
+          <Stack direction="column">
+            <>
+              {Object.values(providers).map((provider) => (
+                <Box
+                  bgColor="#4285F4"
+                  color="white"
+                  fontFamily="sans-serif"
+                  padding={1.5}
+                  width="100%"
+                  rounded="md"
+                  onClick={() => signIn(provider.id)}
+                  cursor="pointer"
+                  key={provider.id}
+                >
+                  <Stack
+                    direction="row"
+                    spacing={4}
+                    paddingLeft={4}
+                    paddingRight={4}
+                  >
+                    <Box bgColor="#ffffff" rounded="100%" width="%">
+                      <Flex justifyContent="center" paddingTop={0.5}>
+                        <Image
+                          boxSize="20px"
+                          src="https://freesvg.org/img/1534129544.png"
+                          alt="Google Image"
+                        />
+                      </Flex>
+                    </Box>
+                    <Text>Continue with {provider.name}</Text>
+                  </Stack>
+                </Box>
+              ))}
+            </>
+            {!resSuccess && (
+              <Text fontFamily="sans-serif" color="red">
+                *Authentication failed. Please try again.
+              </Text>
+            )}
+          </Stack>
+          <Flex justifyContent="center" padding={20}>
             <Image
               boxSize="40%"
               src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/gacore-logo-2020-md.png"
               alt="Logo"
             />
           </Flex>
-          </Stack>
-        </Box>
-      
+        </Stack>
+      </Box>
     </Flex>
-  )
-}
+  );
+};
 
+LoginPage.propTypes = {
+  providers: PropTypes.any,
+};
 
 export default LoginPage;
