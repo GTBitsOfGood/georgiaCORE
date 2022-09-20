@@ -1,13 +1,14 @@
 import LoginPage from "src/screens/Login";
-import { getProviders, signIn } from "next-auth/react"
+import { getProviders } from "next-auth/react";
+import React from "react";
 
 const Login = (props) => <LoginPage {...props} />;
 
-export async function getServerSideProps(context) {
-    const providers = await getProviders()
-    return {
-      props: { providers },
-    }
+export async function getServerSideProps() {
+  const providers = await getProviders();
+  return {
+    props: { providers },
+  };
 }
 
 export default Login;
