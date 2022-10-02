@@ -86,38 +86,38 @@ const questions = [
   },
 ];
 
-export const getQuestion = (id) => questions.find((q) => q.id === id);
-export const getQuestions = () => questions;
+// export const getQuestion = (id) => questions.find((q) => q.id === id);
+// export const getQuestions = () => questions;
 
-export const updateQuestion = (question) => {
-  const index = questions.findIndex((q) => q.id === question.id);
-  questions[index] = question;
-};
+// export const updateQuestion = (question) => {
+//   const index = questions.findIndex((q) => q.id === question.id);
+//   questions[index] = question;
+// };
 
-export const deleteQuestion = (id) => {
-  const index = questions.findIndex((q) => q.id === id);
-  questions.splice(index, 1);
-};
+// export const deleteQuestion = (id) => {
+//   const index = questions.findIndex((q) => q.id === id);
+//   questions.splice(index, 1);
+// };
 
-export const createUntitledQuestion = () => {
-  // TODO: temporary id, will be replaced with actual id from backend
-  const id = Date.now().toString();
+// export const createUntitledQuestion = () => {
+//   // TODO: temporary id, will be replaced with actual id from backend
+//   const id = Date.now().toString();
 
-  const question = {
-    id,
-    question: "Untitled Question",
-    type: "question",
-    options: [
-      {
-        // TODO: replace with actual id from backend
-        id: id + "-1",
-        option: "Option 1",
-        nextId: null,
-      },
-    ],
-  };
+//   const question = {
+//     id,
+//     question: "Untitled Question",
+//     type: "question",
+//     options: [
+//       {
+//         // TODO: replace with actual id from backend
+//         id: id + "-1",
+//         option: "Option 1",
+//         nextId: null,
+//       },
+//     ],
+//   };
 
-  questions.push(question);
+//   questions.push(question);
 
-  return question;
-};
+//   return question;
+// };
