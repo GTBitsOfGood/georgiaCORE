@@ -1,5 +1,6 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
+import { redirect } from "next/dist/server/api-utils";
 
 let allowedEmails = process.env.ALLOWED_EMAILS;
 
