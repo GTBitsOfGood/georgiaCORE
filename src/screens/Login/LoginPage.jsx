@@ -42,9 +42,11 @@ const LoginPage = ({ providers }) => {
                   padding={1.5}
                   width="100%"
                   rounded="md"
-                  onClick={() => signIn(provider.id, {
-                    callbackUrl: `${window.location.origin}/navigation-editor`
-                  })}
+                  onClick={() =>
+                    signIn(provider.id, {
+                      callbackUrl: `${window.location.origin}/navigation-editor`,
+                    })
+                  }
                   cursor="pointer"
                   key={provider.id}
                 >

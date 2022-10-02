@@ -19,6 +19,8 @@
     "no-underscore-dangle": "off",
     "implicit-arrow-linebreak": "off",
     "no-console": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "no-dupe-class-members": "off",
+    "no-unused-vars": "off"
   }
 }

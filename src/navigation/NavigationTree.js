@@ -5,7 +5,6 @@ import NavigationTerminalNode from "./NavigationTerminalNode.js";
 // allow adding/removing/moving answers at specific indices
 
 export default class NavigationTree {
-
   constructor() {
     this.root = null; // Node
     this.questions = new Map(); // Map<question: string, next: Node>
@@ -53,7 +52,7 @@ export default class NavigationTree {
 
     const newNode = new NavigationNode(question);
     if (answers != null) {
-      answers.forEach(answer => newNode.addAnswer(answer));
+      answers.forEach((answer) => newNode.addAnswer(answer));
     }
 
     node.addAnswer(parentAnswer, newNode);
@@ -73,7 +72,7 @@ export default class NavigationTree {
     this.questions.delete(question);
     return removedNode;
   }
-  
+
   /**
    * @param {{<question: string, children: Array<{answer: string, nextInput: input}>}} input
    * @returns {void}
@@ -104,7 +103,7 @@ export default class NavigationTree {
       newNode = new NavigationNode(question);
       questionMap.set(question, newNode);
 
-      children.forEach(({answer, nextInput}) => {
+      children.forEach(({ answer, nextInput }) => {
         newNode.addAnswer(answer, this.createTree(nextInput, questionMap));
       });
     }
@@ -130,8 +129,8 @@ export default class NavigationTree {
       ret = curNode.getUrl();
     } else {
       const question = curNode.getQuestion();
-      ret = {[question]: {}};
-  
+      ret = { [question]: {} };
+
       curNode.children.forEach((nextNode, answer) => {
         ret[question][answer] = this.objectRepresentation(nextNode);
       });
@@ -139,6 +138,4 @@ export default class NavigationTree {
 
     return ret;
   }
-
-
 }
