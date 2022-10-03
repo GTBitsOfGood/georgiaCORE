@@ -62,7 +62,7 @@ export default class NavigationTree {
   }
 
   deleteQuestion(id) {
-    const index = this.getQuestion(id);
+    const index = this.getQuestionIndex(id);
     this.questions.splice(index, 1);
   }
 
@@ -92,6 +92,6 @@ export default class NavigationTree {
   }
 
   printTree() {
-    console.log(this.questions);
+    console.log(JSON.stringify(this.questions));
   }
 }

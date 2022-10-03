@@ -33,6 +33,12 @@ const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   return [newNodes, newEdges];
 };
 
+const deleteNode = (nodes, edges, nodeId) => {
+  const newNodes = nodes.filter((node) => node.id !== nodeId);
+
+  return [newNodes, edges];
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "open_edit_modal":
@@ -70,14 +76,20 @@ const reducer = (state, action) => {
       };
     }
     case "delete_question": {
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
-        state.nodes,
-        state.edges,
-        state.navigationTree,
-        action.questionId
-      );
+      var [deletedNodes, deletedEdges] = [state.nodes, state.edges];
+      action.nodes.forEach((node) => {
+        [deletedNodes, deletedEdges] = deleteNode(
+          deletedNodes,
+          deletedEdges,
+          node.id
+        );
 
-      // TODO: delete from state.navigationTree?
+        // option nodes will be deleted with update_question so we
+        // just delete questions from tree
+        if (state.navigationTree.getQuestion(node.id)) {
+          state.navigationTree.deleteQuestion(node.id);
+        }
+      });
 
       return {
         ...state,
@@ -88,22 +100,23 @@ const reducer = (state, action) => {
     case "edge_delete":
       action.edges.forEach((edge) => {
         const optionId = edge.source;
-        const questionId = state.nodes.find(
+        const parentId = state.nodes.find(
           (node) => node.id == optionId
         ).parentNode;
+        const parentQuestion = state.navigationTree.getQuestion(parentId);
 
-        const question = state.navigationTree.getQuestion(questionId);
-
-        const option = question.options.find((o) => o.id === optionId);
+        const option = parentQuestion.options.find((o) => o.id === optionId);
         const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
-              ...option,
-              nextId: null,
-            },
-          ],
+          ...parentQuestion,
+          options: parentQuestion.options.map((o) => {
+            if (o.id == optionId) {
+              return {
+                ...option,
+                nextId: null,
+              };
+            }
+            return o;
+          }),
         };
         state.navigationTree.updateQuestion(newQuestion);
       });
@@ -260,6 +273,9 @@ const TreeEditor = () => {
             dispatch({ type: "edge_change", changes })
           }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
+          onNodesDelete={(nodes) =>
+            dispatch({ type: "delete_question", nodes })
+          }
           onConnect={(connection) => dispatch({ type: "connect", connection })}
           onConnectStart={(_, { nodeId }) => {
             connectingNodeId.current = nodeId;
