@@ -1,7 +1,4 @@
-import NavigationTree from "src/navigation/NavigationTree";
-
-// TODO: get questions from database
-const questions = [
+const testQuestions = [
   {
     id: "1",
     question: "Do you want to continue?",
@@ -89,4 +86,4 @@ const questions = [
   },
 ];
 
-export const navigationTree = new NavigationTree(questions);
+export default testQuestions;

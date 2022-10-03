@@ -56,7 +56,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       // Edges between option and next question
       if (option.nextId) {
         edges.push({
-          id: option.id + "-next",
+          id: option.id + "-" + option.nextId,
           source: option.id,
           target: option.nextId,
         });
@@ -67,7 +67,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
   // Edge between question and connecting node
   if (connectingNodeId) {
     edges.push({
-      id: connectingNodeId + "-next",
+      id: connectingNodeId + "-" + question.id,
       source: connectingNodeId,
       target: question.id,
     });
@@ -84,6 +84,10 @@ export const generateInitialNodes = (questions) => {
   let nodes = [];
   let edges = [];
 
+  if (!questions || questions.length === 0) {
+    return [[], []];
+  }
+
   let visited = new Set();
   let queue = [];
 
@@ -99,9 +103,7 @@ export const generateInitialNodes = (questions) => {
       currentLevel = level;
       optionY = 0;
     }
-
     const question = questions.find((q) => q.id === sourceId);
-
     if (question.type === "question") {
       for (const option of question.options) {
         if (option.nextId && !visited.has(option.nextId)) {

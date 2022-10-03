@@ -1,4 +1,4 @@
-export default {
+const urls = {
   baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
   pages: {
     index: "/",
@@ -16,5 +16,8 @@ export default {
       logout: "/api/user/logout",
       getCurrent: "/api/user",
     },
+    question: "/api/question",
   },
 };
+
+export default urls;

@@ -11,8 +11,8 @@ const handler = async (req, res) => {
       ...user,
       isLoggedIn: true,
     };
-    await req.session.save();
 
+    await req.session.save();
     return res.status(200).json({
       success: true,
     });

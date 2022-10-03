@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export default class NavigationTree {
   constructor(questions) {
@@ -40,7 +40,15 @@ export default class NavigationTree {
 
   getQuestion(id) {
     return this.questions.find((q) => q.id === id);
-  };
+  }
+
+  getQuestionByOptionId(optionId) {
+    return this.questions.find((q) => {
+      return q.options.some((option) =>
+        option.id == optionId
+      );
+    });
+  }
 
   getQuestionIndex(id) {
     return this.questions.findIndex((q) => q.id == id);
@@ -53,12 +61,12 @@ export default class NavigationTree {
   updateQuestion(question) {
     const index = this.getQuestionIndex(question.id);
     this.questions[index] = question;
-  };
+  }
 
   deleteQuestion(id) {
     const index = this.getQuestion(id);
-    questions.splice(index, 1);
-  };
+    this.questions.splice(index, 1);
+  }
 
   createQuestion(questionContent, type, options) {
     const id = uuidv4();
@@ -67,11 +75,11 @@ export default class NavigationTree {
       id,
       question: questionContent,
       type,
-      options: options.map(o => {
+      options: options.map((o) => {
         return {
           id: uuidv4(),
           option: o.option,
-          nextId: o.nextId, 
+          nextId: o.nextId,
         };
       }),
     };
@@ -81,9 +89,9 @@ export default class NavigationTree {
 
   createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
-      { option: "Option 1", nextId: null }
+      { option: "Option 1", nextId: null },
     ]);
-  };
+  }
 
   printTree() {
     console.log(this.questions);

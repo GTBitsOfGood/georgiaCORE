@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import mongoDB from "../index";
 import User from "../models/User";
+import Question from "../models/Question";
 
 export async function login({ username, password }) {
   if (username == null || password == null) {

@@ -88,6 +88,5 @@ const input = [
   },
 ];
 
-
 const tree = new NavigationTree(input);
 tree.printTree();
