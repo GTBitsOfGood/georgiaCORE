@@ -9,10 +9,7 @@ import ReactFlow, {
 
 import EditQuestionModal from "./EditQuestionModal";
 import {
-  createUntitledQuestion,
-  getQuestion,
-  getQuestions,
-  updateQuestion,
+  navigationTree
 } from "./questions";
 import { createNode, generateInitialNodes } from "./reactflow";
 
@@ -21,7 +18,7 @@ const deleteNodesAndEdges = (nodes, edges, questionId) => {
     (node) => node.id !== questionId && node.parentNode !== questionId
   );
 
-  const optionIds = getQuestion(questionId).options.map((o) => o.id);
+  const optionIds = navigationTree.getQuestion(questionId).options.map((o) => o.id);
 
   const newEdges = edges.filter(
     (edge) =>
@@ -42,11 +39,13 @@ const reducer = (state, action) => {
         editModalNodeId: action.questionId,
       };
     case "update_question": {
-      updateQuestion(action.question);
+      navigationTree.printTree();
+      navigationTree.updateQuestion(action.question);
+      navigationTree.printTree();
       // get the current question x and y
       const node = state.nodes.find((n) => n.id === action.question.id);
       const connectingNodeId = state.edges.find(
-        (e) => e.target === node.id
+        (e) => e.target === node.id // @Jay Fails if no parent
       ).source;
 
       const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
@@ -75,6 +74,8 @@ const reducer = (state, action) => {
         action.questionId
       );
 
+      // TODO: delete from navigationTree?
+
       return {
         ...state,
         nodes: deletedNodes,
@@ -101,7 +102,7 @@ const reducer = (state, action) => {
             },
           ],
         };
-        updateQuestion(newQuestion);
+        navigationTree.updateQuestion(newQuestion);
       });
 
       return state;
@@ -126,7 +127,7 @@ const reducer = (state, action) => {
         sourceNode.dataType === "option"
       ) {
         const questionId = sourceNode.parentNode;
-        const question = getQuestion(questionId);
+        const question = navigationTree.getQuestion(questionId);
         const option = question.options.find((o) => o.id === source);
 
         const newQuestion = {
@@ -139,7 +140,7 @@ const reducer = (state, action) => {
             },
           ],
         };
-        updateQuestion(newQuestion);
+        navigationTree.updateQuestion(newQuestion);
         return { ...state, edges: addEdge(action.connection, state.edges) };
       }
       return state;
@@ -158,7 +159,8 @@ const reducer = (state, action) => {
           y: event.clientY - top,
         });
 
-        const question = createUntitledQuestion();
+        const question = navigationTree.createUntitledQuestion();
+        navigationTree.addQuestion(question);
         const [newNodes, newEdges] = createNode({
           question,
           x,
@@ -184,12 +186,13 @@ const TreeEditor = () => {
 
   const { project } = useReactFlow();
   const [state, dispatch] = useReducer(reducer, {}, () => {
-    const [nodes, edges] = generateInitialNodes(getQuestions());
+    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
 
     return { nodes, edges, editModalOpen: false };
   });
 
   console.log(state.edges);
+  navigationTree.printTree();
 
   return (
     <div
@@ -200,7 +203,7 @@ const TreeEditor = () => {
       <EditQuestionModal
         isOpen={state.editModalOpen}
         dispatch={dispatch}
-        question={getQuestion(state.editModalNodeId)}
+        question={navigationTree.getQuestion(state.editModalNodeId)}
       />
       <ReactFlow
         nodes={state.nodes}

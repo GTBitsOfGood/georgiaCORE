@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid';
 
 export default class NavigationTree {
   constructor(questions) {
@@ -42,12 +42,16 @@ export default class NavigationTree {
     return this.questions.find((q) => q.id === id);
   };
 
+  getQuestionIndex(id) {
+    return this.questions.findIndex((q) => q.id == id);
+  }
+
   addQuestion(question) {
     this.questions.push(question);
   }
 
   updateQuestion(question) {
-    const index = this.getQuestion(question.id);
+    const index = this.getQuestionIndex(question.id);
     this.questions[index] = question;
   };
 
@@ -57,7 +61,7 @@ export default class NavigationTree {
   };
 
   createQuestion(questionContent, type, options) {
-    const id = new mongoose.mongo.ObjectId();
+    const id = uuidv4();
 
     const question = {
       id,
@@ -65,7 +69,7 @@ export default class NavigationTree {
       type,
       options: options.map(o => {
         return {
-          id: mongoose.mongo.ObjectId(),
+          id: uuidv4(),
           option: o.option,
           nextId: o.nextId, 
         };
@@ -82,6 +86,6 @@ export default class NavigationTree {
   };
 
   printTree() {
-    console.log(JSON.stringify(this.questions));
+    console.log(this.questions);
   }
 }
