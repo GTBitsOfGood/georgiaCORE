@@ -11,8 +11,8 @@ import EditQuestionModal from "./EditQuestionModal";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
 import NavigationTree from "src/navigation/NavigationTree";
-import testQuestions from "./questions"
-import { Button } from '@chakra-ui/react'
+import testQuestions from "./questions";
+import { Button } from "@chakra-ui/react";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -164,15 +164,20 @@ const reducer = (state, action) => {
 
         const question = state.navigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
-        const parentQuestion = state.navigationTree.getQuestionByOptionId(action.connectingNodeId.current);
+        const parentQuestion = state.navigationTree.getQuestionByOptionId(
+          action.connectingNodeId.current
+        );
         state.navigationTree.updateQuestion({
           ...parentQuestion,
-          options: parentQuestion.options.map(option => {
+          options: parentQuestion.options.map((option) => {
             return {
               ...option,
-              nextId: option.id === action.connectingNodeId.current ? question.id : option.nextId,
+              nextId:
+                option.id === action.connectingNodeId.current
+                  ? question.id
+                  : option.nextId,
             };
-          })
+          }),
         });
         const [newNodes, newEdges] = createNode({
           question,
@@ -189,7 +194,9 @@ const reducer = (state, action) => {
       return state;
     }
     case "set_state": {
-      const [nodes, edges] = generateInitialNodes(state.navigationTree.getQuestions());
+      const [nodes, edges] = generateInitialNodes(
+        state.navigationTree.getQuestions()
+      );
       return { ...state, nodes, edges, editModalOpen: false };
     }
     default:
@@ -212,7 +219,7 @@ const TreeEditor = () => {
         state.navigationTree.setQuestions(testQuestions);
       }
       // force reducer to recognize changed navigationTree
-      dispatch({type: "set_state"});
+      dispatch({ type: "set_state" });
     }
     initializeQuestions();
   }, []);
@@ -227,11 +234,11 @@ const TreeEditor = () => {
   return (
     <>
       <Button
-          colorScheme='teal'
-          size='lg'
-          onClick={() => setQuestions(state.navigationTree.getQuestions())}
-        >
-          Save
+        colorScheme="teal"
+        size="lg"
+        onClick={() => setQuestions(state.navigationTree.getQuestions())}
+      >
+        Save
       </Button>
       <div
         className="wrapper"
@@ -246,8 +253,12 @@ const TreeEditor = () => {
         <ReactFlow
           nodes={state.nodes}
           edges={state.edges}
-          onNodesChange={(changes) => dispatch({ type: "node_change", changes })}
-          onEdgesChange={(changes) => dispatch({ type: "edge_change", changes })}
+          onNodesChange={(changes) =>
+            dispatch({ type: "node_change", changes })
+          }
+          onEdgesChange={(changes) =>
+            dispatch({ type: "edge_change", changes })
+          }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onConnect={(connection) => dispatch({ type: "connect", connection })}
           onConnectStart={(_, { nodeId }) => {

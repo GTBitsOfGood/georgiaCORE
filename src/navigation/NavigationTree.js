@@ -44,9 +44,7 @@ export default class NavigationTree {
 
   getQuestionByOptionId(optionId) {
     return this.questions.find((q) => {
-      return q.options.some((option) =>
-        option.id == optionId
-      );
+      return q.options.some((option) => option.id == optionId);
     });
   }
 
