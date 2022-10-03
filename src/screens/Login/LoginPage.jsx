@@ -17,7 +17,7 @@ const LoginPage = ({ providers }) => {
    * Success/failure is determined by resSuccess state which is currently set to false (success failed)
    * ResSuccess will be updated later with login functionality
    * Logo is at the bottom of the stack for the white box
-   * Authentication button has hover and button loader which activates on click, but has a bug where it is 
+   * Authentication button has hover and button loader which activates on click, but has a bug where it is
    * transparent on hover after click
    */
   return (
@@ -49,13 +49,13 @@ const LoginPage = ({ providers }) => {
                   onClick={() => {
                     signIn(provider.id, {
                       callbackUrl: `${window.location.origin}/navigation-editor`,
-                    })
-                    setLoading(true)
+                    });
+                    setLoading(true);
                   }}
                   cursor="pointer"
                   key={provider.id}
                   isLoading={isLoading}
-                  _hover={{bgColor:"#8fafe3"}}
+                  _hover={{ bgColor: "#8fafe3" }}
                 >
                   <Stack
                     direction="row"

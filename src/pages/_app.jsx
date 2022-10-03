@@ -27,16 +27,14 @@ const MyApp = ({ Component, pageProps, session }) => {
         <title>Next.js-Starter</title>
       </Head>
       <SessionProvider session={session}>
-      <div className="App">
-        
+        <div className="App">
           {renderHeader && <Header />}
           <div className="Content">
             <ChakraProvider>
               <Component {...pageProps} />
             </ChakraProvider>
           </div>
-        
-      </div>
+        </div>
       </SessionProvider>
     </SWRConfig>
   );
@@ -45,6 +43,7 @@ const MyApp = ({ Component, pageProps, session }) => {
 MyApp.propTypes = {
   Component: PropTypes.any.isRequired,
   pageProps: PropTypes.object.isRequired,
+  session: PropTypes.object.isRequired,
 };
 
 export default MyApp;
