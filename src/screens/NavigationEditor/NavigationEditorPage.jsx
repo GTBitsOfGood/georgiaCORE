@@ -194,6 +194,14 @@ const reducer = (state, action) => {
         targetIsPane &&
         action.connectingNode.current.handleType === "source"
       ) {
+        // Check if the source node already has an edge
+        const sourceNodeHasEdge = state.edges.some(
+          (e) =>
+            e.source === action.connectingNode.current.nodeId ||
+            e.target === action.connectingNode.current.nodeId
+        );
+        if (sourceNodeHasEdge) return state;
+
         // we need to remove the wrapper bounds, in order to get the correct position
         const { top, left } =
           action.reactFlowWrapper.current.getBoundingClientRect();
