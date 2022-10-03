@@ -7,7 +7,7 @@ import ReactFlow, {
   applyEdgeChanges,
 } from "react-flow-renderer";
 
-import EditQuestionModal from "./EditQuestionModal";
+import EditQuestionModal from "../../components/NavigationEditor/EditQuestionModal";
 import {
   createUntitledQuestion,
   getQuestion,
@@ -15,7 +15,10 @@ import {
   updateQuestion,
 } from "./questions";
 import { createNode, generateInitialNodes } from "./reactflow";
+import { Button, useDisclosure } from "@chakra-ui/react";
+import InstructionsModal from "src/components/NavigationEditor/InstructionsModal";
 
+// Delete all nodes and edges that are connected to the given node
 const deleteNodesAndEdges = (nodes, edges, questionId) => {
   const newNodes = nodes.filter(
     (node) => node.id !== questionId && node.parentNode !== questionId
@@ -49,6 +52,7 @@ const reducer = (state, action) => {
         (e) => e.target === node.id
       ).source;
 
+      // delete and recreate the corresponding nodes and edges
       const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
         state.nodes,
         state.edges,
@@ -112,37 +116,69 @@ const reducer = (state, action) => {
     case "edge_change":
       return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
     case "connect": {
+      // Assert that the connection is valid
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      // 3. The edge connects an option to a non-option node
+      // 4. The edge connects an option to a question that is not the parent of the option
       const { source, target } = action.connection;
       const sourceNode = state.nodes.find((n) => n.id === source);
       const targetNode = state.nodes.find((n) => n.id === target);
 
-      const existingEdge = state.edges.find(
-        (e) => e.source === source && e.target === target
-      );
-
-      if (
-        !existingEdge &&
-        targetNode.dataType !== "option" &&
-        sourceNode.dataType === "option"
-      ) {
-        const questionId = sourceNode.parentNode;
-        const question = getQuestion(questionId);
-        const option = question.options.find((o) => o.id === source);
-
-        const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
-              ...option,
-              nextId: target,
-            },
-          ],
-        };
-        updateQuestion(newQuestion);
-        return { ...state, edges: addEdge(action.connection, state.edges) };
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      if (sourceNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.source === source || e.target === source)
+        ) {
+          return state;
+        }
+      } else if (targetNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.target === target || e.source === target)
+        ) {
+          return state;
+        }
       }
-      return state;
+
+      // 3. The edge connects an option to a non-option node
+      if (
+        sourceNode.dataType !== "option" &&
+        targetNode.dataType !== "option"
+      ) {
+        return state;
+      }
+
+      // 4. The edge connects an option to a question that is not the parent of the option
+      if (
+        sourceNode.parentNode === target ||
+        targetNode.parentNode === source
+      ) {
+        return state;
+      }
+
+      let questionId = "";
+      if (sourceNode.dataType === "option") {
+        questionId = sourceNode.parentNode;
+      } else {
+        questionId = targetNode.parentNode;
+      }
+
+      const question = getQuestion(questionId);
+      const option = question.options.find((o) => o.id === source);
+
+      const newQuestion = {
+        ...question,
+        options: [
+          ...question.options,
+          {
+            ...option,
+            nextId: target,
+          },
+        ],
+      };
+      updateQuestion(newQuestion);
+      return { ...state, edges: addEdge(action.connection, state.edges) };
     }
     case "connect_stop": {
       const event = action.event;
@@ -189,47 +225,56 @@ const TreeEditor = () => {
     return { nodes, edges, editModalOpen: false };
   });
 
-  console.log(state.edges);
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <div
-      className="wrapper"
-      ref={reactFlowWrapper}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <EditQuestionModal
-        isOpen={state.editModalOpen}
-        dispatch={dispatch}
-        question={getQuestion(state.editModalNodeId)}
-      />
-      <ReactFlow
-        nodes={state.nodes}
-        edges={state.edges}
-        onNodesChange={(changes) => dispatch({ type: "node_change", changes })}
-        onEdgesChange={(changes) => dispatch({ type: "edge_change", changes })}
-        onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
-        onConnect={(connection) => dispatch({ type: "connect", connection })}
-        onConnectStart={(_, { nodeId }) => {
-          connectingNodeId.current = nodeId;
-        }}
-        onConnectStop={(event) =>
-          dispatch({
-            type: "connect_stop",
-            event,
-            project,
-            reactFlowWrapper,
-            connectingNodeId,
-          })
-        }
-        onNodeDoubleClick={(event, node) => {
-          dispatch({
-            type: "open_edit_modal",
-            questionId: node.id,
-          });
-        }}
-        fitView
-      />
-    </div>
+    <>
+      <Button style={{ margin: "10px" }} onClick={onOpen}>
+        Instructions
+      </Button>
+      <InstructionsModal isOpen={isOpen} onClose={onClose} />
+      <div
+        className="wrapper"
+        ref={reactFlowWrapper}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <EditQuestionModal
+          isOpen={state.editModalOpen}
+          dispatch={dispatch}
+          question={getQuestion(state.editModalNodeId)}
+        />
+        <ReactFlow
+          nodes={state.nodes}
+          edges={state.edges}
+          onNodesChange={(changes) =>
+            dispatch({ type: "node_change", changes })
+          }
+          onEdgesChange={(changes) =>
+            dispatch({ type: "edge_change", changes })
+          }
+          onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
+          onConnect={(connection) => dispatch({ type: "connect", connection })}
+          onConnectStart={(_, { nodeId }) => {
+            connectingNodeId.current = nodeId;
+          }}
+          onConnectStop={(event) =>
+            dispatch({
+              type: "connect_stop",
+              event,
+              project,
+              reactFlowWrapper,
+              connectingNodeId,
+            })
+          }
+          onNodeDoubleClick={(event, node) => {
+            dispatch({
+              type: "open_edit_modal",
+              questionId: node.id,
+            });
+          }}
+          fitView
+        />
+      </div>
+    </>
   );
 };
 

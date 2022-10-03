@@ -1,5 +1,6 @@
 const OPTION_HEIGHT = 50;
 
+// Create the ReactFlow nodes and edges based on the data of a question
 export const createNode = ({ question, x, y, connectingNodeId = null }) => {
   let nodes = [];
   let edges = [];
@@ -13,6 +14,21 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       },
       style: {
         background: "#fff",
+        width: 160,
+        height: 50,
+      },
+      position: { x, y },
+      type: "output",
+    });
+  } else if (question.type == "text") {
+    nodes.push({
+      id: question.id,
+      targetPosition: "left",
+      data: {
+        label: "Heading: " + question.heading + "\nText: " + question.text,
+      },
+      style: {
+        background: "#90EE90",
         width: 160,
         height: 50,
       },
@@ -76,6 +92,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
   return [nodes, edges];
 };
 
+// Generate the intial ReactFlow nodes and edges from the questions
 export const generateInitialNodes = (questions) => {
   // BFS through questions
   // Create nodes for each question
@@ -122,7 +139,7 @@ export const generateInitialNodes = (questions) => {
 
     if (question.type === "question")
       optionY += question.options.length * OPTION_HEIGHT + 70;
-    if (question.type === "url") optionY += 50;
+    else optionY += 50; // TODO: make this dynamic based on question type
   }
 
   return [nodes, edges];

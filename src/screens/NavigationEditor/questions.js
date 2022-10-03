@@ -86,6 +86,7 @@ const questions = [
   },
 ];
 
+// CRUD operations for questions
 export const getQuestion = (id) => questions.find((q) => q.id === id);
 export const getQuestions = () => questions;
 

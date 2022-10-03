@@ -1,3 +1,3 @@
-import NavigatorEditorPage from "src/screens/NavigatorEditor";
+import NavigationEditorPage from "src/screens/NavigationEditor";
 
-export default NavigatorEditorPage;
+export default NavigationEditorPage;
