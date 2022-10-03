@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Flex, Stack, Text, Image } from "@chakra-ui/react";
+import { Box, Flex, Stack, Text, Image, Button } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 import PropTypes from "prop-types";
 
 const LoginPage = ({ providers }) => {
   const [resSuccess, setResSuccess] = React.useState(true);
+  const [isLoading, setLoading] = React.useState(false);
   //setResSuccess(true);
   /**
    * Login page UI
@@ -16,6 +17,8 @@ const LoginPage = ({ providers }) => {
    * Success/failure is determined by resSuccess state which is currently set to false (success failed)
    * ResSuccess will be updated later with login functionality
    * Logo is at the bottom of the stack for the white box
+   * Authentication button has hover and button loader which activates on click, but has a bug where it is 
+   * transparent on hover after click
    */
   return (
     <Flex
@@ -36,19 +39,23 @@ const LoginPage = ({ providers }) => {
             <>
               {Object.values(providers).map((provider) => (
                 <Box
+                  as={Button}
                   bgColor="#4285F4"
                   color="white"
                   fontFamily="sans-serif"
                   padding={1.5}
                   width="100%"
                   rounded="md"
-                  onClick={() =>
+                  onClick={() => {
                     signIn(provider.id, {
                       callbackUrl: `${window.location.origin}/navigation-editor`,
                     })
-                  }
+                    setLoading(true)
+                  }}
                   cursor="pointer"
                   key={provider.id}
+                  isLoading={isLoading}
+                  _hover={{bgColor:"#8fafe3"}}
                 >
                   <Stack
                     direction="row"
