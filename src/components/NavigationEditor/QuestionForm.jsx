@@ -28,10 +28,13 @@ const editOptionText = ({ question, optionId, text }) => {
 };
 
 const removeOption = (question, optionId) => {
-  return {
+  let x = {
     ...question,
     options: question.options.filter((o) => o.id !== optionId),
   };
+
+  console.debug(x);
+  return x;
 };
 
 const NewOption = ({ optionId, optionText, question, setQuestion }) => {
@@ -68,7 +71,7 @@ const addOption = (question) => {
     options: [
       ...question.options,
       {
-        id: question.id + "-" + (question.options.length + 1),
+        id: question.id + "-" + Date.now(), // TODO: replace with actual ID from database
         option: "Option " + (question.options.length + 1),
         nextId: null,
       },

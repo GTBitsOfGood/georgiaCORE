@@ -48,28 +48,33 @@ const reducer = (state, action) => {
       updateQuestion(action.question);
       // get the current question x and y
       const node = state.nodes.find((n) => n.id === action.question.id);
-      const connectingNodeId = state.edges.find(
-        (e) => e.target === node.id
-      ).source;
+
+      const connectingEdge = state.edges.find((e) => e.target === node.id);
 
       // delete and recreate the corresponding nodes and edges
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
+      let [newNodes, newEdges] = deleteNodesAndEdges(
         state.nodes,
         state.edges,
         action.question.id
       );
 
-      const [newNodes, newEdges] = createNode({
-        question: action.question,
-        x: node.position.x,
-        y: node.position.y,
-        connectingNodeId,
-      });
+      if (connectingEdge) {
+        const connectingNodeId = connectingEdge.source;
+        const [recreatedNodes, recreatedEdges] = createNode({
+          question: action.question,
+          x: node.position.x,
+          y: node.position.y,
+          connectingNodeId,
+        });
+
+        newNodes = [...newNodes, ...recreatedNodes];
+        newEdges = [...newEdges, ...recreatedEdges];
+      }
 
       return {
         ...state,
-        nodes: [...deletedNodes, ...newNodes],
-        edges: [...deletedEdges, ...newEdges],
+        nodes: newNodes,
+        edges: newEdges,
       };
     }
     case "delete_question": {
@@ -185,7 +190,10 @@ const reducer = (state, action) => {
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       // User ended a connection not to a node
-      if (targetIsPane) {
+      if (
+        targetIsPane &&
+        action.connectingNode.current.handleType === "source"
+      ) {
         // we need to remove the wrapper bounds, in order to get the correct position
         const { top, left } =
           action.reactFlowWrapper.current.getBoundingClientRect();
@@ -199,8 +207,9 @@ const reducer = (state, action) => {
           question,
           x,
           y,
-          connectingNodeId: action.connectingNodeId.current,
+          connectingNodeId: action.connectingNode.current.nodeId,
         });
+
         return {
           ...state,
           nodes: state.nodes.concat(newNodes),
@@ -216,7 +225,7 @@ const reducer = (state, action) => {
 
 const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
-  const connectingNodeId = useRef(null);
+  const connectingNode = useRef(null);
 
   const { project } = useReactFlow();
   const [state, dispatch] = useReducer(reducer, {}, () => {
@@ -253,8 +262,8 @@ const TreeEditor = () => {
           }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onConnect={(connection) => dispatch({ type: "connect", connection })}
-          onConnectStart={(_, { nodeId }) => {
-            connectingNodeId.current = nodeId;
+          onConnectStart={(_, { nodeId, handleType }) => {
+            connectingNode.current = { nodeId, handleType };
           }}
           onConnectStop={(event) =>
             dispatch({
@@ -262,7 +271,7 @@ const TreeEditor = () => {
               event,
               project,
               reactFlowWrapper,
-              connectingNodeId,
+              connectingNode,
             })
           }
           onNodeDoubleClick={(event, node) => {
