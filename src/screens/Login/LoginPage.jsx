@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 const LoginPage = ({ providers }) => {
   const [resSuccess, setResSuccess] = React.useState(true);
-  setResSuccess(true);
+  //setResSuccess(true);
   /**
    * Login page UI
    * Creates a main green background with a white box in the middle
@@ -42,7 +42,11 @@ const LoginPage = ({ providers }) => {
                   padding={1.5}
                   width="100%"
                   rounded="md"
-                  onClick={() => signIn(provider.id)}
+                  onClick={() =>
+                    signIn(provider.id, {
+                      callbackUrl: `${window.location.origin}/navigation-editor`,
+                    })
+                  }
                   cursor="pointer"
                   key={provider.id}
                 >
