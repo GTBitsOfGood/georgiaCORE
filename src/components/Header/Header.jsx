@@ -12,6 +12,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 import NavLink from "../NavLink";
 
 const Header = () => {
@@ -35,10 +36,12 @@ const Header = () => {
    * Currently, Logo is not the correct picture
    */ 
   const { data: session, status } = useSession();
-  console.log(session);
+
   const [active1, setActive1] = React.useState(false);
   const [active2, setActive2] = React.useState(false);
   const [active3, setActive3] = React.useState(false);
+
+  const router = useRouter();
 
   const createHoverEffect = (i) => {
     killAllHovers();
@@ -67,7 +70,6 @@ const Header = () => {
     setActiveProfile(false);
   }
 
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
@@ -88,8 +90,8 @@ const Header = () => {
             </Flex>
             <Stack direction="row" justifyContent="space-evenly" width="50%">
               <Stack>
-                {active1 && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!active1 && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/" || active1) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                {!(router.pathname == "/" || active1) && <Flex bgColor="#59784D" padding="2px"></Flex>}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
@@ -112,8 +114,8 @@ const Header = () => {
               </Stack>
               <NavLink href="/navigation-editor">
                 <Stack>
-                  {active2 && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                  {!active2 && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                  {(router.pathname == "/navigation-editor" || active2) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                  {!(router.pathname == "/navigation-editor" || active2)&& <Flex bgColor="#59784D" padding="2px"></Flex>}
                   <Menu>
                     <MenuButton
                       as={Button}
@@ -139,7 +141,7 @@ const Header = () => {
                         zIndex="100"
 
                       >
-                      <MenuItem color="white" fontFamily="sans-serif">
+                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
                         <Flex
                           bgColor="#59784D"
                           paddingLeft="55px"
@@ -151,7 +153,7 @@ const Header = () => {
                           <NavLink href="/">Preview</NavLink>
                         </Flex>
                       </MenuItem>
-                      <MenuItem color="white" fontFamily="sans-serif">
+                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
                         <Flex
                           bgColor="#59784D"
                           paddingTop="20px"
@@ -161,7 +163,7 @@ const Header = () => {
                           <NavLink href="/">Edit</NavLink>
                         </Flex>
                       </MenuItem>
-                      <MenuItem color="white" fontFamily="sans-serif">
+                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
                         <Flex
                           bgColor="#59784D"
                           paddingTop="20px"
@@ -177,8 +179,8 @@ const Header = () => {
                 </Stack>
               </NavLink>
               <Stack>
-                {active3 && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!active3 && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/realtime" || active3) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                {!(router.pathname == "/realtime" || active3) && <Flex bgColor="#59784D" padding="2px"></Flex>}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
@@ -201,17 +203,17 @@ const Header = () => {
             </Stack>
           </Stack>
           <Stack width="15%">
-            {activeProfile && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-            {!activeProfile && <Flex bgColor="#59784D" padding="2px"></Flex>}
+            <Flex direction="row-reverse" width="100%">
+              {activeProfile && <Flex bgColor="#F6893C" padding="2px" width="220px"></Flex>}
+              {!activeProfile && <Flex bgColor="#59784D" padding="2px" width="220px"></Flex>}
+            </Flex>
             <Flex
               flexDirection="row-reverse"
               width="100%"
               justifyContent="flex-start"
               alignItems="center"
               paddingTop="10px"
-              
             >
-
               <Menu>
                 <MenuButton
                   color="white"
