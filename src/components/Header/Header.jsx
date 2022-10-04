@@ -9,6 +9,7 @@ import {
   MenuList,
   MenuItem,
   Button,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
 import NavLink from "../NavLink";
@@ -32,21 +33,53 @@ const Header = () => {
    * If not authenticated, shows the following contents:
    *  Logo, Home button, and Login button. Login button routes to login page
    * Currently, Logo is not the correct picture
-   */
+   */ 
   const { data: session, status } = useSession();
+  console.log(session);
   const [active1, setActive1] = React.useState(false);
   const [active2, setActive2] = React.useState(false);
   const [active3, setActive3] = React.useState(false);
+
+  const createHoverEffect = (i) => {
+    killAllHovers();
+
+    if (i == 1) {
+      setActive1(true);
+    }
+
+    if (i == 2) {
+      setActive2(true);
+    }
+    
+    if (i == 3) {
+      setActive3(true);
+    }
+
+    if (i == 4) {
+      setActiveProfile(true);
+    }
+  }
+
+  const killAllHovers = () => {
+    setActive1(false);
+    setActive2(false);
+    setActive3(false);
+    setActiveProfile(false);
+  }
+
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
-      <Flex bgColor="#59784D">
+      <Flex  boxShadow='xl' bgColor="#59784D">
         <Stack direction="row" width="100%" justifyContent="space-between">
-          <Stack direction="row" width="40%" justifyContent="space-between">
+          <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
-              <Image
+            <Image
                 src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
                 alt="Logo"
+                backgroundColor="lightgreen"
               />
             </Flex>
             <Stack direction="row" justifyContent="space-evenly" width="50%">
@@ -61,13 +94,16 @@ const Header = () => {
                   paddingRight="20px"
                   paddingTop="10px"
                   onClick={() => {
-                    setActive1(true);
-                    setActive2(false);
-                    setActive3(false);
-                    setActiveProfile(false);
+                    createHoverEffect(1);
+                  }}
+                  onMouseEnter={() => {
+                    createHoverEffect(1);
+                  }}
+                  onMouseLeave={() => {
+                    killAllHovers();
                   }}
                 >
-                  <NavLink href="/">Home</NavLink>
+                  <NavLink backgroundColor="red" color="red" href="/">Home</NavLink>
                 </Text>
               </Stack>
               <NavLink href="/navigation-editor">
@@ -84,10 +120,14 @@ const Header = () => {
                       paddingRight="20px"
                       paddingTop="10px"
                       onClick={() => {
-                        setActive2(!active2);
-                        setActive1(false);
-                        setActive3(false);
-                        setActiveProfile(false);
+                        createHoverEffect(2);
+                      }}
+                      onMouseEnter={() => {
+                        createHoverEffect(2);
+                        onOpen();
+                      }}
+                      onMouseLeave={() => {
+                        killAllHovers
                       }}
                       _expanded={{ fontWeight: "bold" }}
                     >
@@ -142,11 +182,13 @@ const Header = () => {
                   paddingLeft="20px"
                   paddingTop="10px"
                   onClick={() => {
-                    setActive3(true);
-                    setActive2(false);
-                    setActive1(false);
-                    setActiveProfile(false);
+                    createHoverEffect(3);
                   }}
+                  onMouseEnter={() => {
+                    createHoverEffect(3);
+                  }}
+                  onMouseLeave={killAllHovers}
+
                 >
                   <NavLink href="/ssr">Realtime</NavLink>
                 </Text>
@@ -166,7 +208,7 @@ const Header = () => {
             >
               <Image
                 src={session.user.image}
-                boxSize="30px"
+                boxSize="32px"
                 rounded="100%"
                 alt="Logo"
               />
@@ -174,7 +216,12 @@ const Header = () => {
                 <MenuButton
                   color="white"
                   paddingRight="54px"
-                  onClick={() => setActiveProfile(true)}
+                  whiteSpace="nowrap"
+                  onClick={() => {
+                    createHoverEffect(4);
+                  }}
+                  onMouseEnter={() => createHoverEffect(4)}
+                  onMouseLeave={killAllHovers}
                 >
                   {session.user.name}
                 </MenuButton>

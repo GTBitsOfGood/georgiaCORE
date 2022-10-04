@@ -24,7 +24,7 @@ const MyApp = ({ Component, pageProps, session }) => {
       }}
     >
       <Head>
-        <title>Next.js-Starter</title>
+        <title>GeorgiaCORE Tool</title>
       </Head>
       <SessionProvider session={session}>
         <div className="App">
