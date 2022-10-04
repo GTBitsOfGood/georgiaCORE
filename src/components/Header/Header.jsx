@@ -179,8 +179,8 @@ const Header = () => {
                 </Stack>
               </NavLink>
               <Stack>
-                {(router.pathname == "/realtime" || active3) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!(router.pathname == "/realtime" || active3) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/navigator" || active3) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                {!(router.pathname == "/navigator" || active3) && <Flex bgColor="#59784D" padding="2px"></Flex>}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
