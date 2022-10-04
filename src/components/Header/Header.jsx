@@ -72,8 +72,8 @@ const Header = () => {
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
-      <Flex  boxShadow='xl' bgColor="#59784D">
-        <Stack direction="row" width="100%" justifyContent="space-between">
+      <Flex  bgColor="#59784D">
+        <Stack  direction="row" width="100%" justifyContent="space-between">
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
             <Image
@@ -134,7 +134,11 @@ const Header = () => {
                     >
                       Problem Tree
                     </MenuButton>
-                    <MenuList>
+                    <MenuList
+                        bgColor="#59784D"
+                        zIndex="100"
+
+                      >
                       <MenuItem color="white" fontFamily="sans-serif">
                         <Flex
                           bgColor="#59784D"
@@ -199,20 +203,14 @@ const Header = () => {
           <Stack width="15%">
             {activeProfile && <Flex bgColor="#F6893C" padding="2px"></Flex>}
             {!activeProfile && <Flex bgColor="#59784D" padding="2px"></Flex>}
-            <Stack
-              direction="row"
+            <Flex
+              flexDirection="row-reverse"
               width="100%"
               justifyContent="flex-start"
               alignItems="center"
-              paddingLeft="30px"
               paddingTop="10px"
+              
             >
-              <Image
-                src={session.user.image}
-                boxSize="32px"
-                rounded="100%"
-                alt="Logo"
-              />
 
               <Menu>
                 <MenuButton
@@ -225,7 +223,17 @@ const Header = () => {
                   onMouseEnter={() => createHoverEffect(4)}
                   onMouseLeave={killAllHovers}
                 >
+                  <Flex direction="row" justifyContent={"center"} alignItems="center">
+                    <Image
+                      src={session.user.image}
+                      fallbackSrc="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
+                      boxSize="32px"
+                      rounded="100%"
+                      marginRight="15px"
+                      alt="Logo"
+                    />
                   {session.user.name}
+                  </Flex>
                 </MenuButton>
                 <MenuList
                 onClick={() =>
@@ -252,7 +260,7 @@ const Header = () => {
                 </MenuList>
               </Menu>
 
-            </Stack>
+            </Flex>
           </Stack>
         </Stack>
       </Flex>
@@ -266,7 +274,6 @@ const Header = () => {
             <Image
                 src="/static/images/georgiacore_navbar_logo.png/"
               alt="Logo"
-              fallbackSrc="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
               marginTop="-5px"
               height="60px"
             />
