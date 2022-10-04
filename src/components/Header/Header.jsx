@@ -197,7 +197,7 @@ const Header = () => {
                   onMouseLeave={killAllHovers}
 
                 >
-                  <NavLink href="/ssr">Realtime</NavLink>
+                  <NavLink href="/navigator">Realtime</NavLink>
                 </Text>
               </Stack>
             </Stack>
