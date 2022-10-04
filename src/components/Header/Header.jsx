@@ -221,6 +221,7 @@ const Header = () => {
                   whiteSpace="nowrap"
                   onClick={() => {
                     createHoverEffect(4);
+
                   }}
                   onMouseEnter={() => createHoverEffect(4)}
                   onMouseLeave={killAllHovers}
@@ -313,6 +314,7 @@ const Header = () => {
             fontSize="20px"
             paddingLeft="20px"
             paddingRight="20px"
+            textDecoration="underline" 
             onClick={() => {
               setActive1(true);
               setActive2(false);
@@ -320,7 +322,7 @@ const Header = () => {
               setActiveProfile(false);
             }}
           >
-            <NavLink href="/login">Login</NavLink>
+            <NavLink href="/login" >Login</NavLink>
           </Text>
         </Stack>
       </Stack>
