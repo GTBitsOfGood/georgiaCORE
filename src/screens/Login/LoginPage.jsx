@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Flex, Stack, Text, Image, Button } from "@chakra-ui/react";
+import { Box, Flex, Stack, Text, Image, Button, Center } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 import PropTypes from "prop-types";
 
@@ -64,15 +64,16 @@ const LoginPage = ({ providers }) => {
                     paddingRight={4}
                   >
                     <Box bgColor="#ffffff" rounded="100%" width="%">
-                      <Flex justifyContent="center" paddingTop={0.5}>
+                      <Flex justifyContent="center" padding={0.5}>
                         <Image
-                          boxSize="20px"
                           src="https://freesvg.org/img/1534129544.png"
                           alt="Google Image"
+                          borderRadius="100%"
+                          height="20px"
                         />
                       </Flex>
                     </Box>
-                    <Text>Continue with {provider.name}</Text>
+                    <Center> Continue with {provider.name}</Center>
                   </Stack>
                 </Box>
               ))}

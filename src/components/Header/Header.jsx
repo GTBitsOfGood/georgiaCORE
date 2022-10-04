@@ -77,9 +77,13 @@ const Header = () => {
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
             <Image
-                src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
+                //src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
+                src="/static/images/georgiacore_navbar_logo.png/"
                 alt="Logo"
                 backgroundColor="lightgreen"
+                height="60px"
+                padding="0px"
+                marginTop="-5px"
               />
             </Flex>
             <Stack direction="row" justifyContent="space-evenly" width="50%">
@@ -119,9 +123,6 @@ const Header = () => {
                       paddingLeft="20px"
                       paddingRight="20px"
                       paddingTop="10px"
-                      onClick={() => {
-                        createHoverEffect(2);
-                      }}
                       onMouseEnter={() => {
                         createHoverEffect(2);
                         onOpen();
@@ -212,6 +213,7 @@ const Header = () => {
                 rounded="100%"
                 alt="Logo"
               />
+
               <Menu>
                 <MenuButton
                   color="white"
@@ -225,27 +227,31 @@ const Header = () => {
                 >
                   {session.user.name}
                 </MenuButton>
-                <MenuList>
+                <MenuList
+                onClick={() =>
+                  signOut({
+                    callbackUrl: `${window.location.origin}/login`,
+                  })
+                }
+                >
                   <MenuItem
                     onClick={() =>
                       signOut({
                         callbackUrl: `${window.location.origin}/login`,
                       })
                     }
-                  >
-                    <Flex
                       bgColor="#59784D"
                       color="white"
                       paddingRight="100px"
                       paddingLeft="100px"
                       paddingTop="10px"
                       paddingBottom="10px"
-                    >
+                  >
                       Log out
-                    </Flex>
                   </MenuItem>
                 </MenuList>
               </Menu>
+
             </Stack>
           </Stack>
         </Stack>
@@ -258,8 +264,11 @@ const Header = () => {
         <Stack direction="row" width="40%" justifyContent="flex-start">
           <Flex bgColor="gray" margin="10px">
             <Image
-              src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
+                src="/static/images/georgiacore_navbar_logo.png/"
               alt="Logo"
+              fallbackSrc="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
+              marginTop="-5px"
+              height="60px"
             />
           </Flex>
           <Stack>
@@ -295,7 +304,6 @@ const Header = () => {
             fontSize="20px"
             paddingLeft="20px"
             paddingRight="20px"
-            paddingTop="10px"
             onClick={() => {
               setActive1(true);
               setActive2(false);
