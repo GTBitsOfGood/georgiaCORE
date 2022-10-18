@@ -40,6 +40,7 @@ const Header = () => {
   const [active1, setActive1] = React.useState(false);
   const [active2, setActive2] = React.useState(false);
   const [active3, setActive3] = React.useState(false);
+  const [active4, setActive4] = React.useState(false);
 
   const router = useRouter();
 
@@ -59,6 +60,10 @@ const Header = () => {
     }
 
     if (i == 4) {
+      setActive4(true);
+    }
+
+    if (i == 5) {
       setActiveProfile(true);
     }
   }
@@ -67,6 +72,7 @@ const Header = () => {
     setActive1(false);
     setActive2(false);
     setActive3(false);
+    setActive4(false);
     setActiveProfile(false);
   }
 
@@ -200,6 +206,28 @@ const Header = () => {
                   <NavLink href="/navigator">Realtime</NavLink>
                 </Text>
               </Stack>
+              <Stack>
+                {(router.pathname == "/admin" || active4) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                {!(router.pathname == "/admin" || active4) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                <Text
+                  color="white"
+                  fontFamily="sans-serif"
+                  fontSize="20px"
+                  paddingRight="20px"
+                  paddingLeft="20px"
+                  paddingTop="10px"
+                  onClick={() => {
+                    createHoverEffect(4);
+                  }}
+                  onMouseEnter={() => {
+                    createHoverEffect(4);
+                  }}
+                  onMouseLeave={killAllHovers}
+
+                >
+                  <NavLink href="/admin">Admin</NavLink>
+                </Text>
+              </Stack>
             </Stack>
           </Stack>
           <Stack width="15%">
@@ -220,10 +248,10 @@ const Header = () => {
                   paddingRight="54px"
                   whiteSpace="nowrap"
                   onClick={() => {
-                    createHoverEffect(4);
+                    createHoverEffect(5);
 
                   }}
-                  onMouseEnter={() => createHoverEffect(4)}
+                  onMouseEnter={() => createHoverEffect(5)}
                   onMouseLeave={killAllHovers}
                 >
                   <Flex direction="row" justifyContent={"center"} alignItems="center">
@@ -295,6 +323,7 @@ const Header = () => {
                 setActive1(true);
                 setActive2(false);
                 setActive3(false);
+                setActive4(false);
                 setActiveProfile(false);
               }}
             >
@@ -319,6 +348,7 @@ const Header = () => {
               setActive1(true);
               setActive2(false);
               setActive3(false);
+              setActive4(false);
               setActiveProfile(false);
             }}
           >
