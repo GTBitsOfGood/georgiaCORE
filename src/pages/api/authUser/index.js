@@ -1,0 +1,57 @@
+import { withSessionRoute } from "src/utils/lib/session";
+import { deleteAuthUser, insertAuthUser, updateAuthUser } from "server/mongodb/actions/AuthUser";
+
+// @route   POST/DELETE api/authUser
+// @desc    Insert/Delete authUser into/from database
+// @access  Public
+const handler = async (req, res) => {
+  if (req.method === "POST") {
+    // Insert authUser
+    try {
+      await insertAuthUser(req.body);
+      
+      console.log(req.body);
+      await req.session.save();
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } else if (req.method === "DELETE") {
+    //Delete authUser
+    try {
+      await deleteAuthUser(req.body);
+
+      await req.session.save();
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } else if (req.method === "PATCH") {
+    //Update authUser
+    try {
+      await updateAuthUser(req.body.first, req.body.second);
+
+      await req.session.save();
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+};
+
+export default withSessionRoute(handler);
