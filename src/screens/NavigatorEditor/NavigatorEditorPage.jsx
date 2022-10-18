@@ -51,43 +51,49 @@ const reducer = (state, action) => {
       state.navigationTree.updateQuestion(action.question);
       // get the current question x and y
       const node = state.nodes.find((n) => n.id === action.question.id);
-      const connectingNodeId = state.edges.find(
-        (e) => e.target === node.id // @Jay Fails if no parent
-      ).source;
+      const connectingEdge = state.edges.find((e) => e.target === node.id);
 
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
+      // delete and recreate the corresponding nodes and edges
+      let [newNodes, newEdges] = deleteNodesAndEdges(
         state.nodes,
         state.edges,
         state.navigationTree,
         action.question.id
       );
 
-      const [newNodes, newEdges] = createNode({
-        question: action.question,
-        x: node.position.x,
-        y: node.position.y,
-        connectingNodeId,
-      });
+      if (connectingEdge) {
+        const connectingNodeId = connectingEdge.source;
+        const [recreatedNodes, recreatedEdges] = createNode({
+          question: action.question,
+          x: node.position.x,
+          y: node.position.y,
+          connectingNodeId,
+        });
+
+        newNodes = [...newNodes, ...recreatedNodes];
+        newEdges = [...newEdges, ...recreatedEdges];
+      }
 
       return {
         ...state,
-        nodes: [...deletedNodes, ...newNodes],
-        edges: [...deletedEdges, ...newEdges],
+        nodes: newNodes,
+        edges: newEdges,
       };
     }
     case "delete_question": {
       var [deletedNodes, deletedEdges] = [state.nodes, state.edges];
       action.nodes.forEach((node) => {
-        [deletedNodes, deletedEdges] = deleteNode(
-          deletedNodes,
-          deletedEdges,
-          node.id
-        );
-
+        const question = state.navigationTree.getQuestion(node.id);
         // option nodes will be deleted with update_question so we
         // just delete questions from tree
-        if (state.navigationTree.getQuestion(node.id)) {
+        if (question && !question.isRoot) {
           state.navigationTree.deleteQuestion(node.id);
+
+          [deletedNodes, deletedEdges] = deleteNode(
+            deletedNodes,
+            deletedEdges,
+            node.id
+          );
         }
       });
 
@@ -129,44 +135,87 @@ const reducer = (state, action) => {
     case "edge_change":
       return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
     case "connect": {
+      // Assert that the connection is valid
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      // 3. The edge connects an option to a non-option node
+      // 4. The edge connects an option to a question that is not the parent of the option
       const { source, target } = action.connection;
       const sourceNode = state.nodes.find((n) => n.id === source);
       const targetNode = state.nodes.find((n) => n.id === target);
 
-      const existingEdge = state.edges.find(
-        (e) => e.source === source && e.target === target
-      );
-
-      if (
-        !existingEdge &&
-        targetNode.dataType !== "option" &&
-        sourceNode.dataType === "option"
-      ) {
-        const questionId = sourceNode.parentNode;
-        const question = state.navigationTree.getQuestion(questionId);
-        const option = question.options.find((o) => o.id === source);
-
-        const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
-              ...option,
-              nextId: target,
-            },
-          ],
-        };
-        state.navigationTree.updateQuestion(newQuestion);
-        return { ...state, edges: addEdge(action.connection, state.edges) };
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      if (sourceNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.source === source || e.target === source)
+        ) {
+          return state;
+        }
+      } else if (targetNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.target === target || e.source === target)
+        ) {
+          return state;
+        }
       }
-      return state;
+
+      // 3. The edge connects an option to a non-option node
+      if (
+        sourceNode.dataType !== "option" &&
+        targetNode.dataType !== "option"
+      ) {
+        return state;
+      }
+
+      // 4. The edge connects an option to a question that is not the parent of the option
+      if (
+        sourceNode.parentNode === target ||
+        targetNode.parentNode === source
+      ) {
+        return state;
+      }
+
+      let questionId = "";
+      if (sourceNode.dataType === "option") {
+        questionId = sourceNode.parentNode;
+      } else {
+        questionId = targetNode.parentNode;
+      }
+
+      const question = state.navigationTree.getQuestion(questionId);
+      const option = question.options.find((o) => o.id === source);
+
+      const newQuestion = {
+        ...question,
+        options: [
+          ...question.options,
+          {
+            ...option,
+            nextId: target,
+          },
+        ],
+      };
+      state.navigationTree.updateQuestion(newQuestion);
+      return { ...state, edges: addEdge(action.connection, state.edges) };
     }
     case "connect_stop": {
       const event = action.event;
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       // User ended a connection not to a node
-      if (targetIsPane) {
+      if (
+        targetIsPane &&
+        action.connectingNode.current.handleType === "source"
+      ) {
+        // Check if the source node already has an edge
+        const sourceNodeHasEdge = state.edges.some(
+          (e) =>
+            e.source === action.connectingNode.current.nodeId ||
+            e.target === action.connectingNode.current.nodeId
+        );
+        if (sourceNodeHasEdge) return state;
+
         // we need to remove the wrapper bounds, in order to get the correct position
         const { top, left } =
           action.reactFlowWrapper.current.getBoundingClientRect();
@@ -178,7 +227,7 @@ const reducer = (state, action) => {
         const question = state.navigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
         const parentQuestion = state.navigationTree.getQuestionByOptionId(
-          action.connectingNodeId.current
+          action.connectingNode.current.nodeId
         );
         state.navigationTree.updateQuestion({
           ...parentQuestion,
@@ -186,7 +235,7 @@ const reducer = (state, action) => {
             return {
               ...option,
               nextId:
-                option.id === action.connectingNodeId.current
+                option.id === action.connectingNode.current.nodeId
                   ? question.id
                   : option.nextId,
             };
@@ -196,7 +245,7 @@ const reducer = (state, action) => {
           question,
           x,
           y,
-          connectingNodeId: action.connectingNodeId.current,
+          connectingNodeId: action.connectingNode.current.nodeId,
         });
         return {
           ...state,
@@ -219,7 +268,7 @@ const reducer = (state, action) => {
 
 const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
-  const connectingNodeId = useRef(null);
+  const connectingNode = useRef(null);
 
   // initialize navigationTree in reducer
   useEffect(() => {
@@ -277,8 +326,8 @@ const TreeEditor = () => {
             dispatch({ type: "delete_question", nodes })
           }
           onConnect={(connection) => dispatch({ type: "connect", connection })}
-          onConnectStart={(_, { nodeId }) => {
-            connectingNodeId.current = nodeId;
+          onConnectStart={(_, { nodeId, handleType }) => {
+            connectingNode.current = { nodeId, handleType };
           }}
           onConnectStop={(event) =>
             dispatch({
@@ -286,7 +335,7 @@ const TreeEditor = () => {
               event,
               project,
               reactFlowWrapper,
-              connectingNodeId,
+              connectingNode,
             })
           }
           onNodeDoubleClick={(event, node) => {
@@ -303,7 +352,6 @@ const TreeEditor = () => {
 };
 
 const NavigatorEditorPage = () => {
-  
   return (
     <ReactFlowProvider>
       <TreeEditor />

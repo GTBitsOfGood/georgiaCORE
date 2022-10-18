@@ -1,6 +1,7 @@
 const testQuestions = [
   {
     id: "1",
+    isRoot: true,
     question: "Do you want to continue?",
     type: "question",
     options: [

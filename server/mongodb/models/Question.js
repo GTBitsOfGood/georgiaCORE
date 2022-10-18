@@ -6,6 +6,7 @@ const QUESTION_TYPES = ["question"];
 
 const QuestionSchema = new Schema({
   id: String,
+  isRoot: { type: Boolean, default: false },
   question: String,
   type: { type: String, enum: QUESTION_TYPES },
   options: [
@@ -14,8 +15,9 @@ const QuestionSchema = new Schema({
       option: String,
       nextId: String,
       url: String,
-    }
+    },
   ],
 });
 
-export default mongoose.models.Question ?? mongoose.model("Question", QuestionSchema);
+export default mongoose.models.Question ??
+  mongoose.model("Question", QuestionSchema);

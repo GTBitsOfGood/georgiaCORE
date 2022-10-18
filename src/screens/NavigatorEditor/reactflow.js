@@ -124,7 +124,7 @@ export const generateInitialNodes = (questions) => {
 
     if (question.type === "question")
       optionY += question.options.length * OPTION_HEIGHT + 70;
-    if (question.type === "url") optionY += 50;
+    else optionY += 50;
   }
 
   return [nodes, edges];
