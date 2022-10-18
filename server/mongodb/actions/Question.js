@@ -12,7 +12,7 @@ export const getAllQuestions = async () => {
     }
 
     return {
-      questions
+      questions,
     };
   } catch (e) {
     throw new Error("Invalid token!", e);
