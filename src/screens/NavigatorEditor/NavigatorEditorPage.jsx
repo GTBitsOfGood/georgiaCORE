@@ -6,13 +6,14 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
 } from "react-flow-renderer";
+import { Button, useDisclosure } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./questions";
-import { Button } from "@chakra-ui/react";
+import InstructionsModal from "./InstructionsModal";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -270,6 +271,13 @@ const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
   const connectingNode = useRef(null);
 
+  const { project } = useReactFlow();
+  const [state, dispatch] = useReducer(reducer, {}, () => {
+    const navigationTree = new NavigationTree([]);
+    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
+    return { nodes, edges, navigationTree, editModalOpen: false };
+  });
+
   // initialize navigationTree in reducer
   useEffect(() => {
     async function initializeQuestions() {
@@ -286,17 +294,23 @@ const TreeEditor = () => {
     initializeQuestions();
   }, []);
 
-  const { project } = useReactFlow();
-  const [state, dispatch] = useReducer(reducer, {}, () => {
-    const navigationTree = new NavigationTree([]);
-    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
-    return { nodes, edges, navigationTree, editModalOpen: false };
-  });
-
+  const {
+    isOpen: isInstructionsOpen,
+    onOpen: openInstructions,
+    onClose: onInstructionsClose,
+  } = useDisclosure();
   return (
     <>
+      <Button style={{ margin: "10px" }} size="lg" onClick={openInstructions}>
+        Instructions
+      </Button>
+      <InstructionsModal
+        isOpen={isInstructionsOpen}
+        onClose={onInstructionsClose}
+      />
       <Button
         colorScheme="teal"
+        style={{ margin: "10px" }}
         size="lg"
         onClick={() => setQuestions(state.navigationTree.getQuestions())}
       >
