@@ -29,7 +29,7 @@ const AuthUserTable = ({authUsers}) => {
             </Td>
             <Td paddingInlineStart={5} paddingInlineEnd={50} fontFamily="sans-serif" fontWeight={600}>{authUser.role}</Td>
             <Td>
-                <AuthUserModal btnName="Edit" modalTitle="Edit User" action="updateAuthUser" currentEmail={authUser.email}></AuthUserModal>
+                <AuthUserModal btnName="Submit" modalTitle="Edit Assistant" action="updateAuthUser" currentEmail={authUser.email}></AuthUserModal>
                 {authUser.role != "Administrator" && (
                   <Button
                       bgColor="white"

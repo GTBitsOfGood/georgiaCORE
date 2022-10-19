@@ -58,7 +58,7 @@ const AdminPage = () => {
                     alignItems="center"
                 >
                     <Text fontFamily="initial" fontSize="4xl" letterSpacing="tight">Employees</Text>
-                    <AuthUserModal btnName="Add" modalTitle="Add New User" action="insertAuthUser" currentEmail="Email"></AuthUserModal>
+                    <AuthUserModal btnName="Add as an Assistant" modalTitle="Add Assistant" action="insertAuthUser" currentEmail="Email"></AuthUserModal>
                 </Stack>
                 <Flex
                     minH="400px"
