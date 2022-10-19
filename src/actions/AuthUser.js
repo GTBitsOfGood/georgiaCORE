@@ -66,3 +66,22 @@ export const updateAuthUser = (oldAuthUserEmail, newAuthUser) => {
         return json.payload;
       });
 };
+
+export const getAuthUsers = () => {
+    return fetch(urls.baseUrl + urls.api.authUser, {
+      method: "GET",
+      mode: "same-origin",
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        if (json == null) {
+          throw new Error("Could not connect to API!");
+        } else if (!json.success) {
+          throw new Error(json.message);
+        }
+        return json.payload;
+      });
+  };
