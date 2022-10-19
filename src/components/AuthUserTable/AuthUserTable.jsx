@@ -18,7 +18,7 @@ const AuthUserTable = ({authUsers}) => {
         </Tr>
       </Thead>
       <Tbody overflowY="auto">
-        {authUsers[0] && (Object.values(authUsers[0]).map((authUser) => (
+        {authUsers && authUsers.map((authUser) => (
           <Tr
             key={authUser._id}
             height="5px"
@@ -42,7 +42,7 @@ const AuthUserTable = ({authUsers}) => {
                 )}
             </Td>
           </Tr>
-        )))}
+        ))}
       </Tbody>
     </Table>
   );

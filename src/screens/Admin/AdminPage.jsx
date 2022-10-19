@@ -1,10 +1,14 @@
 import React from "react";
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Stack, Text, Button } from "@chakra-ui/react";
 import { getAuthUsers } from "src/actions/AuthUser";
 import  AuthUserTable  from "src/components/AuthUserTable/AuthUserTable";
 import AuthUserModal from "src/components/AuthUserTable/AuthUserModal";
 const AdminPage = () => {
     const [authUsers, setAuthUsers] = React.useState([]);
+    const [numAuthUsers, setNumAuthUsers] = React.useState(0);
+    const [numArray, setNumArray] = React.useState([]);
+    const [authUsersDisplay, setAuthUsersDisplay] = React.useState([]);
+    const [isActive, setIsActive] = React.useState(0);
 
     React.useEffect(() => {
         async function loadAuthUsers() {
@@ -13,13 +17,34 @@ const AdminPage = () => {
           newAuthUsers.push(newAuthUsersData);
 
           setAuthUsers(newAuthUsers);
+          if (Object.values(newAuthUsers[0]).length >= 7) {
+            setAuthUsersDisplay(Object.values(newAuthUsers[0]).slice(0, 7));
+          } else if (Object.values(newAuthUsers[0]).length < 7) {
+            setAuthUsersDisplay(Object.values(newAuthUsers[0]).slice(0, Object.values(newAuthUsers[0]).length));
+          }
         }
     
         loadAuthUsers().catch((e) => {
-          const error = e;
-          showError(error.message);
+          throw new Error("Invalid token!" + e);;
         });
     }, []);
+
+    React.useEffect(() => {
+        async function setNumberArray(authUsers) {
+            let tempNumArray = [];
+            if (authUsers[0]) {
+                for (let i = 0; i < Object.values(authUsers[0]).length / 7; i++) {
+                    tempNumArray.push(i);
+                }
+            }
+            setNumArray(tempNumArray);
+        };
+
+        setNumberArray(authUsers).catch((e) => {
+            throw new Error("Invalid token!" + e);;
+          });
+    }, [authUsers])
+
     /*const authUsers = [
         {
             id: "1",
@@ -50,7 +75,7 @@ const AdminPage = () => {
                 direction="column"
                 width="75%"
                 margin={50}
-                overflow="auto"
+                
             >
                 <Stack
                     direction="row"
@@ -71,9 +96,57 @@ const AdminPage = () => {
                     flexGrow={1}
                     justifyContent="center"
                     alignItems="stretch"
-                    overflow="auto"
+                    
                 >
-                    <AuthUserTable authUsers={authUsers}></AuthUserTable>
+                    {authUsers != null && authUsers[0] != null && Object.values(authUsers[0]).length > 0 && (
+                        <Stack
+                            direction="column"
+                            width="100%"
+                            justifyContent="space-between"
+                        >
+                            <AuthUserTable authUsers={authUsersDisplay}></AuthUserTable>
+                            <Stack
+                                direction="row"
+                                justifyContent="center"
+                                
+                            >
+                                <Stack
+                                    direction="row"
+                                    
+                                >
+                                    <Button bgColor="white" fontFamily="serif" fontWeight="normal"  fontSize={20} onClick={() => {
+                                        if (isActive > 0) {
+                                            setAuthUsersDisplay(Object.values(authUsers[0]).slice((isActive - 1) * 7, (isActive - 1) * 7 + 7));
+                                            setIsActive(isActive - 1);
+                                        }
+                                        
+                                    }}>
+                                        Previous
+                                    </Button>
+                                    {numArray.map(num => (
+                                        <Button bgColor="white" fontFamily="body" fontWeight={isActive == num ? "bold" : "normal"} onClick={() => {
+                                            if (Object.values(authUsers[0]).length >= num * 7 + 7) {
+                                                setAuthUsersDisplay(Object.values(authUsers[0]).slice(num * 7, num * 7 + 7));
+                                            } else if (Object.values(authUsers[0]).length < num * 7 + 7){
+                                                setAuthUsersDisplay(Object.values(authUsers[0]).slice(num * 7, Object.values(authUsers[0]).length));
+                                            }
+                                            setIsActive(num);
+                                        }}>
+                                            {num + 1}
+                                        </Button>
+                                    ))}
+                                    <Button bgColor="white" fontFamily="serif" fontWeight="normal" fontSize={20} onClick={() => {
+                                        if (isActive < numArray.length - 1) {
+                                            setAuthUsersDisplay(Object.values(authUsers[0]).slice((isActive + 1) * 7, (isActive + 1) * 7 + 7));
+                                            setIsActive(isActive + 1);
+                                        }
+                                    }}>
+                                        Next
+                                    </Button>
+                                </Stack>
+                            </Stack>
+                        </Stack>
+                    )}
                 </Flex>
             </Stack>
         </Flex>
