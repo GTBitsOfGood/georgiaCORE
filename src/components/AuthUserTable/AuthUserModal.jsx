@@ -14,7 +14,7 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
         <Button w={5} h={5} bgColor="white" onClick={onOpen}><EditIcon w={5} h={5} /></Button>
       )}
       {btnName == "Add" && (
-        <Button bgColor="#F6893C" color="white" onClick={onOpen}>Add an Assistant</Button>
+        <Button bgColor="#F6893C" color="white" variant="solid" _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} onClick={onOpen}>Add an Assistant</Button>
       )}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
