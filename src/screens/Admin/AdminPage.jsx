@@ -59,6 +59,7 @@ const AdminPage = () => {
                 flexGrow={1}
                 justifyContent="center"
                 alignItems="stretch"
+                overflow="auto"
             >
                 <AuthUserTable authUsers={authUsers}></AuthUserTable>
             </Flex>
