@@ -1,5 +1,6 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react";
-import { deleteAuthUser, insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
+import { deleteAuthUser } from "src/actions/AuthUser";
+import AuthUserModal from "./AuthUserModal";
 
 const AuthUserTable = ({authUsers}) => {
 
@@ -11,11 +12,7 @@ const AuthUserTable = ({authUsers}) => {
             E-mail
           </Th>
           <Th>
-            <Button
-                onClick = {() => insertAuthUser({email: "borg.org"})}
-            >
-                Add
-            </Button>
+            <AuthUserModal btnName="Add" modalTitle="Add New User" action="insertAuthUser" currentEmail="Email"></AuthUserModal>
           </Th>
         </Tr>
       </Thead>
@@ -31,11 +28,12 @@ const AuthUserTable = ({authUsers}) => {
               {authUser.email}
             </Td>
             <Td>
-                <Button
+                {/*<Button
                     onClick = {() => updateAuthUser(authUser.email, {email: "bits.org"})}
                 >
                     Edit
-                </Button>
+                </Button>*/}
+                <AuthUserModal btnName="Edit" modalTitle="Edit User" action="updateAuthUser" currentEmail={authUser.email}></AuthUserModal>
                 <Button
                     onClick = {() => deleteAuthUser({email: authUser.email})}
                 >
