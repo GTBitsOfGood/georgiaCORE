@@ -34,7 +34,7 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
             <Button colorScheme='blue' mr={3} onClick={() => {
                 if (action == "insertAuthUser") {
                     if (inputValue != null && inputValue != "") {
-                        insertAuthUser({email: inputValue});
+                        insertAuthUser({email: inputValue, role: "Staff"});
                     }
                 } else if (action == "updateAuthUser") {
                     if (inputValue != null && inputValue != "") {

@@ -1,8 +1,6 @@
 import React from "react";
-import { Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { getAuthUsers, insertAuthUser } from "src/actions/AuthUser";
-import { deleteAuthUser } from "src/actions/AuthUser";
-import { updateAuthUser } from "src/actions/AuthUser";
+import { Flex, Stack, Text } from "@chakra-ui/react";
+import { getAuthUsers } from "src/actions/AuthUser";
 import  AuthUserTable  from "src/components/AuthUserTable/AuthUserTable";
 import AuthUserModal from "src/components/AuthUserTable/AuthUserModal";
 const AdminPage = () => {
