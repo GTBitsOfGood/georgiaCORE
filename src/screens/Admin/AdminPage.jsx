@@ -1,9 +1,10 @@
 import React from "react";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, Stack, Text } from "@chakra-ui/react";
 import { getAuthUsers, insertAuthUser } from "src/actions/AuthUser";
 import { deleteAuthUser } from "src/actions/AuthUser";
 import { updateAuthUser } from "src/actions/AuthUser";
 import  AuthUserTable  from "src/components/AuthUserTable/AuthUserTable";
+import AuthUserModal from "src/components/AuthUserTable/AuthUserModal";
 const AdminPage = () => {
     const [authUsers, setAuthUsers] = React.useState([]);
 
@@ -44,25 +45,39 @@ const AdminPage = () => {
         <Flex
             height="100%"
             width="100%"
-            justifyContent="flex-start"
-            alignItems="stretch"
-            overflow="auto"
+            justifyContent="center"
+            bgColor="#f5f5f5"
         >
-            <Flex
-                minH="600px"
+            <Stack
+                direction="column"
+                width="75%"
                 margin={50}
-                padding={50}
-                border="1px solid #657788"
-                borderRadius={10}
-                backgroundColor="white"
-                flexShrink={0}
-                flexGrow={1}
-                justifyContent="center"
-                alignItems="stretch"
                 overflow="auto"
             >
-                <AuthUserTable authUsers={authUsers}></AuthUserTable>
-            </Flex>
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    <Text fontFamily="initial" fontSize="4xl" letterSpacing="tight">Employees</Text>
+                    <AuthUserModal btnName="Add" modalTitle="Add New User" action="insertAuthUser" currentEmail="Email"></AuthUserModal>
+                </Stack>
+                <Flex
+                    minH="400px"
+                    marginTop={10}
+                    padding={5}
+                    border="1px solid #E2E8F0"
+                    borderRadius={10}
+                    backgroundColor="white"
+                    flexShrink={0}
+                    flexGrow={1}
+                    justifyContent="center"
+                    alignItems="stretch"
+                    overflow="auto"
+                >
+                    <AuthUserTable authUsers={authUsers}></AuthUserTable>
+                </Flex>
+            </Stack>
         </Flex>
     );
 };

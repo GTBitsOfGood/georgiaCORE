@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, ModalCloseButton, ModalFooter, Input, useDisclosure } from "@chakra-ui/react";
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
+import { EditIcon } from "@chakra-ui/icons";
 
 const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -9,8 +10,12 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
   
   return (
     <>
-      <Button onClick={onOpen}>{btnName}</Button>
-
+      {btnName == "Edit" && (
+        <Button w={5} h={5} bgColor="white" onClick={onOpen}><EditIcon w={5} h={5} /></Button>
+      )}
+      {btnName == "Add" && (
+        <Button bgColor="#F6893C" color="white" onClick={onOpen}>Add an Assistant</Button>
+      )}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
