@@ -168,7 +168,7 @@ const QuestionForm = ({ question, setQuestion }) => {
               isChecked={question.type !== "question"}
               disabled
             >
-              Is Root Node
+              Final Node
             </Checkbox>
           </VStack>
         </FormControl>
