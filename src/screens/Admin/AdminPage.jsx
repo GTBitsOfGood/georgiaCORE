@@ -13,6 +13,8 @@ const AdminPage = () => {
     const [authUsersDisplayData, setAuthUsersDisplayData] = React.useState([]);
     const [rolesSorted, setRolesSorted] = React.useState(false);
     const [emailsSorted, setEmailsSorted] = React.useState(false);
+    const [isEmailSort, setIsEmailSort] = React.useState(true);
+    const [isRolesSort, setIsRolesSort] = React.useState(false);
 
     React.useEffect(() => {
         async function loadAuthUsers() {
@@ -46,8 +48,13 @@ const AdminPage = () => {
     
         const newAuthUsers = [];
         const newAuthUsersData = await getAuthUsers();
-        if (newAuthUsersData[0]) {
+        console.log(isEmailSort);
+        console.log(isRolesSort);
+        if (newAuthUsersData[0] && (isEmailSort == true)) {
             newAuthUsersData = await doEmailSort(newAuthUsersData, emailsSorted);
+        }
+        else if (newAuthUsersData[0] && (isRolesSort == true)) {
+            newAuthUsersData = await doRoleSort(newAuthUsersData, rolesSorted);
         }
         newAuthUsers.push(newAuthUsersData);
 
@@ -83,21 +90,6 @@ const AdminPage = () => {
         });
     }, [isActive])
 
-    /*const emailSort = () => {
-        if (authUsers[0]) {
-            const tempAuthUsersArray = [];
-            console.log(Object.values(authUsers[0])[0].email);
-            const tempAuthUsers = Object.values(authUsers[0]).sort((a, b) =>
-                (a.email.localeCompare(b.email))
-            );
-            console.log(tempAuthUsers);
-            tempAuthUsersArray.push(tempAuthUsers);
-            console.log(tempAuthUsersArray);
-            setAuthUsers([{email: "m2", role: "Berg"}, {email: "m7", role: "Borg"}]);
-            console.log(authUsers);
-            console.log(authUsers[0]);
-        }
-    }*/
     async function doEmailSort(users, emailSorted) {
         if (users != undefined) {
             if (emailSorted == false) {
@@ -115,6 +107,7 @@ const AdminPage = () => {
                         }
                     }
                 }
+                //await stopEmailSort();
                 return tempUsersArray;
             } else if (emailSorted == true) {
                 let tempUsersArray = [];
@@ -125,7 +118,6 @@ const AdminPage = () => {
                 }
                 sortedEmails = emails.sort();
                 sortedEmails = sortedEmails.reverse()
-                console.log(sortedEmails);
                 for (let i = 0; i < sortedEmails.length; i++) {
                     for (let j = 0; j < Object.values(users).length; j++) {
                         if (users[j].email == sortedEmails[i]) {
@@ -133,9 +125,11 @@ const AdminPage = () => {
                         }
                     }
                 }
+                //await stopEmailSort();
                 return tempUsersArray;
             }
         } else {
+           // await stopEmailSort();
             return users;
         }
     }
@@ -192,17 +186,90 @@ const AdminPage = () => {
     async function roleSort() {
         setRolesSorted(!rolesSorted);
         
+        
     };
 
     React.useEffect(() => {
         
-        calculateDisplay();
+        async function handleRolesSort() {
+            setRoleSort();
+            calculateDisplay();
+        }
         
-    }, [rolesSorted, emailsSorted])
+        handleRolesSort().catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+        
+    }, [rolesSorted])
+
+    async function setRoleSort() {
+        await stopEmailSort();
+        await startRolesSort();
+    };
 
     async function emailSort() {
         setEmailsSorted(!emailsSorted);
         
+    };
+
+    React.useEffect(() => {
+        async function handleEmailSort() {
+            setEmailSort();
+            calculateDisplay();
+        }
+        
+        handleEmailSort().catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+    }, [emailsSorted])
+
+    /*async function setEmailSort() {
+        await stopRolesSort();
+        console.log("stopped")
+        await startEmailSort();
+        
+    };*/
+
+    React.useEffect(() => {
+        async function displayEmailSort() {
+            calculateDisplay();
+        }
+        
+        displayEmailSort().catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+    }, [isEmailSort])
+
+    React.useEffect(() => {
+        async function displayRoleSort() {
+            calculateDisplay();
+        }
+        
+        displayRoleSort().catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+    }, [isRolesSort])
+
+    async function setEmailSort() {
+        await stopRolesSort();
+        await startEmailSort();
+        
+    }
+
+    async function stopEmailSort() {
+        setIsEmailSort(false);
+    };
+
+    async function stopRolesSort() {
+        setIsRolesSort(false);
+    };
+
+    async function startEmailSort() {
+        setIsEmailSort(true);
+    };
+
+    async function startRolesSort() {
+        setIsRolesSort(true);
     };
 
     /*React.useEffect(() => {
