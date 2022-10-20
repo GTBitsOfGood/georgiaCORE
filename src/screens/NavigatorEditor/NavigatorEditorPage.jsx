@@ -5,8 +5,12 @@ import ReactFlow, {
   ReactFlowProvider,
   applyNodeChanges,
   applyEdgeChanges,
+  Background,
+  MiniMap,
+  Controls,
 } from "react-flow-renderer";
-import { Button, useDisclosure } from "@chakra-ui/react";
+
+import { Button, HStack, useDisclosure } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import { createNode, generateInitialNodes } from "./reactflow";
@@ -301,21 +305,11 @@ const TreeEditor = () => {
   } = useDisclosure();
   return (
     <>
-      <Button style={{ margin: "10px" }} size="lg" onClick={openInstructions}>
-        Instructions
-      </Button>
       <InstructionsModal
         isOpen={isInstructionsOpen}
         onClose={onInstructionsClose}
       />
-      <Button
-        colorScheme="teal"
-        style={{ margin: "10px" }}
-        size="lg"
-        onClick={() => setQuestions(state.navigationTree.getQuestions())}
-      >
-        Save
-      </Button>
+
       <div
         className="wrapper"
         ref={reactFlowWrapper}
@@ -359,7 +353,30 @@ const TreeEditor = () => {
             });
           }}
           fitView
-        />
+        >
+          <div style={{ position: "absolute", zIndex: 5 }}>
+            <Button
+              style={{ margin: "10px" }}
+              size="lg"
+              onClick={openInstructions}
+            >
+              Instructions
+            </Button>
+            <Button
+              colorScheme="teal"
+              style={{
+                margin: "10px",
+              }}
+              size="lg"
+              onClick={() => setQuestions(state.navigationTree.getQuestions())}
+            >
+              Save
+            </Button>
+          </div>
+          <MiniMap />
+          <Controls />
+          <Background />
+        </ReactFlow>
       </div>
     </>
   );
