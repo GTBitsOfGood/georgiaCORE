@@ -9,19 +9,12 @@ const AdminPage = () => {
     const [numArray, setNumArray] = React.useState([]);
     const [authUsersDisplay, setAuthUsersDisplay] = React.useState([]);
     const [isActive, setIsActive] = React.useState(0);
+    const [authUsersDisplayData, setAuthUsersDisplayData] = React.useState([]);
 
     React.useEffect(() => {
         async function loadAuthUsers() {
-          const newAuthUsers = [];
-          const newAuthUsersData = await getAuthUsers();
-          newAuthUsers.push(newAuthUsersData);
-
-          setAuthUsers(newAuthUsers);
-          if (Object.values(newAuthUsers[0]).length >= 7) {
-            setAuthUsersDisplay(Object.values(newAuthUsers[0]).slice(0, 7));
-          } else if (Object.values(newAuthUsers[0]).length < 7) {
-            setAuthUsersDisplay(Object.values(newAuthUsers[0]).slice(0, Object.values(newAuthUsers[0]).length));
-          }
+          
+          calculateDisplay();
         }
     
         loadAuthUsers().catch((e) => {
@@ -42,9 +35,83 @@ const AdminPage = () => {
 
         setNumberArray(authUsers).catch((e) => {
             throw new Error("Invalid token!" + e);;
-          });
-    }, [authUsers])
+        });
+    }, [authUsers]);
 
+
+    async function calculateDisplay() {
+        const newAuthUsers = [];
+        const newAuthUsersData = await getAuthUsers();
+        newAuthUsers.push(newAuthUsersData);
+
+        setAuthUsers(newAuthUsers);
+        let tempCalcArray = [];
+        if (newAuthUsers[0]) {
+            if (Object.values(newAuthUsers[0]).length >= isActive * 7 + 7) {
+                tempCalcArray = Object.values(newAuthUsers[0]).slice(isActive * 7, isActive * 7 + 7);
+            } else if (Object.values(newAuthUsers[0]).length < isActive * 7 + 7){
+                tempCalcArray = Object.values(newAuthUsers[0]).slice(isActive * 7, Object.values(newAuthUsers[0]).length);
+            }
+            setAuthUsersDisplay(tempCalcArray);
+        }
+    };
+
+    React.useEffect(() => {
+        async function setDisplay() {
+            setAuthUsersDisplayData(authUsersDisplay);
+        }
+
+        setDisplay(authUsersDisplay).catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+    }, [authUsersDisplay]);
+
+    React.useEffect(() => {
+        async function calcDisplayButtons() {
+            calculateDisplay();
+        }
+
+        calcDisplayButtons().catch((e) => {
+            throw new Error("Invalid token!" + e);;
+        });
+    }, [isActive])
+
+    /*const emailSort = () => {
+        if (authUsers[0]) {
+            const tempAuthUsersArray = [];
+            console.log(Object.values(authUsers[0])[0].email);
+            const tempAuthUsers = Object.values(authUsers[0]).sort((a, b) =>
+                (a.email.localeCompare(b.email))
+            );
+            console.log(tempAuthUsers);
+            tempAuthUsersArray.push(tempAuthUsers);
+            console.log(tempAuthUsersArray);
+            setAuthUsers([{email: "m2", role: "Berg"}, {email: "m7", role: "Borg"}]);
+            console.log(authUsers);
+            console.log(authUsers[0]);
+        }
+    }*/
+    const roleSort = () => {
+        let tempUsersArray = [];
+        for (let i = 0; i < Object.values(authUsers[0]).length; i++) {
+            if (authUsers[0][i].role == "Administrator") {
+                tempUsersArray.push(authUsers[0][i]);
+            }
+        }
+        for (let i = 0; i < Object.values(authUsers[0]).length; i++) {
+            if (authUsers[0][i].role == "Staff") {
+                tempUsersArray.push(authUsers[0][i]);
+            }
+        }
+        setAuthUsers(tempUsersArray);
+        setAuthUsersDisplay(tempUsersArray);
+    }
+    /*React.useEffect(() => {
+        console.log(authUsers);
+    }, [authUsers]);
+    React.useEffect(() => {
+        console.log(authUsersDisplay);
+    }, [authUsersDisplay]);*/
     /*const authUsers = [
         {
             id: "1",
@@ -83,7 +150,7 @@ const AdminPage = () => {
                     alignItems="center"
                 >
                     <Text fontFamily="initial" fontSize="4xl" letterSpacing="tight">Employees</Text>
-                    <AuthUserModal btnName="Add as an Assistant" modalTitle="Add Assistant" action="insertAuthUser" currentEmail="Email"></AuthUserModal>
+                    <AuthUserModal btnName="Add as an Assistant" modalTitle="Add Assistant" action="insertAuthUser" currentEmail="Email" calculate={calculateDisplay}></AuthUserModal>
                 </Stack>
                 <Flex
                     minH="400px"
@@ -98,13 +165,15 @@ const AdminPage = () => {
                     alignItems="stretch"
                     
                 >
-                    {authUsers != null && authUsers[0] != null && Object.values(authUsers[0]).length > 0 && (
-                        <Stack
-                            direction="column"
-                            width="100%"
-                            justifyContent="space-between"
-                        >
-                            <AuthUserTable authUsers={authUsersDisplay}></AuthUserTable>
+                    
+                    <Stack
+                        direction="column"
+                        width="100%"
+                        justifyContent="space-between"
+                    >
+                        
+                        <AuthUserTable authUsers={authUsersDisplayData} roleSort={roleSort} calculate={calculateDisplay}></AuthUserTable>
+                        {authUsers != null && authUsers[0] != null && Object.values(authUsers[0]).length > 0 && (
                             <Stack
                                 direction="row"
                                 justifyContent="center"
@@ -116,7 +185,6 @@ const AdminPage = () => {
                                 >
                                     <Button bgColor="white" fontFamily="serif" fontWeight="normal"  fontSize={20} onClick={() => {
                                         if (isActive > 0) {
-                                            setAuthUsersDisplay(Object.values(authUsers[0]).slice((isActive - 1) * 7, (isActive - 1) * 7 + 7));
                                             setIsActive(isActive - 1);
                                         }
                                         
@@ -125,19 +193,15 @@ const AdminPage = () => {
                                     </Button>
                                     {numArray.map(num => (
                                         <Button bgColor="white" fontFamily="body" fontWeight={isActive == num ? "bold" : "normal"} onClick={() => {
-                                            if (Object.values(authUsers[0]).length >= num * 7 + 7) {
-                                                setAuthUsersDisplay(Object.values(authUsers[0]).slice(num * 7, num * 7 + 7));
-                                            } else if (Object.values(authUsers[0]).length < num * 7 + 7){
-                                                setAuthUsersDisplay(Object.values(authUsers[0]).slice(num * 7, Object.values(authUsers[0]).length));
-                                            }
                                             setIsActive(num);
+                                            
+                                            
                                         }}>
                                             {num + 1}
                                         </Button>
                                     ))}
                                     <Button bgColor="white" fontFamily="serif" fontWeight="normal" fontSize={20} onClick={() => {
                                         if (isActive < numArray.length - 1) {
-                                            setAuthUsersDisplay(Object.values(authUsers[0]).slice((isActive + 1) * 7, (isActive + 1) * 7 + 7));
                                             setIsActive(isActive + 1);
                                         }
                                     }}>
@@ -145,8 +209,9 @@ const AdminPage = () => {
                                     </Button>
                                 </Stack>
                             </Stack>
-                        </Stack>
-                    )}
+                        )}
+                    </Stack>
+                            
                 </Flex>
             </Stack>
         </Flex>

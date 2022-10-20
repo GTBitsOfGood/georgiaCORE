@@ -1,9 +1,9 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { ArrowUpDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { deleteAuthUser } from "src/actions/AuthUser";
 import AuthUserModal from "./AuthUserModal";
 
-const AuthUserTable = ({authUsers}) => {
+const AuthUserTable = ({authUsers, roleSort, calculate}) => {
 
   return (
     <Table variant="unstyled" size="lg">
@@ -11,12 +11,15 @@ const AuthUserTable = ({authUsers}) => {
         <Tr height="5px">
           <Th fontFamily="initial" textTransform="capitalize" fontSize="2xl" fontWeight="normal" letterSpacing="tight" paddingInlineStart={5} paddingInlineEnd={200}>
             Email Address
+            <Button bgColor="white" _hover={{bgColor: "white"}} _active={{bgColor: "white"}} paddingLeft={1}><ArrowUpDownIcon  w={4} h={4}/></Button>
           </Th>
           <Th fontFamily="initial" textTransform="capitalize" fontSize="2xl" fontWeight="normal" letterSpacing="tight" paddingInlineStart={5} paddingInlineEnd={50}>
             Role
+            <Button bgColor="white" _hover={{bgColor: "white"}} _active={{bgColor: "white"}} paddingLeft={1} onClick={() => {roleSort()}}><ArrowUpDownIcon  w={4} h={4}/></Button>
           </Th>
         </Tr>
       </Thead>
+      {authUsers && authUsers.length > 0 && (
       <Tbody overflowY="auto">
         {authUsers && authUsers.map((authUser) => (
           <Tr
@@ -29,11 +32,11 @@ const AuthUserTable = ({authUsers}) => {
             </Td>
             <Td paddingInlineStart={5} paddingInlineEnd={50} fontFamily="sans-serif" fontWeight={600}>{authUser.role}</Td>
             <Td>
-                <AuthUserModal btnName="Submit" modalTitle="Edit Assistant" action="updateAuthUser" currentEmail={authUser.email}></AuthUserModal>
+                <AuthUserModal btnName="Submit" modalTitle="Edit Assistant" action="updateAuthUser" currentEmail={authUser.email} calculate={calculate}></AuthUserModal>
                 {authUser.role != "Administrator" && (
                   <Button
                       bgColor="white"
-                      onClick = {() => deleteAuthUser({email: authUser.email})}
+                      onClick = {() => {deleteAuthUser({email: authUser.email}); calculate()}}
                       w={5}
                       h={5}
                   >
@@ -44,6 +47,7 @@ const AuthUserTable = ({authUsers}) => {
           </Tr>
         ))}
       </Tbody>
+      )}
     </Table>
   );
 };

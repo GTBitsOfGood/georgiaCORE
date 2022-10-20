@@ -3,7 +3,7 @@ import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, Moda
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
 import { EditIcon } from "@chakra-ui/icons";
 
-const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
+const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [inputValue, setInputValue] = React.useState('')
   const handleChange = (event) => 
@@ -41,11 +41,13 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail}) => {
                 if (action == "insertAuthUser") {
                     if (inputValue != null && inputValue != "") {
                         insertAuthUser({email: inputValue, role: "Staff"});
+                        calculate();
                     }
                 } else if (action == "updateAuthUser") {
                     if (inputValue != null && inputValue != "") {
                         
                         updateAuthUser(currentEmail, {email: inputValue});
+                        calculate();
                     }
                 }; 
                 onClose()
