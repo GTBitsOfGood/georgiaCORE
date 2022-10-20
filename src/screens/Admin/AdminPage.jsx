@@ -12,6 +12,7 @@ const AdminPage = () => {
     const [isActive, setIsActive] = React.useState(0);
     const [authUsersDisplayData, setAuthUsersDisplayData] = React.useState([]);
     const [rolesSorted, setRolesSorted] = React.useState(false);
+    const [emailsSorted, setEmailsSorted] = React.useState(false);
 
     React.useEffect(() => {
         async function loadAuthUsers() {
@@ -46,7 +47,7 @@ const AdminPage = () => {
         const newAuthUsers = [];
         const newAuthUsersData = await getAuthUsers();
         if (newAuthUsersData[0]) {
-            newAuthUsersData = await doRoleSort(newAuthUsersData, rolesSorted);
+            newAuthUsersData = await doEmailSort(newAuthUsersData, emailsSorted);
         }
         newAuthUsers.push(newAuthUsersData);
 
@@ -97,6 +98,48 @@ const AdminPage = () => {
             console.log(authUsers[0]);
         }
     }*/
+    async function doEmailSort(users, emailSorted) {
+        if (users != undefined) {
+            if (emailSorted == false) {
+                let tempUsersArray = [];
+                let emails = [];
+                let sortedEmails = [];
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    emails.push(users[i].email)
+                }
+                sortedEmails = emails.sort();
+                for (let i = 0; i < sortedEmails.length; i++) {
+                    for (let j = 0; j < Object.values(users).length; j++) {
+                        if (users[j].email == sortedEmails[i]) {
+                            tempUsersArray.push(users[j]);
+                        }
+                    }
+                }
+                return tempUsersArray;
+            } else if (emailSorted == true) {
+                let tempUsersArray = [];
+                let emails = [];
+                let sortedEmails = [];
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    emails.push(users[i].email)
+                }
+                sortedEmails = emails.sort();
+                sortedEmails = sortedEmails.reverse()
+                console.log(sortedEmails);
+                for (let i = 0; i < sortedEmails.length; i++) {
+                    for (let j = 0; j < Object.values(users).length; j++) {
+                        if (users[j].email == sortedEmails[i]) {
+                            tempUsersArray.push(users[j]);
+                        }
+                    }
+                }
+                return tempUsersArray;
+            }
+        } else {
+            return users;
+        }
+    }
+
     async function doRoleSort(users, roleSorted) {
         if (users!= undefined) {
             if (roleSorted == false) {
@@ -155,7 +198,12 @@ const AdminPage = () => {
         
         calculateDisplay();
         
-    }, [rolesSorted])
+    }, [rolesSorted, emailsSorted])
+
+    async function emailSort() {
+        setEmailsSorted(!emailsSorted);
+        
+    };
 
     /*React.useEffect(() => {
         console.log(authUsers);
@@ -223,7 +271,7 @@ const AdminPage = () => {
                         justifyContent="space-between"
                     >
                         
-                        <AuthUserTable authUsers={authUsersDisplayData} roleSort={roleSort} calculate={calculateDisplay}></AuthUserTable>
+                        <AuthUserTable authUsers={authUsersDisplayData} roleSort={roleSort} emailSort={emailSort} calculate={calculateDisplay}></AuthUserTable>
                         {authUsers != null && authUsers[0] != null && Object.values(authUsers[0]).length > 0 && (
                             <Stack
                                 direction="row"

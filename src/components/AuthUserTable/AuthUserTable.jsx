@@ -3,7 +3,7 @@ import { ArrowUpDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { deleteAuthUser } from "src/actions/AuthUser";
 import AuthUserModal from "./AuthUserModal";
 
-const AuthUserTable = ({authUsers, roleSort, calculate}) => {
+const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
 
   return (
     <Table variant="unstyled" size="lg">
@@ -11,7 +11,7 @@ const AuthUserTable = ({authUsers, roleSort, calculate}) => {
         <Tr height="5px">
           <Th fontFamily="initial" textTransform="capitalize" fontSize="2xl" fontWeight="normal" letterSpacing="tight" paddingInlineStart={5} paddingInlineEnd={200}>
             Email Address
-            <Button bgColor="white" _hover={{bgColor: "white"}} _active={{bgColor: "white"}} paddingLeft={1}><ArrowUpDownIcon  w={4} h={4}/></Button>
+            <Button bgColor="white" _hover={{bgColor: "white"}} _active={{bgColor: "white"}} paddingLeft={1} onClick={() => {emailSort()}}><ArrowUpDownIcon  w={4} h={4}/></Button>
           </Th>
           <Th fontFamily="initial" textTransform="capitalize" fontSize="2xl" fontWeight="normal" letterSpacing="tight" paddingInlineStart={5} paddingInlineEnd={50}>
             Role
