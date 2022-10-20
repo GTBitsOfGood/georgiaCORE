@@ -1,8 +1,9 @@
 import React from "react";
 import { Flex, Stack, Text, Button } from "@chakra-ui/react";
-import { getAuthUsers } from "src/actions/AuthUser";
+import { getAuthUsers, deleteAuthUser, insertAuthUser } from "src/actions/AuthUser";
 import  AuthUserTable  from "src/components/AuthUserTable/AuthUserTable";
 import AuthUserModal from "src/components/AuthUserTable/AuthUserModal";
+
 const AdminPage = () => {
     const [authUsers, setAuthUsers] = React.useState([]);
     const [numAuthUsers, setNumAuthUsers] = React.useState(0);
@@ -10,6 +11,7 @@ const AdminPage = () => {
     const [authUsersDisplay, setAuthUsersDisplay] = React.useState([]);
     const [isActive, setIsActive] = React.useState(0);
     const [authUsersDisplayData, setAuthUsersDisplayData] = React.useState([]);
+    const [rolesSorted, setRolesSorted] = React.useState(false);
 
     React.useEffect(() => {
         async function loadAuthUsers() {
@@ -40,8 +42,12 @@ const AdminPage = () => {
 
 
     async function calculateDisplay() {
+    
         const newAuthUsers = [];
         const newAuthUsersData = await getAuthUsers();
+        if (newAuthUsersData[0]) {
+            newAuthUsersData = await doRoleSort(newAuthUsersData, rolesSorted);
+        }
         newAuthUsers.push(newAuthUsersData);
 
         setAuthUsers(newAuthUsers);
@@ -91,21 +97,66 @@ const AdminPage = () => {
             console.log(authUsers[0]);
         }
     }*/
-    const roleSort = () => {
-        let tempUsersArray = [];
-        for (let i = 0; i < Object.values(authUsers[0]).length; i++) {
-            if (authUsers[0][i].role == "Administrator") {
-                tempUsersArray.push(authUsers[0][i]);
+    async function doRoleSort(users, roleSorted) {
+        if (users!= undefined) {
+            if (roleSorted == false) {
+                let tempUsersArray = [];
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    if (users[i].role == "Administrator") {
+                        tempUsersArray.push(users[i]);
+                    }
+                }
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    if (users[i].role == "Staff") {
+                        tempUsersArray.push(users[i]);
+                    }
+                }
+                
+                for (let i = 0; i < tempUsersArray.length; i++) {
+                    deleteAuthUser({email: tempUsersArray[i].email});
+                }
+                for (let i = 0; i < tempUsersArray.length; i++) {
+                    insertAuthUser({email: tempUsersArray[i].email, role: tempUsersArray[i].role});
+                }
+                return tempUsersArray;
+            } else if (roleSorted == true) {
+                
+                let tempUsersArray = [];
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    if (users[i].role == "Staff") {
+                        tempUsersArray.push(users[i]);
+                    }
+                }
+                for (let i = 0; i < Object.values(users).length; i++) {
+                    if (users[i].role == "Administrator") {
+                        tempUsersArray.push(users[i]);
+                    }
+                }
+                
+                for (let i = 0; i < tempUsersArray.length; i++) {
+                    deleteAuthUser({email: tempUsersArray[i].email});
+                }
+                for (let i = 0; i < tempUsersArray.length; i++) {
+                    insertAuthUser({email: tempUsersArray[i].email, role: tempUsersArray[i].role});
+                }
+                
+                return tempUsersArray;
             }
+        } else {
+            return users;
         }
-        for (let i = 0; i < Object.values(authUsers[0]).length; i++) {
-            if (authUsers[0][i].role == "Staff") {
-                tempUsersArray.push(authUsers[0][i]);
-            }
-        }
-        setAuthUsers(tempUsersArray);
-        setAuthUsersDisplay(tempUsersArray);
     }
+    async function roleSort() {
+        setRolesSorted(!rolesSorted);
+        
+    };
+
+    React.useEffect(() => {
+        
+        calculateDisplay();
+        
+    }, [rolesSorted])
+
     /*React.useEffect(() => {
         console.log(authUsers);
     }, [authUsers]);
