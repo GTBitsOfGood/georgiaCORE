@@ -33,7 +33,7 @@ const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
             <Td paddingInlineStart={5} paddingInlineEnd={50} fontFamily="sans-serif" fontWeight={600}>{authUser.role}</Td>
             <Td>
                 <AuthUserModal btnName="Save Changes" modalTitle="Edit an Employee" action="updateAuthUser" currentEmail={authUser.email} calculate={calculate}></AuthUserModal>
-                {authUser.role != "Administrator" && (
+                
                   <Button
                       bgColor="white"
                       onClick = {() => {deleteAuthUser({email: authUser.email}); calculate()}}
@@ -42,7 +42,7 @@ const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
                   >
                       <DeleteIcon w={5} h={5} color="#c41e3a" />
                   </Button>
-                )}
+                
             </Td>
           </Tr>
         ))}
