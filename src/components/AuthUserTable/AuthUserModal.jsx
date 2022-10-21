@@ -61,9 +61,21 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}
                     } 
                 } else if (action == "updateAuthUser") {
                     if (inputValue != null && inputValue != "") {
-                        
-                        updateAuthUser(currentEmail, {email: inputValue});
+                      if (buttonRole == "1") {
+                        updateAuthUser(currentEmail, {email: inputValue, role: "Administrator"});
                         calculate();
+                      } else if (buttonRole == "2") {
+                        updateAuthUser(currentEmail, {email: inputValue, role: "Staff"});
+                        calculate();
+                      }
+                    } else if (inputValue == "") {
+                      if (buttonRole == "1") {
+                        updateAuthUser(currentEmail, {email: currentEmail, role: "Administrator"});
+                        calculate();
+                      } else if (buttonRole == "2") {
+                        updateAuthUser(currentEmail, {email: currentEmail, role: "Staff"});
+                        calculate();
+                      }
                     }
                 }; 
                 onClose()
