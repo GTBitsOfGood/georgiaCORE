@@ -3,7 +3,7 @@ import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, Moda
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
 import { EditIcon } from "@chakra-ui/icons";
 
-const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
+const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [inputValue, setInputValue] = React.useState('')
   const [buttonRole, setButtonRole] = React.useState("1")
@@ -90,4 +90,4 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}
   )
 };
 
-export default AddAuthUserModal;
+export default AuthUserModal;

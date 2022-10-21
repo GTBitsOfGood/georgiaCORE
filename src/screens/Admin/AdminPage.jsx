@@ -345,6 +345,7 @@ const AdminPage = () => {
                             >
                                 <Stack
                                     direction="row"
+                                    wrap="wrap"
                                     
                                 >
                                     <Button bgColor="white" fontFamily="serif" fontWeight="normal"  fontSize={20} onClick={() => {
