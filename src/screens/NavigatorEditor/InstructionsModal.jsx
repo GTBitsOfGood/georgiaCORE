@@ -50,6 +50,9 @@ const InstructionsModal = ({ onClose, isOpen }) => {
             Click a question once to select it and then press backspace.
             <H1>Editing Nodes</H1>
             Double click a question to edit it.
+            <H1>Saving Changes</H1>
+            Press the save button in the top right corner to save your changes,
+            all non-connected nodes will be deleted.
             <H1>Node Types</H1>
             To switch between types, double click a node and select from the
             dropdown menu.

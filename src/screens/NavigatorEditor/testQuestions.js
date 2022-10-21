@@ -52,7 +52,7 @@ const testQuestions = [
       {
         id: "3-2",
         option: "No",
-        nextId: null,
+        nextId: "4",
         url: null,
       },
       {
@@ -84,6 +84,13 @@ const testQuestions = [
         url: null,
       },
     ],
+  },
+  {
+    id: "4",
+    heading: "Heading",
+    bodyText: "Body text",
+    type: "text",
+    options: [],
   },
 ];
 

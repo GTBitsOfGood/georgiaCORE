@@ -9,6 +9,8 @@ const QuestionSchema = new Schema({
   isRoot: { type: Boolean, default: false },
   question: String,
   type: { type: String, enum: QUESTION_TYPES },
+  heading: String,
+  bodyText: String,
   options: [
     {
       id: String,

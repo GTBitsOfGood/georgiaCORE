@@ -24,7 +24,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       id: question.id,
       targetPosition: "left",
       data: {
-        label: "Heading: " + question.heading + "\nText: " + question.text,
+        label: "Heading: " + question.heading + "\nText: " + question.bodyText,
       },
       style: {
         background: "#90EE90",
@@ -50,7 +50,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
         height: question.options.length * OPTION_HEIGHT + 50,
       },
       position: { x, y },
-      type: "output",
+      type: question.isRoot ? "root" : "output",
     });
 
     for (const [i, option] of question.options.entries()) {
@@ -106,8 +106,13 @@ export const generateInitialNodes = (questions) => {
   let visited = new Set();
   let queue = [];
 
-  queue.push([questions[0].id, 0]);
-  visited.add(questions[0].id);
+  const root = questions.find((question) => question.isRoot);
+  if (!root) {
+    throw new Error("No root question");
+  }
+
+  queue.push([root.id, 0]);
+  visited.add(root.id);
 
   let optionY = 0;
   let currentLevel = 0;

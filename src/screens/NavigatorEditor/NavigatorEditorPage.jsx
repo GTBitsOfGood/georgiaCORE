@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useEffect } from "react";
+import React, { useMemo, useRef, useReducer, useEffect } from "react";
 import ReactFlow, {
   useReactFlow,
   addEdge,
@@ -10,14 +10,15 @@ import ReactFlow, {
   Controls,
 } from "react-flow-renderer";
 
-import { Button, HStack, useDisclosure } from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
 import NavigationTree from "src/navigation/NavigationTree";
-import testQuestions from "./questions";
+import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
+import RootNode from "src/components/RootNode/RootNode";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -296,7 +297,9 @@ const TreeEditor = () => {
       dispatch({ type: "set_state" });
     }
     initializeQuestions();
-  }, []);
+  }, [state.navigationTree]);
+
+  const nodeTypes = useMemo(() => ({ root: RootNode }), []);
 
   const {
     isOpen: isInstructionsOpen,
@@ -321,6 +324,7 @@ const TreeEditor = () => {
           question={state.navigationTree.getQuestion(state.editModalNodeId)}
         />
         <ReactFlow
+          nodeTypes={nodeTypes}
           nodes={state.nodes}
           edges={state.edges}
           onNodesChange={(changes) =>
