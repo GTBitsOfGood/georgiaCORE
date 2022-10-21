@@ -98,6 +98,7 @@ const QuestionForm = ({ question, setQuestion }) => {
                 <option value="question">Question</option>
                 <option value="url">URL</option>
                 <option value="text">TEXT</option>
+                <option value="error">ERROR</option>
               </Select>
               {question.type === "question" && (
                 <Input
@@ -168,7 +169,7 @@ const QuestionForm = ({ question, setQuestion }) => {
               isChecked={question.type !== "question"}
               disabled
             >
-              Final Node
+              Leaf Node
             </Checkbox>
           </VStack>
         </FormControl>

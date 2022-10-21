@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const QUESTION_TYPES = ["question", "url", "text"];
+const QUESTION_TYPES = ["question", "url", "text", "error"];
 
 const QuestionSchema = new Schema({
   id: String,
