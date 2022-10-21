@@ -309,27 +309,6 @@ const Header = () => {
               height="60px"
             />
           </Flex>
-          <Stack>
-            {active1 && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-            {!active1 && <Flex bgColor="#59784D" padding="2px"></Flex>}
-            <Text
-              color="white"
-              fontFamily="sans-serif"
-              fontSize="20px"
-              paddingLeft="20px"
-              paddingRight="20px"
-              paddingTop="10px"
-              onClick={() => {
-                setActive1(true);
-                setActive2(false);
-                setActive3(false);
-                setActive4(false);
-                setActiveProfile(false);
-              }}
-            >
-              <NavLink href="/">Home</NavLink>
-            </Text>
-          </Stack>
         </Stack>
         <Stack
           width="15%"
