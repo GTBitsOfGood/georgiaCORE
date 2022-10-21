@@ -136,7 +136,7 @@ const Header = () => {
                         onOpen();
                       }}
                       onMouseLeave={() => {
-                        killAllHovers
+                        killAllHovers()
                       }}
                       _expanded={{ fontWeight: "bold" }}
                     >
