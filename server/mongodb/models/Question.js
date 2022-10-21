@@ -11,6 +11,7 @@ const QuestionSchema = new Schema({
   type: { type: String, enum: QUESTION_TYPES },
   heading: String,
   bodyText: String,
+  url: { type: String, default: null },
   options: [
     {
       id: String,
