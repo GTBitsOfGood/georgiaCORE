@@ -1,11 +1,12 @@
 import React from "react";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, ModalCloseButton, ModalFooter, Input, useDisclosure, Text } from "@chakra-ui/react";
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, ModalCloseButton, ModalFooter, Input, useDisclosure, Text, Stack, RadioGroup, Radio } from "@chakra-ui/react";
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
 import { EditIcon } from "@chakra-ui/icons";
 
 const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [inputValue, setInputValue] = React.useState('')
+  const [buttonRole, setButtonRole] = React.useState("1")
   const handleChange = (event) => 
     setInputValue(event.target.value)
     
@@ -16,33 +17,48 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}
       {btnName == "Submit" && (
         <Button w={5} h={5} bgColor="white" onClick={() => {setInputValue(""); onOpen()}}><EditIcon w={5} h={5} /></Button>
       )}
-      {btnName == "Add as an Assistant" && (
+      {btnName == "Confirm" && (
         <Button bgColor="#F6893C" color="white" variant="solid" _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} onClick={() => {setInputValue(""); onOpen()}}>Add an Assistant</Button>
       )}
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={() => {setButtonRole("1"); onClose()}}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent boxShadow="none" alignSelf="center" minWidth={600}>
           <ModalHeader textAlign="center" fontFamily="initial" fontWeight="normal">{modalTitle}</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton/>
           <ModalBody border="1px solid #E2E8F0" paddingBottom={5}>
-            <Text fontFamily="body" fontWeight="semibold">
+            <Text fontFamily="body" fontWeight="semibold" paddingBottom={2} paddingLeft={1}>
               Email
             </Text>
             <Input 
                 value={inputValue}
                 onChange={handleChange}
                 placeholder= {currentEmail}
+                marginBottom={5}
             >
             </Input>
+            <Text fontFamily="body" fontWeight="semibold" paddingBottom={2} paddingLeft={1}>
+              Role:
+            </Text>
+            <RadioGroup onChange={setButtonRole} value={buttonRole} paddingLeft={1}>
+              <Stack direction="row">
+                <Radio value="1" _checked={{bgColor: "#59784D", padding: "2px"}} _focus={{boxShadow: "none"}}>Administrator</Radio>
+                <Radio value="2"  _checked={{bgColor: "#59784D", padding: "2px"}} _focus={{boxShadow:"none"}}>Staff</Radio>
+              </Stack>
+            </RadioGroup>
           </ModalBody>
 
           <ModalFooter>
-            <Button bgColor="#F6893C" color="white" variant="solid"  _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} onClick={() => {
+            <Button bgColor="#59784D" color="#E2E8F0" variant="solid"  _hover={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} _active={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} onClick={() => {
                 if (action == "insertAuthUser") {
                     if (inputValue != null && inputValue != "") {
+                      if (buttonRole == "1") {
+                        insertAuthUser({email: inputValue, role: "Administrator"});
+                        calculate();
+                      } else if (buttonRole == "2") {
                         insertAuthUser({email: inputValue, role: "Staff"});
                         calculate();
-                    }
+                      }
+                    } 
                 } else if (action == "updateAuthUser") {
                     if (inputValue != null && inputValue != "") {
                         
@@ -51,6 +67,7 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}
                     }
                 }; 
                 onClose()
+                setButtonRole("1")
             }}>
               {btnName}
             </Button>

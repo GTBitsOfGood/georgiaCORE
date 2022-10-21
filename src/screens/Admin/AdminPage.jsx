@@ -48,8 +48,6 @@ const AdminPage = () => {
     
         const newAuthUsers = [];
         const newAuthUsersData = await getAuthUsers();
-        console.log(isEmailSort);
-        console.log(isRolesSort);
         if (newAuthUsersData[0] && (isEmailSort == true)) {
             newAuthUsersData = await doEmailSort(newAuthUsersData, emailsSorted);
         }
@@ -316,7 +314,7 @@ const AdminPage = () => {
                     alignItems="center"
                 >
                     <Text fontFamily="initial" fontSize="4xl" letterSpacing="tight">Employees</Text>
-                    <AuthUserModal btnName="Add as an Assistant" modalTitle="Add Assistant" action="insertAuthUser" currentEmail="Email" calculate={calculateDisplay}></AuthUserModal>
+                    <AuthUserModal btnName="Confirm" modalTitle="Add an Employee" action="insertAuthUser" currentEmail="Email" calculate={calculateDisplay}></AuthUserModal>
                 </Stack>
                 <Flex
                     minH="400px"
