@@ -18,7 +18,8 @@ import { getAllQuestions, setQuestions } from "src/actions/Question";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
-import RootNode from "src/components/RootNode/RootNode";
+import RootNode from "src/components/Nodes/RootNode";
+import TextNode from "src/components/Nodes/TextNode";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -299,7 +300,7 @@ const TreeEditor = () => {
     initializeQuestions();
   }, [state.navigationTree]);
 
-  const nodeTypes = useMemo(() => ({ root: RootNode }), []);
+  const nodeTypes = useMemo(() => ({ root: RootNode, text: TextNode }), []);
 
   const {
     isOpen: isInstructionsOpen,
@@ -358,8 +359,9 @@ const TreeEditor = () => {
           }}
           fitView
         >
-          <div style={{ position: "absolute", zIndex: 5 }}>
+          <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
             <Button
+              backgroundColor="#AFB9A5"
               style={{ margin: "10px" }}
               size="lg"
               onClick={openInstructions}
@@ -367,7 +369,8 @@ const TreeEditor = () => {
               Instructions
             </Button>
             <Button
-              colorScheme="teal"
+              color="white"
+              backgroundColor="#F6893C" // georgiacore orange
               style={{
                 margin: "10px",
               }}

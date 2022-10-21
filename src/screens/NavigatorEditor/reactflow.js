@@ -24,7 +24,8 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       id: question.id,
       targetPosition: "left",
       data: {
-        label: "Heading: " + question.heading + "\nText: " + question.bodyText,
+        heading: question.heading,
+        bodyText: question.bodyText,
       },
       style: {
         background: "#90EE90",
@@ -32,7 +33,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
         height: 50,
       },
       position: { x, y },
-      type: "output",
+      type: "text",
     });
   } else if (question.type === "question") {
     // Create node for question
@@ -45,7 +46,9 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       dataType: "question",
       data: { label: question.question },
       style: {
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        backgroundColor: question.isRoot
+          ? "LightSalmon"
+          : "rgba(255, 0, 0, 0.2)",
         width: 160,
         height: question.options.length * OPTION_HEIGHT + 50,
       },

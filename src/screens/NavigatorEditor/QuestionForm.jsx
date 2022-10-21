@@ -155,7 +155,7 @@ const QuestionForm = ({ question, setQuestion }) => {
 
             {question.type === "text" && (
               <Input
-                value={question.text}
+                value={question.bodyText}
                 placeholder="Body Text"
                 onChange={(e) =>
                   setQuestion({ ...question, bodyText: e.target.value })

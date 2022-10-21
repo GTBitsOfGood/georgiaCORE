@@ -64,7 +64,12 @@ const InstructionsModal = ({ onClose, isOpen }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="teal" mr={3} onClick={onClose}>
+            <Button
+              color="white"
+              backgroundColor="#F6893C" // GeorgiaCore orange
+              mr={3}
+              onClick={onClose}
+            >
               Done
             </Button>
           </ModalFooter>
