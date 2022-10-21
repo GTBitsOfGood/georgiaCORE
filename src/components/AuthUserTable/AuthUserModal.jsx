@@ -14,7 +14,7 @@ const AddAuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}
 
   return (
     <>
-      {btnName == "Submit" && (
+      {btnName == "Save Changes" && (
         <Button w={5} h={5} bgColor="white" onClick={() => {setInputValue(""); onOpen()}}><EditIcon w={5} h={5} /></Button>
       )}
       {btnName == "Confirm" && (

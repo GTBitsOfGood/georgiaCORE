@@ -32,7 +32,7 @@ const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
             </Td>
             <Td paddingInlineStart={5} paddingInlineEnd={50} fontFamily="sans-serif" fontWeight={600}>{authUser.role}</Td>
             <Td>
-                <AuthUserModal btnName="Submit" modalTitle="Edit Assistant" action="updateAuthUser" currentEmail={authUser.email} calculate={calculate}></AuthUserModal>
+                <AuthUserModal btnName="Save Changes" modalTitle="Edit an Employee" action="updateAuthUser" currentEmail={authUser.email} calculate={calculate}></AuthUserModal>
                 {authUser.role != "Administrator" && (
                   <Button
                       bgColor="white"
