@@ -12,6 +12,7 @@ import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
+import { getAuthUsers } from "src/actions/AuthUser";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./questions";
 import { Button } from "@chakra-ui/react";
@@ -240,73 +241,38 @@ const TreeEditor = () => {
   }, []);
 
   const { project } = useReactFlow();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+  const [authUser, setAuthUser] = React.useState("");
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree([]);
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
     return { nodes, edges, navigationTree, editModalOpen: false };
   });
 
-  //Displays page if user is logged in
-  if (status === "authenticated") {
+  //Checks user email if it is in authorized list
+  React.useEffect(() => {
+    async function setAllAuthUserEmails() {
+      const newAuthUsers = [];
+      const newAuthUsersData = await getAuthUsers();
+      newAuthUsers.push(newAuthUsersData);
+      if (newAuthUsers[0] && session) {
+        let emailsArray = [];
+        for (let i = 0; i < Object.values(newAuthUsers[0]).length; i++) {
+          emailsArray.push(newAuthUsers[0][i].email);
+        }
+        if (emailsArray.includes(session.user.email)) {
+          setAuthUser("allowed");
+        } else if (!emailsArray.includes(session.user.email)) {
+          setAuthUser("not allowed");
+        }
+      }
+    }
 
-    return (
-      <>
-        <Button
-          colorScheme="teal"
-          size="lg"
-          onClick={() => setQuestions(state.navigationTree.getQuestions())}
-        >
-          Save
-        </Button>
-        <div
-          className="wrapper"
-          ref={reactFlowWrapper}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <EditQuestionModal
-            isOpen={state.editModalOpen}
-            dispatch={dispatch}
-            question={state.navigationTree.getQuestion(state.editModalNodeId)}
-          />
-          <ReactFlow
-            nodes={state.nodes}
-            edges={state.edges}
-            onNodesChange={(changes) =>
-              dispatch({ type: "node_change", changes })
-            }
-            onEdgesChange={(changes) =>
-              dispatch({ type: "edge_change", changes })
-            }
-            onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
-            onNodesDelete={(nodes) =>
-              dispatch({ type: "delete_question", nodes })
-            }
-            onConnect={(connection) => dispatch({ type: "connect", connection })}
-            onConnectStart={(_, { nodeId }) => {
-              connectingNodeId.current = nodeId;
-            }}
-            onConnectStop={(event) =>
-              dispatch({
-                type: "connect_stop",
-                event,
-                project,
-                reactFlowWrapper,
-                connectingNodeId,
-              })
-            }
-            onNodeDoubleClick={(event, node) => {
-              dispatch({
-                type: "open_edit_modal",
-                questionId: node.id,
-              });
-            }}
-            fitView
-          />
-        </div>
-      </>
-    );
-  }
+    setAllAuthUserEmails().catch((e) => {
+        throw new Error("Invalid token!" + e);;
+    });
+}, [session]);
+
   //Displays blank page if session is being checked
   if (status === "loading") {
     return (
@@ -314,10 +280,86 @@ const TreeEditor = () => {
       </>
     );
   }
-  //User is not logged in, so it displays the error page to protect /navigation-editor
+
+  //Displays page if user is logged in
+  if (status === "authenticated") {
+    if (authUser == "allowed") {
+
+      return (
+        <>
+          <Button
+            colorScheme="teal"
+            size="lg"
+            onClick={() => setQuestions(state.navigationTree.getQuestions())}
+          >
+            Save
+          </Button>
+          <div
+            className="wrapper"
+            ref={reactFlowWrapper}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <EditQuestionModal
+              isOpen={state.editModalOpen}
+              dispatch={dispatch}
+              question={state.navigationTree.getQuestion(state.editModalNodeId)}
+            />
+            <ReactFlow
+              nodes={state.nodes}
+              edges={state.edges}
+              onNodesChange={(changes) =>
+                dispatch({ type: "node_change", changes })
+              }
+              onEdgesChange={(changes) =>
+                dispatch({ type: "edge_change", changes })
+              }
+              onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
+              onNodesDelete={(nodes) =>
+                dispatch({ type: "delete_question", nodes })
+              }
+              onConnect={(connection) => dispatch({ type: "connect", connection })}
+              onConnectStart={(_, { nodeId }) => {
+                connectingNodeId.current = nodeId;
+              }}
+              onConnectStop={(event) =>
+                dispatch({
+                  type: "connect_stop",
+                  event,
+                  project,
+                  reactFlowWrapper,
+                  connectingNodeId,
+                })
+              }
+              onNodeDoubleClick={(event, node) => {
+                dispatch({
+                  type: "open_edit_modal",
+                  questionId: node.id,
+                });
+              }}
+              fitView
+            />
+          </div>
+        </>
+      );
+    }
+    //User is not in the authorized user list
+    else if (authUser == "not allowed") {
+      return (
+        <>
+          <ErrorPage message="User Cannot Access this Page"/>
+        </>
+      );
+    }
+  //User is not logged in, so it displays the error page to protect /
+  } else if (status === "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not Logged In"/>
+      </>
+    );
+  }
   return (
     <>
-      <ErrorPage message="User is not Logged In"/>
     </>
   );
 };
