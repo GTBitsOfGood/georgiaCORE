@@ -1,6 +1,7 @@
 import fetch from "isomorphic-unfetch";
 import urls from "src/utils/urls";
 
+//Function to insert an authUser into database
 export const insertAuthUser = (authUser) => {
     return fetch(urls.baseUrl + urls.api.authUser, {
       method: "POST",
@@ -23,6 +24,7 @@ export const insertAuthUser = (authUser) => {
       });
 };
 
+//Function to delete an authUser from database
 export const deleteAuthUser = (authUser) => {
     return fetch(urls.baseUrl + urls.api.authUser, {
       method: "DELETE",
@@ -45,6 +47,8 @@ export const deleteAuthUser = (authUser) => {
       });
 };
 
+//Function to update an authUser in the database by finding the 
+//corresponding email and updating with the new information
 export const updateAuthUser = (oldAuthUserEmail, newAuthUser) => {
     return fetch(urls.baseUrl + urls.api.authUser, {
       method: "PATCH",
@@ -67,6 +71,7 @@ export const updateAuthUser = (oldAuthUserEmail, newAuthUser) => {
       });
 };
 
+//Function to get all authUsers from database
 export const getAuthUsers = () => {
     return fetch(urls.baseUrl + urls.api.authUser, {
       method: "GET",

@@ -247,6 +247,7 @@ const TreeEditor = () => {
     return { nodes, edges, navigationTree, editModalOpen: false };
   });
 
+  //Displays page if user is logged in
   if (status === "authenticated") {
 
     return (
@@ -306,12 +307,14 @@ const TreeEditor = () => {
       </>
     );
   }
+  //Displays blank page if session is being checked
   if (status === "loading") {
     return (
       <>
       </>
     );
   }
+  //User is not logged in, so it displays the error page to protect /navigation-editor
   return (
     <>
       <ErrorPage message="User is not Logged In"/>

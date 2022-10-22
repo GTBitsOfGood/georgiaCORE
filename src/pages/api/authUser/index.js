@@ -1,8 +1,8 @@
 import { withSessionRoute } from "src/utils/lib/session";
 import { deleteAuthUser, insertAuthUser, updateAuthUser, getAuthUsers } from "server/mongodb/actions/AuthUser";
 
-// @route   POST/DELETE api/authUser
-// @desc    Insert/Delete authUser into/from database
+// @route   POST/DELETE/PATCH/GET api/authUser
+// @desc    Insert/Delete/Update/Get authUser(s) into/from database
 // @access  Public
 const handler = async (req, res) => {
   if (req.method === "POST") {

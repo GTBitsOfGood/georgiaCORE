@@ -1,25 +1,64 @@
 import React from "react";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalOverlay, ModalCloseButton, ModalFooter, Input, useDisclosure, Text, Stack, RadioGroup, Radio } from "@chakra-ui/react";
+import { 
+  Button, 
+  Modal, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  ModalOverlay, 
+  ModalCloseButton, 
+  ModalFooter, 
+  Input, 
+  useDisclosure, 
+  Text, 
+  Stack, 
+  RadioGroup, 
+  Radio 
+} from "@chakra-ui/react";
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
 import { EditIcon } from "@chakra-ui/icons";
 
+/**
+ * Modal for adding and editing authUsers
+ * Creates an add button and an edit icon for adding and editing authUsers on click
+ * Includes a field to enter the email for the new authUser or the changed email
+ * Includes buttons to choose the role for the new authUser or the changed role
+ * Includes button to add a new authUser on click or to edit authUser in the row
+ */
+
 const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [inputValue, setInputValue] = React.useState('')
   const [buttonRole, setButtonRole] = React.useState("1")
   const handleChange = (event) => 
     setInputValue(event.target.value)
     
-  
-
   return (
     <>
       {btnName == "Save Changes" && (
-        <Button w={5} h={5} bgColor="white" onClick={() => {setInputValue(""); onOpen()}}><EditIcon w={5} h={5} /></Button>
+        <Button 
+          w={5} 
+          h={5} 
+          bgColor="white" 
+          onClick={() => {setInputValue(""); onOpen()}}
+        >
+          <EditIcon w={5} h={5} />
+        </Button>
       )}
       {btnName == "Confirm" && (
-        <Button bgColor="#F6893C" color="white" variant="solid" _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} onClick={() => {setInputValue(""); onOpen()}}>Add an Assistant</Button>
+        <Button 
+          bgColor="#F6893C" 
+          color="white" 
+          variant="solid" 
+          _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} 
+          _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} 
+          onClick={() => {setInputValue(""); onOpen()}}
+        >
+          Add an Assistant
+        </Button>
       )}
+
       <Modal isOpen={isOpen} onClose={() => {setButtonRole("1"); onClose()}}>
         <ModalOverlay />
         <ModalContent boxShadow="none" alignSelf="center" minWidth={600}>
@@ -48,7 +87,13 @@ const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) =
           </ModalBody>
 
           <ModalFooter>
-            <Button bgColor="#59784D" color="#E2E8F0" variant="solid"  _hover={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} _active={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} onClick={() => {
+            <Button 
+              bgColor="#59784D" 
+              color="#E2E8F0" 
+              variant="solid"  
+              _hover={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} 
+              _active={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} 
+              onClick={() => {
                 if (action == "insertAuthUser") {
                     if (inputValue != null && inputValue != "") {
                       if (buttonRole == "1") {
@@ -60,34 +105,35 @@ const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) =
                       }
                     } 
                 } else if (action == "updateAuthUser") {
-                    if (inputValue != null && inputValue != "") {
-                      if (buttonRole == "1") {
-                        updateAuthUser(currentEmail, {email: inputValue, role: "Administrator"});
-                        calculate();
-                      } else if (buttonRole == "2") {
-                        updateAuthUser(currentEmail, {email: inputValue, role: "Staff"});
-                        calculate();
-                      }
-                    } else if (inputValue == "") {
-                      if (buttonRole == "1") {
-                        updateAuthUser(currentEmail, {email: currentEmail, role: "Administrator"});
-                        calculate();
-                      } else if (buttonRole == "2") {
-                        updateAuthUser(currentEmail, {email: currentEmail, role: "Staff"});
-                        calculate();
-                      }
+                  if (inputValue != null && inputValue != "") {
+                    if (buttonRole == "1") {
+                      updateAuthUser(currentEmail, {email: inputValue, role: "Administrator"});
+                      calculate();
+                    } else if (buttonRole == "2") {
+                      updateAuthUser(currentEmail, {email: inputValue, role: "Staff"});
+                      calculate();
                     }
+                  } else if (inputValue == "") {
+                    if (buttonRole == "1") {
+                      updateAuthUser(currentEmail, {email: currentEmail, role: "Administrator"});
+                      calculate();
+                    } else if (buttonRole == "2") {
+                      updateAuthUser(currentEmail, {email: currentEmail, role: "Staff"});
+                      calculate();
+                    }
+                  }
                 }; 
                 onClose()
                 setButtonRole("1")
-            }}>
+              }}
+            >
               {btnName}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  )
+  );
 };
 
 export default AuthUserModal;

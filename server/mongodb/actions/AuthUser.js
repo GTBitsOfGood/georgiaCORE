@@ -1,6 +1,7 @@
 import mongoDB from "../index";
 import AuthUser from "../models/AuthUser";
 
+//Function to get all authUsers from database
 export const getAuthUsers = async () => {
     await mongoDB();
   
@@ -19,6 +20,7 @@ export const getAuthUsers = async () => {
     }
   };
 
+//Function to insert a new authUser into database
 export const insertAuthUser = async (authUser) => {
     await mongoDB();
   
@@ -33,6 +35,7 @@ export const insertAuthUser = async (authUser) => {
     }
 };
 
+//Function to delete an authUser from database
 export const deleteAuthUser = async (authUser) => {
     await mongoDB();
 
@@ -47,6 +50,7 @@ export const deleteAuthUser = async (authUser) => {
     }
 };
 
+//Function to update an authUser corresponding to given email with new information
 export const updateAuthUser = async (oldAuthUserEmail, newAuthUser) => {
     await mongoDB();
 

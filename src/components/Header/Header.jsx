@@ -25,15 +25,13 @@ const Header = () => {
    *  Right stack contains user's profile image and profile menu
    *  Every link in the stack of links is a link to a page, and the Problem Tree holds a menu
    *  of other links that currently route to "/" (home).
-   *  The Problem Tree link routes to the nav editor, the Realtime link routes to SSR and the Home link
-   *  routes to home. Each link attempts to reveal an orange bar above it if it is currently active,
-   *  but there are some bugs where clicking out of the link does not turn off the orange bar.
+   *  The Problem Tree link routes to the nav editor, the Realtime link routes to the navigator, the Admin link 
+   *  routes to the admin page for authenticated users, and the Home link
+   *  routes to home. Each link reveals an orange bar above it if it is currently active.
    *  The user's profile menu contains a link to sign out which signs the user out and redirects to the
-   *  login page. The profile menu also attempts to reveal an orange bar above it when it is active,
-   *  but there is the same bug here.
+   *  login page. The profile menu reveals an orange bar above it when it is hovered over.
    * If not authenticated, shows the following contents:
-   *  Logo, Home button, and Login button. Login button routes to login page
-   * Currently, Logo is not the correct picture
+   *  Logo and Login button. Login button routes to login page.
    */ 
   const { data: session, status } = useSession();
 
@@ -76,7 +74,7 @@ const Header = () => {
     setActiveProfile(false);
   }
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { onOpen } = useDisclosure();
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
@@ -85,7 +83,6 @@ const Header = () => {
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
             <Image
-                //src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
                 src="/static/images/georgiacore_navbar_logo.png/"
                 alt="Logo"
                 backgroundColor="lightgreen"
@@ -145,7 +142,6 @@ const Header = () => {
                     <MenuList
                         bgColor="#59784D"
                         zIndex="100"
-
                       >
                       <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
                         <Flex
@@ -201,7 +197,6 @@ const Header = () => {
                     createHoverEffect(3);
                   }}
                   onMouseLeave={killAllHovers}
-
                 >
                   <NavLink href="/navigator">Realtime</NavLink>
                 </Text>
@@ -223,7 +218,6 @@ const Header = () => {
                     createHoverEffect(4);
                   }}
                   onMouseLeave={killAllHovers}
-
                 >
                   <NavLink href="/admin">Admin</NavLink>
                 </Text>
@@ -249,7 +243,6 @@ const Header = () => {
                   whiteSpace="nowrap"
                   onClick={() => {
                     createHoverEffect(5);
-
                   }}
                   onMouseEnter={() => createHoverEffect(5)}
                   onMouseLeave={killAllHovers}
