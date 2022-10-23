@@ -11,14 +11,23 @@ const QuestionTemplate = (props) => {
       <div id={styles.optionContainer}>
         {props.options.map((option, index) => {
           return (
-            <div key={option.answer} className={styles.option}>
-              <Image
-                layout="fixed"
-                src={option.image}
-                width={100}
-                height={100}
-                alt={option.answer}
-              />
+            <div
+              key={index}
+              className={styles.option}
+              onClick={option.triggerNext ? option.triggerNext : () => {}}
+            >
+              {props.options.image ? (
+                <Image
+                  layout="fixed"
+                  src={option.image}
+                  width={100}
+                  height={100}
+                  alt={option.answer}
+                />
+              ) : (
+                <></>
+              )}
+
               <h4>{option.answer}</h4>
               <div />
             </div>
@@ -33,9 +42,10 @@ QuestionTemplate.propTypes = {
   question: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      image: PropTypes.string,
+      image: PropTypes.any, // string but optional
       answer: PropTypes.string,
-      next: PropTypes.string,
+      next: PropTypes.number,
+      triggerNext: PropTypes.func,
     })
   ),
 };
