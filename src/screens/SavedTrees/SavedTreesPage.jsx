@@ -34,7 +34,7 @@ const SavedTreesPage = () => {
             <Heading w='100%' as='h4' size='lg' justifyContent='left'>
               Currently Active:
             </Heading>
-            <Box boxShadow='xs' w='100%' padding='46.5' rounded='2xl' bg='white'>
+            <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
                 <WrapItem>
                 <TreeThumbnailCard />
@@ -59,7 +59,7 @@ const SavedTreesPage = () => {
                     pointerEvents='none'
                     children={<SearchIcon color='gray' />}
                   />
-                  <Input type='text' focusBorderColor='georgia-core-green.500' />
+                  <Input rounded='2xl' type='text' focusBorderColor='georgia-core-green.500' />
                 </InputGroup>
                 <Button colorScheme='georgia-core-green' variant='solid'>
                   Search
@@ -79,7 +79,7 @@ const SavedTreesPage = () => {
                 <Button colorScheme='black' variant='link' textDecoration='underline' >Author</Button>
               </Flex>
             </Flex>
-            <Box boxShadow='xs' w='100%' padding='46.5' rounded='2xl' bg='white'>
+            <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
                 <WrapItem>
                 <TreeThumbnailCard />
