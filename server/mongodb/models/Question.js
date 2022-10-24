@@ -17,7 +17,6 @@ const QuestionSchema = new Schema({
       id: String,
       option: String,
       nextId: String,
-      url: String,
     },
   ],
 });

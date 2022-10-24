@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useReducer, useEffect } from "react";
 import ReactFlow, {
+  useKeyPress,
   useReactFlow,
   addEdge,
   ReactFlowProvider,
@@ -54,6 +55,39 @@ const reducer = (state, action) => {
         editModalOpen: true,
         editModalNodeId: action.questionId,
       };
+    case "copy":
+      return {
+        ...state,
+        copiedNode: state.selectedNode,
+      };
+    case "paste": {
+      const copiedNode = action.copiedNode;
+      console.log(copiedNode);
+      if (!copiedNode) {
+        return state;
+      }
+
+      const question = state.navigationTree.getQuestion(copiedNode.id);
+      const copyOfQuestion = state.navigationTree.copyQuestion(question);
+      state.navigationTree.addQuestion(copyOfQuestion);
+
+      const [newNodes, newEdges] = createNode({
+        question: copyOfQuestion,
+        x: copiedNode.position.x + 100,
+        y: copiedNode.position.y + 100,
+      });
+
+      return {
+        ...state,
+        nodes: [...state.nodes, ...newNodes],
+        edges: [...state.edges, ...newEdges],
+      };
+    }
+    case "selection_change":
+      return {
+        ...state,
+        selectedNode: action.nodes[0],
+      };
     case "update_question": {
       state.navigationTree.updateQuestion(action.question);
       // get the current question x and y
@@ -68,18 +102,19 @@ const reducer = (state, action) => {
         action.question.id
       );
 
+      let connectingNodeId = null;
       if (connectingEdge) {
-        const connectingNodeId = connectingEdge.source;
-        const [recreatedNodes, recreatedEdges] = createNode({
-          question: action.question,
-          x: node.position.x,
-          y: node.position.y,
-          connectingNodeId,
-        });
-
-        newNodes = [...newNodes, ...recreatedNodes];
-        newEdges = [...newEdges, ...recreatedEdges];
+        connectingNodeId = connectingEdge.source;
       }
+      const [recreatedNodes, recreatedEdges] = createNode({
+        question: action.question,
+        x: node.position.x,
+        y: node.position.y,
+        connectingNodeId,
+      });
+
+      newNodes = [...newNodes, ...recreatedNodes];
+      newEdges = [...newEdges, ...recreatedEdges];
 
       return {
         ...state,
@@ -191,18 +226,23 @@ const reducer = (state, action) => {
       }
 
       const question = state.navigationTree.getQuestion(questionId);
-      const option = question.options.find((o) => o.id === source);
+      const option = question.options.find(
+        (o) => o.id === source || o.id === target
+      );
 
       const newQuestion = {
         ...question,
-        options: [
-          ...question.options,
-          {
-            ...option,
-            nextId: target,
-          },
-        ],
+        options: question.options.map((o) => {
+          if (o.id === option.id) {
+            return {
+              ...option,
+              nextId: target,
+            };
+          }
+          return o;
+        }),
       };
+
       state.navigationTree.updateQuestion(newQuestion);
       return { ...state, edges: addEdge(action.connection, state.edges) };
     }
@@ -276,13 +316,38 @@ const reducer = (state, action) => {
 const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
   const connectingNode = useRef(null);
+  const copiedNode = useRef(null);
 
   const { project } = useReactFlow();
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree([]);
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
-    return { nodes, edges, navigationTree, editModalOpen: false };
+    return {
+      nodes,
+      edges,
+      navigationTree,
+      editModalOpen: false,
+      selectedNode: null,
+    };
   });
+
+  // Copy and paste nodes
+  const cmdCPressed = useKeyPress(["Meta+c", "Strg+c"]);
+  const cmdVPressed = useKeyPress(["Meta+v", "Strg+v"]);
+
+  useEffect(() => {
+    if (cmdCPressed) {
+      copiedNode.current = state.selectedNode;
+    }
+  }, [cmdCPressed, state.selectedNode]);
+  useEffect(() => {
+    if (cmdVPressed) {
+      dispatch({
+        type: "paste",
+        copiedNode: copiedNode.current,
+      });
+    }
+  }, [cmdVPressed]);
 
   // initialize navigationTree in reducer
   useEffect(() => {
@@ -333,6 +398,9 @@ const TreeEditor = () => {
           }
           onEdgesChange={(changes) =>
             dispatch({ type: "edge_change", changes })
+          }
+          onSelectionChange={({ nodes }) =>
+            dispatch({ type: "selection_change", nodes })
           }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onNodesDelete={(nodes) =>

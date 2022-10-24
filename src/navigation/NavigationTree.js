@@ -85,6 +85,27 @@ export default class NavigationTree {
     return question;
   }
 
+  copyQuestion(question) {
+    const id = uuidv4();
+
+    const newQuestion = {
+      ...question,
+      isRoot: false,
+      id,
+    };
+
+    delete newQuestion._id;
+    delete newQuestion.__v;
+
+    newQuestion.options = newQuestion.options.map((o) => {
+      return {
+        ...o,
+        id: uuidv4(),
+      };
+    });
+    return newQuestion;
+  }
+
   createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
       { option: "Option 1", nextId: null },
