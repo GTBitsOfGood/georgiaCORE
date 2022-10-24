@@ -104,6 +104,9 @@ export const updateQuestionTree = async (tree) => {
   await mongoDB();
 
   try {
+    const changingToInactive = oldTree.active && !((await getQuestionTreeById(tree._id)).active);
+    // add metadata to tree
+    await addMetadataModifications(tree, changingToInactive);
     await Tree.updateOne({ _id: id }, tree);
 
     return {
