@@ -1,11 +1,12 @@
-import React, { useRef, useReducer, useEffect } from "react";
+import React, { useState, useRef, useReducer, useEffect } from "react";
 
-import { getAllQuestions, setQuestions } from "src/actions/Question";
+import { getAllQuestionTrees, updateQuestionTree, addQuestionTree } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
 import { Text, Button, Divider, VStack, HStack, Box, Center, Heading, SimpleGrid, Flex, Wrap, WrapItem, InputLeftElement, Input, InputGroup, Spacer, extendTheme, ChakraProvider } from "@chakra-ui/react";
 import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCard";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { testTree } from "../NavigatorEditor/questions";
 
 const theme = extendTheme({
   colors: {
@@ -25,6 +26,46 @@ const theme = extendTheme({
 });
 
 const SavedTreesPage = () => {
+  const [trees, setTrees] = useState([]);
+
+  useEffect(() => {
+    async function initializeTrees() {
+      var initTrees = await getAllQuestionTrees();
+      if (initTrees.length == 0) {
+        // temporary initial tree for debugging
+        addQuestionTree(testTree);
+        initTrees = await getAllQuestionTrees();
+      }
+      setTrees(initTrees);
+    }
+    initializeTrees();
+  }, []);
+
+  const activeTrees = trees.filter(tree => tree.active);
+  const inactiveTrees = trees.filter(tree => !tree.active);
+
+  const handeActiveSwitch = (e, id) => {
+    const newActive = e.target.checked;
+  
+    if (newActive) {
+      // set cur active to inactive
+      if (activeTrees.length > 0) {
+        const curActiveId = activeTrees[0]._id;
+        const curActiveTreeInd = trees.findIndex(tree => tree._id == curActiveId);
+        const newCurActiveTree = {...trees[curActiveTreeInd]};
+        newCurActiveTree.active = false;
+        trees[curActiveTreeInd] = newCurActiveTree;
+        updateQuestionTree(newCurActiveTree);
+      }
+    }
+    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const newCurTree = {...trees[curTreeInd]};
+    newCurTree.active = newActive;
+    trees[curTreeInd] = newCurTree;
+    updateQuestionTree(newCurTree);
+    setTrees([...trees]);
+  };
+
   return (
     <ChakraProvider theme={theme}>
       {/* <Center> */}
@@ -36,12 +77,9 @@ const SavedTreesPage = () => {
             </Heading>
             <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
-                <WrapItem>
-                <TreeThumbnailCard />
-                </WrapItem>
-                <WrapItem>
-                <TreeThumbnailCard />
-                </WrapItem>
+                {activeTrees.map(tree => 
+                  <WrapItem key={tree._id}><TreeThumbnailCard handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} tree={tree}/></WrapItem>
+                )}
               </Wrap>
             </Box>
           </VStack>
@@ -81,12 +119,9 @@ const SavedTreesPage = () => {
             </Flex>
             <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
-                <WrapItem>
-                <TreeThumbnailCard />
-                </WrapItem>
-                <WrapItem>
-                <TreeThumbnailCard />
-                </WrapItem>
+                {inactiveTrees.map(tree => 
+                  <WrapItem key={tree._id}><TreeThumbnailCard handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} tree={tree}/></WrapItem>
+                )}
               </Wrap>
             </Box>
           </VStack>

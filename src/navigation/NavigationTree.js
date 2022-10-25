@@ -1,9 +1,31 @@
 import { v4 as uuidv4 } from "uuid";
 
 export default class NavigationTree {
-  constructor(questions) {
-    this.questions = questions;
+  constructor(tree) {
+    this.tree = tree;
     /*
+    active: Boolean,
+    title: String,
+    thumbnailImage: Buffer,
+    questions: [{
+      id: String,
+      question: String,
+      type: { type: String, enum: QUESTION_TYPES },
+      options: [
+        {
+          id: String,
+          option: String,
+          nextId: String,
+          url: String,
+        }
+      ],
+    }],
+    // Metadata
+    editedOn: Date, // updated internally by mongodb/actions
+    // (will be updated when tree goes active => inactive, so will be wrong for the active tree)
+    lastActive: Date, // updated internally by mongodb/actions
+    author: String, // updated internally by mongodb/actions
+
       Array<
         {
           id: "1",
@@ -30,40 +52,48 @@ export default class NavigationTree {
 
   // Getters/Setters
 
+  getTree() {
+    return this.tree;
+  }
+
+  setTree(tree) {
+    this.tree = tree;
+  }
+
   getQuestions() {
-    return this.questions;
+    return this.tree.questions;
   }
 
   setQuestions(questions) {
-    this.questions = questions;
+    this.tree.questions = questions;
   }
 
   getQuestion(id) {
-    return this.questions.find((q) => q.id === id);
+    return this.tree.questions.find((q) => q.id === id);
   }
 
   getQuestionByOptionId(optionId) {
-    return this.questions.find((q) => {
+    return this.tree.questions.find((q) => {
       return q.options.some((option) => option.id == optionId);
     });
   }
 
   getQuestionIndex(id) {
-    return this.questions.findIndex((q) => q.id == id);
+    return this.tree.questions.findIndex((q) => q.id == id);
   }
 
   addQuestion(question) {
-    this.questions.push(question);
+    this.tree.questions.push(question);
   }
 
   updateQuestion(question) {
     const index = this.getQuestionIndex(question.id);
-    this.questions[index] = question;
+    this.tree.questions[index] = question;
   }
 
   deleteQuestion(id) {
     const index = this.getQuestionIndex(id);
-    this.questions.splice(index, 1);
+    this.tree.questions.splice(index, 1);
   }
 
   createQuestion(questionContent, type, options) {
@@ -92,6 +122,6 @@ export default class NavigationTree {
   }
 
   printTree() {
-    console.log(JSON.stringify(this.questions));
+    console.log(JSON.stringify(this.tree.questions));
   }
 }

@@ -3,13 +3,20 @@ import Tree from "../models/Tree";
 import { getUserFromId } from "server/mongodb/actions/User";
 
 // adds metadata to passed in tree, returns nothing
-async function addMetadataModifications(tree, changingToInactive) {
-  const id = req.session.user?.id;
-  const user = await getUserFromId(id);
+async function addMetadataModifications(tree, userId, changingToInactive) {
+  var user = null;
+  try {
+    const userTemp = await getUserFromId(userId);
+    user = userTemp;
+  } catch (error) {
+    console.error('could not find username for current user. `author` field was not updated.');
+  }
 
   tree.editedOn = new Date();
-  tree.author = user.username; // note: if we add a full name field to User in future, change here
-  
+  if (user != null) {
+    tree.author = user.username; // note: if we add a full name field to User in future, change here
+  }
+
   // if we're making it inactive, update the last date it was active to today
   if (changingToInactive) {
     tree.lastActive = new Date();
@@ -41,7 +48,7 @@ export const getActiveQuestionTree = async () => {
     const tree = await Tree.findOne({ active: true });
 
     if (tree == null) {
-      throw new Error("Questions from database null");
+      console.error("Questions from database null");
     }
 
     return {
@@ -70,12 +77,12 @@ export const getAllQuestionTrees = async () => {
   }
 };
 
-export const addQuestionTree = async (tree) => {
+export const addQuestionTree = async (tree, userId) => {
   await mongoDB();
 
   try {
     // add metadata to tree
-    await addMetadataModifications(tree, false);
+    await addMetadataModifications(tree, userId, false);
     await Tree.create(tree);
 
     return {
@@ -86,7 +93,7 @@ export const addQuestionTree = async (tree) => {
   }
 };
 
-export const removeQuestionTree = async (id) => {
+export const removeQuestionTreeById = async (id) => {
   await mongoDB();
 
   try {
@@ -100,14 +107,14 @@ export const removeQuestionTree = async (id) => {
   }
 };
 
-export const updateQuestionTree = async (tree) => {
+export const updateQuestionTree = async (tree, userId) => {
   await mongoDB();
 
   try {
-    const changingToInactive = oldTree.active && !((await getQuestionTreeById(tree._id)).active);
+    const changingToInactive = !tree.active && (await getQuestionTreeById(tree._id)).active;
     // add metadata to tree
-    await addMetadataModifications(tree, changingToInactive);
-    await Tree.updateOne({ _id: id }, tree);
+    await addMetadataModifications(tree, userId, changingToInactive);
+    await Tree.updateOne({ _id: tree._id }, tree, {upsert: true});
 
     return {
       success: true,

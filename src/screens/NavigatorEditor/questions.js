@@ -86,4 +86,16 @@ const testQuestions = [
   },
 ];
 
+export const testTree = {
+  active: true,
+  title: 'test title',
+  thumbnailImage: null,
+  questions: testQuestions,
+  // Metadata
+  editedOn: new Date(), // updated internally by mongodb/actions
+  // (will be updated when tree goes active => inactive, so will be wrong for the active tree)
+  lastActive: new Date(), // updated internally by mongodb/actions
+  author: 'yours truly', // updated internally by mongodb/actions
+};
+
 export default testQuestions;
