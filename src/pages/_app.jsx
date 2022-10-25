@@ -11,6 +11,8 @@ import fetchJson from "src/utils/lib/fetchJson";
 import "focus-visible/dist/focus-visible.min.js";
 import "normalize.css";
 import "public/static/styles/App.css";
+import "src/components/Nodes/RootNode/RootNode.css";
+import "src/components/Nodes/TextNode/TextNode.css";
 
 const MyApp = ({ Component, pageProps, session }) => {
   const PAGES_WITH_NO_HEADER = new Set(["Login"]);

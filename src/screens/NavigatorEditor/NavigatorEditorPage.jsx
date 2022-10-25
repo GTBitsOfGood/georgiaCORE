@@ -1,18 +1,26 @@
-import React, { useRef, useReducer, useEffect } from "react";
+import React, { useMemo, useRef, useReducer, useEffect } from "react";
 import ReactFlow, {
+  useKeyPress,
   useReactFlow,
   addEdge,
   ReactFlowProvider,
   applyNodeChanges,
   applyEdgeChanges,
+  Background,
+  MiniMap,
+  Controls,
 } from "react-flow-renderer";
+
+import { Button, useDisclosure } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
 import NavigationTree from "src/navigation/NavigationTree";
-import testQuestions from "./questions";
-import { Button } from "@chakra-ui/react";
+import testQuestions from "./testQuestions";
+import InstructionsModal from "./InstructionsModal";
+import RootNode from "src/components/Nodes/RootNode";
+import TextNode from "src/components/Nodes/TextNode";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -47,47 +55,87 @@ const reducer = (state, action) => {
         editModalOpen: true,
         editModalNodeId: action.questionId,
       };
+    case "copy":
+      return {
+        ...state,
+        copiedNode: state.selectedNode,
+      };
+    case "paste": {
+      const copiedNode = action.copiedNode;
+      console.log(copiedNode);
+      if (!copiedNode) {
+        return state;
+      }
+
+      const question = state.navigationTree.getQuestion(copiedNode.id);
+      const copyOfQuestion = state.navigationTree.copyQuestion(question);
+      state.navigationTree.addQuestion(copyOfQuestion);
+
+      const [newNodes, newEdges] = createNode({
+        question: copyOfQuestion,
+        x: copiedNode.position.x + 100,
+        y: copiedNode.position.y + 100,
+      });
+
+      return {
+        ...state,
+        nodes: [...state.nodes, ...newNodes],
+        edges: [...state.edges, ...newEdges],
+      };
+    }
+    case "selection_change":
+      return {
+        ...state,
+        selectedNode: action.nodes[0],
+      };
     case "update_question": {
       state.navigationTree.updateQuestion(action.question);
       // get the current question x and y
       const node = state.nodes.find((n) => n.id === action.question.id);
-      const connectingNodeId = state.edges.find(
-        (e) => e.target === node.id // @Jay Fails if no parent
-      ).source;
+      const connectingEdge = state.edges.find((e) => e.target === node.id);
 
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
+      // delete and recreate the corresponding nodes and edges
+      let [newNodes, newEdges] = deleteNodesAndEdges(
         state.nodes,
         state.edges,
         state.navigationTree,
         action.question.id
       );
 
-      const [newNodes, newEdges] = createNode({
+      let connectingNodeId = null;
+      if (connectingEdge) {
+        connectingNodeId = connectingEdge.source;
+      }
+      const [recreatedNodes, recreatedEdges] = createNode({
         question: action.question,
         x: node.position.x,
         y: node.position.y,
         connectingNodeId,
       });
 
+      newNodes = [...newNodes, ...recreatedNodes];
+      newEdges = [...newEdges, ...recreatedEdges];
+
       return {
         ...state,
-        nodes: [...deletedNodes, ...newNodes],
-        edges: [...deletedEdges, ...newEdges],
+        nodes: newNodes,
+        edges: newEdges,
       };
     }
     case "delete_question": {
       var [deletedNodes, deletedEdges] = [state.nodes, state.edges];
       action.nodes.forEach((node) => {
-        [deletedNodes, deletedEdges] = deleteNode(
-          deletedNodes,
-          deletedEdges,
-          node.id
-        );
-
+        const question = state.navigationTree.getQuestion(node.id);
         // option nodes will be deleted with update_question so we
         // just delete questions from tree
-        if (state.navigationTree.getQuestion(node.id)) {
+        if (question && !question.isRoot) {
           state.navigationTree.deleteQuestion(node.id);
+
+          [deletedNodes, deletedEdges] = deleteNode(
+            deletedNodes,
+            deletedEdges,
+            node.id
+          );
         }
       });
 
@@ -129,44 +177,92 @@ const reducer = (state, action) => {
     case "edge_change":
       return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
     case "connect": {
+      // Assert that the connection is valid
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      // 3. The edge connects an option to a non-option node
+      // 4. The edge connects an option to a question that is not the parent of the option
       const { source, target } = action.connection;
       const sourceNode = state.nodes.find((n) => n.id === source);
       const targetNode = state.nodes.find((n) => n.id === target);
 
-      const existingEdge = state.edges.find(
-        (e) => e.source === source && e.target === target
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      if (sourceNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.source === source || e.target === source)
+        ) {
+          return state;
+        }
+      } else if (targetNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.target === target || e.source === target)
+        ) {
+          return state;
+        }
+      }
+
+      // 3. The edge connects an option to a non-option node
+      if (
+        sourceNode.dataType !== "option" &&
+        targetNode.dataType !== "option"
+      ) {
+        return state;
+      }
+
+      // 4. The edge connects an option to a question that is not the parent of the option
+      if (
+        sourceNode.parentNode === target ||
+        targetNode.parentNode === source
+      ) {
+        return state;
+      }
+
+      let questionId = "";
+      if (sourceNode.dataType === "option") {
+        questionId = sourceNode.parentNode;
+      } else {
+        questionId = targetNode.parentNode;
+      }
+
+      const question = state.navigationTree.getQuestion(questionId);
+      const option = question.options.find(
+        (o) => o.id === source || o.id === target
       );
 
-      if (
-        !existingEdge &&
-        targetNode.dataType !== "option" &&
-        sourceNode.dataType === "option"
-      ) {
-        const questionId = sourceNode.parentNode;
-        const question = state.navigationTree.getQuestion(questionId);
-        const option = question.options.find((o) => o.id === source);
-
-        const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
+      const newQuestion = {
+        ...question,
+        options: question.options.map((o) => {
+          if (o.id === option.id) {
+            return {
               ...option,
               nextId: target,
-            },
-          ],
-        };
-        state.navigationTree.updateQuestion(newQuestion);
-        return { ...state, edges: addEdge(action.connection, state.edges) };
-      }
-      return state;
+            };
+          }
+          return o;
+        }),
+      };
+
+      state.navigationTree.updateQuestion(newQuestion);
+      return { ...state, edges: addEdge(action.connection, state.edges) };
     }
     case "connect_stop": {
       const event = action.event;
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       // User ended a connection not to a node
-      if (targetIsPane) {
+      if (
+        targetIsPane &&
+        action.connectingNode.current.handleType === "source"
+      ) {
+        // Check if the source node already has an edge
+        const sourceNodeHasEdge = state.edges.some(
+          (e) =>
+            e.source === action.connectingNode.current.nodeId ||
+            e.target === action.connectingNode.current.nodeId
+        );
+        if (sourceNodeHasEdge) return state;
+
         // we need to remove the wrapper bounds, in order to get the correct position
         const { top, left } =
           action.reactFlowWrapper.current.getBoundingClientRect();
@@ -178,7 +274,7 @@ const reducer = (state, action) => {
         const question = state.navigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
         const parentQuestion = state.navigationTree.getQuestionByOptionId(
-          action.connectingNodeId.current
+          action.connectingNode.current.nodeId
         );
         state.navigationTree.updateQuestion({
           ...parentQuestion,
@@ -186,7 +282,7 @@ const reducer = (state, action) => {
             return {
               ...option,
               nextId:
-                option.id === action.connectingNodeId.current
+                option.id === action.connectingNode.current.nodeId
                   ? question.id
                   : option.nextId,
             };
@@ -196,7 +292,7 @@ const reducer = (state, action) => {
           question,
           x,
           y,
-          connectingNodeId: action.connectingNodeId.current,
+          connectingNodeId: action.connectingNode.current.nodeId,
         });
         return {
           ...state,
@@ -219,7 +315,39 @@ const reducer = (state, action) => {
 
 const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
-  const connectingNodeId = useRef(null);
+  const connectingNode = useRef(null);
+  const copiedNode = useRef(null);
+
+  const { project } = useReactFlow();
+  const [state, dispatch] = useReducer(reducer, {}, () => {
+    const navigationTree = new NavigationTree([]);
+    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
+    return {
+      nodes,
+      edges,
+      navigationTree,
+      editModalOpen: false,
+      selectedNode: null,
+    };
+  });
+
+  // Copy and paste nodes
+  const cmdCPressed = useKeyPress(["Meta+c", "Strg+c"]);
+  const cmdVPressed = useKeyPress(["Meta+v", "Strg+v"]);
+
+  useEffect(() => {
+    if (cmdCPressed) {
+      copiedNode.current = state.selectedNode;
+    }
+  }, [cmdCPressed, state.selectedNode]);
+  useEffect(() => {
+    if (cmdVPressed) {
+      dispatch({
+        type: "paste",
+        copiedNode: copiedNode.current,
+      });
+    }
+  }, [cmdVPressed]);
 
   // initialize navigationTree in reducer
   useEffect(() => {
@@ -235,24 +363,22 @@ const TreeEditor = () => {
       dispatch({ type: "set_state" });
     }
     initializeQuestions();
-  }, []);
+  }, [state.navigationTree]);
 
-  const { project } = useReactFlow();
-  const [state, dispatch] = useReducer(reducer, {}, () => {
-    const navigationTree = new NavigationTree([]);
-    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
-    return { nodes, edges, navigationTree, editModalOpen: false };
-  });
+  const nodeTypes = useMemo(() => ({ root: RootNode, text: TextNode }), []);
 
+  const {
+    isOpen: isInstructionsOpen,
+    onOpen: openInstructions,
+    onClose: onInstructionsClose,
+  } = useDisclosure();
   return (
     <>
-      <Button
-        colorScheme="teal"
-        size="lg"
-        onClick={() => setQuestions(state.navigationTree.getQuestions())}
-      >
-        Save
-      </Button>
+      <InstructionsModal
+        isOpen={isInstructionsOpen}
+        onClose={onInstructionsClose}
+      />
+
       <div
         className="wrapper"
         ref={reactFlowWrapper}
@@ -264,6 +390,7 @@ const TreeEditor = () => {
           question={state.navigationTree.getQuestion(state.editModalNodeId)}
         />
         <ReactFlow
+          nodeTypes={nodeTypes}
           nodes={state.nodes}
           edges={state.edges}
           onNodesChange={(changes) =>
@@ -272,13 +399,16 @@ const TreeEditor = () => {
           onEdgesChange={(changes) =>
             dispatch({ type: "edge_change", changes })
           }
+          onSelectionChange={({ nodes }) =>
+            dispatch({ type: "selection_change", nodes })
+          }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onNodesDelete={(nodes) =>
             dispatch({ type: "delete_question", nodes })
           }
           onConnect={(connection) => dispatch({ type: "connect", connection })}
-          onConnectStart={(_, { nodeId }) => {
-            connectingNodeId.current = nodeId;
+          onConnectStart={(_, { nodeId, handleType }) => {
+            connectingNode.current = { nodeId, handleType };
           }}
           onConnectStop={(event) =>
             dispatch({
@@ -286,7 +416,7 @@ const TreeEditor = () => {
               event,
               project,
               reactFlowWrapper,
-              connectingNodeId,
+              connectingNode,
             })
           }
           onNodeDoubleClick={(event, node) => {
@@ -296,14 +426,38 @@ const TreeEditor = () => {
             });
           }}
           fitView
-        />
+        >
+          <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
+            <Button
+              backgroundColor="#AFB9A5"
+              style={{ margin: "10px" }}
+              size="lg"
+              onClick={openInstructions}
+            >
+              Instructions
+            </Button>
+            <Button
+              color="white"
+              backgroundColor="#F6893C" // georgiacore orange
+              style={{
+                margin: "10px",
+              }}
+              size="lg"
+              onClick={() => setQuestions(state.navigationTree.getQuestions())}
+            >
+              Save
+            </Button>
+          </div>
+          <MiniMap />
+          <Controls />
+          <Background />
+        </ReactFlow>
       </div>
     </>
   );
 };
 
 const NavigatorEditorPage = () => {
-  
   return (
     <ReactFlowProvider>
       <TreeEditor />

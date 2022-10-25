@@ -19,6 +19,37 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       position: { x, y },
       type: "output",
     });
+  } else if (question.type == "error") {
+    nodes.push({
+      id: question.id,
+      targetPosition: "left",
+      data: {
+        label: "Error Node",
+      },
+      style: {
+        background: "red",
+        width: 160,
+        height: 50,
+      },
+      position: { x, y },
+      type: "output",
+    });
+  } else if (question.type == "text") {
+    nodes.push({
+      id: question.id,
+      targetPosition: "left",
+      data: {
+        heading: question.heading,
+        bodyText: question.bodyText,
+      },
+      style: {
+        background: "#90EE90",
+        width: 160,
+        height: 50,
+      },
+      position: { x, y },
+      type: "text",
+    });
   } else if (question.type === "question") {
     // Create node for question
     nodes.push({
@@ -30,12 +61,14 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       dataType: "question",
       data: { label: question.question },
       style: {
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        backgroundColor: question.isRoot
+          ? "LightSalmon"
+          : "rgba(255, 0, 0, 0.2)",
         width: 160,
         height: question.options.length * OPTION_HEIGHT + 50,
       },
       position: { x, y },
-      type: "output",
+      type: question.isRoot ? "root" : "output",
     });
 
     for (const [i, option] of question.options.entries()) {
@@ -91,8 +124,13 @@ export const generateInitialNodes = (questions) => {
   let visited = new Set();
   let queue = [];
 
-  queue.push([questions[0].id, 0]);
-  visited.add(questions[0].id);
+  const root = questions.find((question) => question.isRoot);
+  if (!root) {
+    throw new Error("No root question");
+  }
+
+  queue.push([root.id, 0]);
+  visited.add(root.id);
 
   let optionY = 0;
   let currentLevel = 0;
@@ -124,7 +162,7 @@ export const generateInitialNodes = (questions) => {
 
     if (question.type === "question")
       optionY += question.options.length * OPTION_HEIGHT + 70;
-    if (question.type === "url") optionY += 50;
+    else optionY += 50;
   }
 
   return [nodes, edges];
