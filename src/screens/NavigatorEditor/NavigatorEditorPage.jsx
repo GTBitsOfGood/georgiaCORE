@@ -1,4 +1,6 @@
 import React, { useMemo, useRef, useReducer, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
 import ReactFlow, {
   useKeyPress,
   useReactFlow,
@@ -14,8 +16,10 @@ import ReactFlow, {
 import { Button, useDisclosure } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
+import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAllQuestions, setQuestions } from "src/actions/Question";
+import { getAuthUsers } from "src/actions/AuthUser";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
@@ -319,6 +323,9 @@ const TreeEditor = () => {
   const copiedNode = useRef(null);
 
   const { project } = useReactFlow();
+  const { data: session, status } = useSession();
+  const [authUser, setAuthUser] = React.useState("");
+
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree([]);
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
@@ -365,6 +372,29 @@ const TreeEditor = () => {
     initializeQuestions();
   }, [state.navigationTree]);
 
+  React.useEffect(() => {
+    async function setAllAuthUserEmails() {
+      const newAuthUsers = [];
+      const newAuthUsersData = await getAuthUsers();
+      newAuthUsers.push(newAuthUsersData);
+      if (newAuthUsers[0] && session) {
+        let emailsArray = [];
+        for (let i = 0; i < Object.values(newAuthUsers[0]).length; i++) {
+          emailsArray.push(newAuthUsers[0][i].email);
+        }
+        if (emailsArray.includes(session.user.email)) {
+          setAuthUser("allowed");
+        } else if (!emailsArray.includes(session.user.email)) {
+          setAuthUser("not allowed");
+        }
+      }
+    }
+
+    setAllAuthUserEmails().catch((e) => {
+        throw new Error("Invalid token!" + e);;
+    });
+}, [session]);
+
   const nodeTypes = useMemo(() => ({ root: RootNode, text: TextNode }), []);
 
   const {
@@ -372,7 +402,35 @@ const TreeEditor = () => {
     onOpen: openInstructions,
     onClose: onInstructionsClose,
   } = useDisclosure();
-  return (
+
+  console.log(status);
+  console.log(authUser);
+
+  if (status === "loading") {
+    return (
+      <>
+      </>
+    );
+  }
+
+  else if (status == "authenticated" && (authUser != "allowed")) {
+    return (
+      <>
+        <ErrorPage message="User Cannot Access this Page."/>
+      </>
+    );
+  }
+
+  else if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in."/>
+      </>
+    );
+  }
+  
+
+    return (
     <>
       <InstructionsModal
         isOpen={isInstructionsOpen}

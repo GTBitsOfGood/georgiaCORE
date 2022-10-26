@@ -17,6 +17,7 @@ const urls = {
       getCurrent: "/api/user",
     },
     question: "/api/question",
+    authUser: "/api/authUser",
   },
 };
 
