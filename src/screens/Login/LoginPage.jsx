@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 const LoginPage = ({ providers }) => {
   const [resSuccess, setResSuccess] = React.useState(true);
   const [isLoading, setLoading] = React.useState(false);
-  //setResSuccess(true);
   /**
    * Login page UI
    * Creates a main green background with a white box in the middle

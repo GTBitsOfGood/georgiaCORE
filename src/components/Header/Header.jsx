@@ -25,21 +25,20 @@ const Header = () => {
    *  Right stack contains user's profile image and profile menu
    *  Every link in the stack of links is a link to a page, and the Problem Tree holds a menu
    *  of other links that currently route to "/" (home).
-   *  The Problem Tree link routes to the nav editor, the Realtime link routes to SSR and the Home link
-   *  routes to home. Each link attempts to reveal an orange bar above it if it is currently active,
-   *  but there are some bugs where clicking out of the link does not turn off the orange bar.
+   *  The Problem Tree link routes to the nav editor, the Realtime link routes to the navigator, the Admin link 
+   *  routes to the admin page for authenticated users, and the Home link
+   *  routes to home. Each link reveals an orange bar above it if it is currently active.
    *  The user's profile menu contains a link to sign out which signs the user out and redirects to the
-   *  login page. The profile menu also attempts to reveal an orange bar above it when it is active,
-   *  but there is the same bug here.
+   *  login page. The profile menu reveals an orange bar above it when it is hovered over.
    * If not authenticated, shows the following contents:
-   *  Logo, Home button, and Login button. Login button routes to login page
-   * Currently, Logo is not the correct picture
+   *  Logo and Login button. Login button routes to login page.
    */ 
   const { data: session, status } = useSession();
 
   const [active1, setActive1] = React.useState(false);
   const [active2, setActive2] = React.useState(false);
   const [active3, setActive3] = React.useState(false);
+  const [active4, setActive4] = React.useState(false);
 
   const router = useRouter();
 
@@ -59,6 +58,10 @@ const Header = () => {
     }
 
     if (i == 4) {
+      setActive4(true);
+    }
+
+    if (i == 5) {
       setActiveProfile(true);
     }
   }
@@ -67,10 +70,11 @@ const Header = () => {
     setActive1(false);
     setActive2(false);
     setActive3(false);
+    setActive4(false);
     setActiveProfile(false);
   }
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { onOpen } = useDisclosure();
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
@@ -79,7 +83,6 @@ const Header = () => {
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
             <Image
-                //src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/GaCORE_Horizontal_RGB_White_NoOutline.png"
                 src="/static/images/georgiacore_navbar_logo.png/"
                 alt="Logo"
                 backgroundColor="lightgreen"
@@ -130,7 +133,7 @@ const Header = () => {
                         onOpen();
                       }}
                       onMouseLeave={() => {
-                        killAllHovers
+                        killAllHovers()
                       }}
                       _expanded={{ fontWeight: "bold" }}
                     >
@@ -139,7 +142,6 @@ const Header = () => {
                     <MenuList
                         bgColor="#59784D"
                         zIndex="100"
-
                       >
                       <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
                         <Flex
@@ -195,9 +197,29 @@ const Header = () => {
                     createHoverEffect(3);
                   }}
                   onMouseLeave={killAllHovers}
-
                 >
                   <NavLink href="/navigator">Realtime</NavLink>
+                </Text>
+              </Stack>
+              <Stack>
+                {(router.pathname == "/admin" || active4) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
+                {!(router.pathname == "/admin" || active4) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                <Text
+                  color="white"
+                  fontFamily="sans-serif"
+                  fontSize="20px"
+                  paddingRight="20px"
+                  paddingLeft="20px"
+                  paddingTop="10px"
+                  onClick={() => {
+                    createHoverEffect(4);
+                  }}
+                  onMouseEnter={() => {
+                    createHoverEffect(4);
+                  }}
+                  onMouseLeave={killAllHovers}
+                >
+                  <NavLink href="/admin">Admin</NavLink>
                 </Text>
               </Stack>
             </Stack>
@@ -220,10 +242,9 @@ const Header = () => {
                   paddingRight="54px"
                   whiteSpace="nowrap"
                   onClick={() => {
-                    createHoverEffect(4);
-
+                    createHoverEffect(5);
                   }}
-                  onMouseEnter={() => createHoverEffect(4)}
+                  onMouseEnter={() => createHoverEffect(5)}
                   onMouseLeave={killAllHovers}
                 >
                   <Flex direction="row" justifyContent={"center"} alignItems="center">
@@ -281,26 +302,6 @@ const Header = () => {
               height="60px"
             />
           </Flex>
-          <Stack>
-            {active1 && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-            {!active1 && <Flex bgColor="#59784D" padding="2px"></Flex>}
-            <Text
-              color="white"
-              fontFamily="sans-serif"
-              fontSize="20px"
-              paddingLeft="20px"
-              paddingRight="20px"
-              paddingTop="10px"
-              onClick={() => {
-                setActive1(true);
-                setActive2(false);
-                setActive3(false);
-                setActiveProfile(false);
-              }}
-            >
-              <NavLink href="/">Home</NavLink>
-            </Text>
-          </Stack>
         </Stack>
         <Stack
           width="15%"
@@ -319,6 +320,7 @@ const Header = () => {
               setActive1(true);
               setActive2(false);
               setActive3(false);
+              setActive4(false);
               setActiveProfile(false);
             }}
           >
