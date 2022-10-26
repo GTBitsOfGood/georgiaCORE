@@ -6,7 +6,10 @@
 #question {
     padding: 50px;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
+    color: #5B794E;
+    font-size: 28px;
+    font-weight: 500;
 }
 
 #optionContainer {
@@ -17,7 +20,23 @@
 }
 
 #optionContainer > div.option {
-    padding: 20px;
+    padding: 10px;
+    width: 250px;
+    min-height: 124px;
+    margin: 40px;
+    background-color: #5B794E;
+    border-radius: 30px;
+    color: white;
+    font-family: Inter, 'Sans-Serif';
+    font-size: 28px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#optionContainer > div.option:hover {
+    background-color: #F6893C;
 }
 
 @media (max-width: 500px) {
