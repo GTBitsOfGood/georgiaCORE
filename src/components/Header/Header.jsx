@@ -137,7 +137,7 @@ const Header = () => {
                       }}
                       _expanded={{ fontWeight: "bold" }}
                     >
-                      Problem Tree
+                      Editor
                     </MenuButton>
                     <MenuList
                         bgColor="#59784D"
@@ -198,7 +198,7 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/navigator">Realtime</NavLink>
+                  <NavLink href="/navigator">Preview</NavLink>
                 </Text>
               </Stack>
               <Stack>
@@ -219,7 +219,7 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/admin">Admin</NavLink>
+                  <NavLink href="/admin">Employees</NavLink>
                 </Text>
               </Stack>
             </Stack>

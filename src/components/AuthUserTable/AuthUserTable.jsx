@@ -1,3 +1,5 @@
+import React from "react";
+import { useSession } from "next-auth/react";
 import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react";
 import { ArrowUpDownIcon } from "@chakra-ui/icons";
 import AuthUserModal from "./AuthUserModal";
@@ -12,6 +14,7 @@ import AuthUsersDeleteAlert from "./AuthUserDeleteAlert";
  */
 
 const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
+  const { data: session } = useSession();
 
   return (
     <Table variant="unstyled" size="lg">
@@ -93,11 +96,13 @@ const AuthUserTable = ({authUsers, roleSort, emailSort, calculate}) => {
                   calculate={calculate}
                 >
                 </AuthUserModal>
-                <AuthUsersDeleteAlert 
-                  calculate={calculate} 
-                  email={authUser.email}
-                >
-                </AuthUsersDeleteAlert>
+                {session.user.email != authUser.email && (
+                  <AuthUsersDeleteAlert 
+                    calculate={calculate} 
+                    email={authUser.email}
+                  >
+                  </AuthUsersDeleteAlert>
+                )}
               </Td>
             </Tr>
           ))}
