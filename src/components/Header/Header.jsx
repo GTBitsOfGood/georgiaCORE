@@ -78,7 +78,7 @@ const Header = () => {
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
-      <Flex  bgColor="#59784D">
+      <Flex  bgColor="#59784D" zIndex={100}>
         <Stack  direction="row" width="100%" justifyContent="space-between">
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
