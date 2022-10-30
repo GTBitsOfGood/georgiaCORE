@@ -78,9 +78,9 @@ const Header = () => {
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
-      <Flex bgColor="#59784D">
-        <Stack direction="row" width="100%" justifyContent="space-between">
-          <Stack direction="row" justifyContent="space-between">
+      <Flex  bgColor="#59784D" zIndex={100}>
+        <Stack  direction="row" width="100%" justifyContent="space-between">
+          <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
               <Image
                 src="/static/images/georgiacore_navbar_logo.png/"
@@ -147,7 +147,7 @@ const Header = () => {
                       }}
                       _expanded={{ fontWeight: "bold" }}
                     >
-                      Problem Tree
+                      Editor
                     </MenuButton>
                   </Menu>
                 </Stack>
@@ -174,7 +174,7 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/navigator">Realtime</NavLink>
+                  <NavLink href="/navigator">Preview</NavLink>
                 </Text>
               </Stack>
               <Stack>
@@ -199,7 +199,7 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/admin">Admin</NavLink>
+                  <NavLink href="/admin">Employees</NavLink>
                 </Text>
               </Stack>
             </Stack>

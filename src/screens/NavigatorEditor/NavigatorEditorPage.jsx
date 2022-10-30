@@ -403,9 +403,6 @@ const TreeEditor = () => {
     onClose: onInstructionsClose,
   } = useDisclosure();
 
-  console.log(status);
-  console.log(authUser);
-
   if (status === "loading") {
     return (
       <>
