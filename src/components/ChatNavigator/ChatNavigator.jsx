@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import styles from "./ChatNavigator.module.css";
-import { getAllQuestions } from "../../actions/Question";
+import { getActiveQuestionTree } from "../../actions/Tree";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
@@ -12,7 +12,8 @@ const ChatNavigator = (props) => {
   useEffect(() => {
     const setup = async () => {
       try {
-        const questions = await getAllQuestions();
+        const questionsTree = await getActiveQuestionTree();
+        const questions = questionsTree.questions;
         const questionMap = {};
         for (const question of questions) {
           const id = parseInt(question.id);
