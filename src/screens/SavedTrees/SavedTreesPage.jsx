@@ -8,6 +8,7 @@ import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCar
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { testTree } from "../NavigatorEditor/testQuestions";
+import ErrorPage from "src/components/ErrorPage";
 
 const theme = extendTheme({
   colors: {
@@ -30,6 +31,22 @@ const SavedTreesPage = () => {
   const [trees, setTrees] = useState([]);
 
   const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <></>;
+  } else if (status == "authenticated" && authUser != "allowed") {
+    return (
+      <>
+        <ErrorPage message="User Cannot Access this Page." />
+      </>
+    );
+  } else if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }
 
   useEffect(() => {
     async function initializeTrees() {
