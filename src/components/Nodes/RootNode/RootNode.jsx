@@ -6,8 +6,10 @@ export default memo(RootNode);
 function RootNode({ data }) {
   return (
     <>
-      <br />
-      {data.label}
+      <div style={{ height: 50, backgroundColor: "#F3E2D6" }}>
+        <br />
+        {data.label}
+      </div>
     </>
   );
 }

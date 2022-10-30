@@ -61,9 +61,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       dataType: "question",
       data: { label: question.question },
       style: {
-        backgroundColor: question.isRoot
-          ? "LightSalmon"
-          : "rgba(255, 0, 0, 0.2)",
+        backgroundColor: question.isRoot ? "#F7C5A3" : "rgba(255, 0, 0, 0.2)",
         width: 160,
         height: question.options.length * OPTION_HEIGHT + 50,
       },
@@ -79,7 +77,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
 
         sourcePosition: "right",
         dataType: "option",
-        type: "input",
+        type: "option",
         data: { label: option.option },
         parentNode: question.id,
         draggable: false,

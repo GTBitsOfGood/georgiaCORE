@@ -25,6 +25,7 @@ import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
+import OptionNode from "src/components/Nodes/OptionNode";
 import TextNode from "src/components/Nodes/TextNode";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
@@ -402,7 +403,10 @@ const TreeEditor = () => {
     });
   }, [session]);
 
-  const nodeTypes = useMemo(() => ({ root: RootNode, text: TextNode }), []);
+  const nodeTypes = useMemo(
+    () => ({ root: RootNode, text: TextNode, option: OptionNode }),
+    []
+  );
 
   const {
     isOpen: isInstructionsOpen,
