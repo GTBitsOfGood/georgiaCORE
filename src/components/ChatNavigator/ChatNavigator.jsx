@@ -20,7 +20,6 @@ const ChatNavigator = (props) => {
           questionMap[id] = question;
         }
         setAllQuestions(questionMap);
-        console.log(questionMap);
       } catch {
         console.log("Unable to get questions at this time.");
       }
@@ -32,7 +31,6 @@ const ChatNavigator = (props) => {
 
   if (numQs > 0) {
     const currentQuestion = allQuestions[currentQuestionIndex];
-    console.log(currentQuestion);
     return (
       <div style={styles} id={styles.main}>
         <div

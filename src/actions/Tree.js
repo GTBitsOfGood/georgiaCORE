@@ -67,7 +67,7 @@ export const getAllQuestionTrees = async () => {
     });
 };
 
-export const addQuestionTree = async (tree) => {
+export const addQuestionTree = async (tree, username) => {
   return fetch(urls.baseUrl + urls.api.tree.add, {
     method: "POST",
     mode: "same-origin",
@@ -75,7 +75,10 @@ export const addQuestionTree = async (tree) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(tree),
+    body: JSON.stringify({
+      tree,
+      username,
+    }),
   })
     .then((response) => response.json())
     .then((json) => {
@@ -111,7 +114,7 @@ export const removeQuestionTreeById =  async(id) => {
     });
 };
 
-export const updateQuestionTree = async (tree) => {
+export const updateQuestionTree = async (tree, username) => {
   return fetch(urls.baseUrl + urls.api.tree.update, {
     method: "POST",
     mode: "same-origin",
@@ -119,7 +122,10 @@ export const updateQuestionTree = async (tree) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(tree),
+    body: JSON.stringify({
+      tree,
+      username,
+    }),
   })
     .then((response) => response.json())
     .then((json) => {

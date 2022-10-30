@@ -66,7 +66,6 @@ const reducer = (state, action) => {
       };
     case "paste": {
       const copiedNode = action.copiedNode;
-      console.log(copiedNode);
       if (!copiedNode) {
         return state;
       }
@@ -487,7 +486,7 @@ const TreeEditor = () => {
                   margin: "10px",
                 }}
                 size="lg"
-                onClick={() => updateQuestionTree(state.navigationTree.getTree())}
+                onClick={() => updateQuestionTree(state.navigationTree.getTree(), session.user?.name)}
               >
                 Save
               </Button>

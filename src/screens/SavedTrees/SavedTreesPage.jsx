@@ -1,4 +1,5 @@
 import React, { useState, useRef, useReducer, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 import { getAllQuestionTrees, updateQuestionTree, addQuestionTree } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
@@ -28,12 +29,14 @@ const theme = extendTheme({
 const SavedTreesPage = () => {
   const [trees, setTrees] = useState([]);
 
+  const { data: session, status } = useSession();
+
   useEffect(() => {
     async function initializeTrees() {
       var initTrees = await getAllQuestionTrees();
       if (initTrees.length == 0) {
         // temporary initial tree for debugging
-        await addQuestionTree(testTree);
+        await addQuestionTree(testTree, session.user?.name);
         initTrees = await getAllQuestionTrees();
       }
       setTrees(initTrees);
@@ -55,14 +58,14 @@ const SavedTreesPage = () => {
         const newCurActiveTree = {...trees[curActiveTreeInd]};
         newCurActiveTree.active = false;
         trees[curActiveTreeInd] = newCurActiveTree;
-        updateQuestionTree(newCurActiveTree);
+        updateQuestionTree(newCurActiveTree, session.user?.name);
       }
     }
     const curTreeInd = trees.findIndex(tree => tree._id == id);
     const newCurTree = {...trees[curTreeInd]};
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
-    updateQuestionTree(newCurTree);
+    updateQuestionTree(newCurTree, session.user?.name);
     setTrees([...trees]);
   };
 

@@ -6,8 +6,7 @@ import { addQuestionTree } from "server/mongodb/actions/Tree";
 // @access  Public
 const handler = async (req, res) => {
   try {
-    const userId = req.session.user?.id;
-    await addQuestionTree(req.body, userId);
+    await addQuestionTree(req.body.tree, req.body.username);
 
     await req.session.save();
     return res.status(200).json({
