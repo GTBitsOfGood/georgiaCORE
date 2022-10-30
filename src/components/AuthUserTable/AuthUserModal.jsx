@@ -48,14 +48,14 @@ const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) =
       )}
       {btnName == "Confirm" && (
         <Button 
-          bgColor="#F6893C" 
+          bgColor="#59784D" 
           color="white" 
           variant="solid" 
-          _hover={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} 
-          _active={{backgroundColor: "rgba(246, 137, 60, 0.50)"}} 
+          _hover={{backgroundColor: "rgba(89, 120, 77, 0.50)"}} 
+          _active={{backgroundColor: "rgba(89, 120, 77, 0.50)"}} 
           onClick={() => {setInputValue(""); onOpen()}}
         >
-          Add an Assistant
+          Add an Employee
         </Button>
       )}
 

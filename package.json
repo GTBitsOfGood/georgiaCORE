@@ -45,6 +45,7 @@
     "isomorphic-unfetch": "^3.1.0",
     "mongodb": "^4.0.0",
     "mongoose": "^6.1.6",
+    "uuid": "^9.0.0",
     "next": "^12.0.8",
     "next-auth": "^4.10.3",
     "next-images": "^1.8.1",
@@ -52,9 +53,8 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "reactflow": "^11.1.2",
-    "swr": "^1.1.2",
-    "uuid": "^9.0.0"
+    "react-flow-renderer": "^10.3.16",
+    "swr": "^1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",

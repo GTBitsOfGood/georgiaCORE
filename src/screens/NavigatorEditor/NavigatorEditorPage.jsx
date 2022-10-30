@@ -12,7 +12,7 @@ import ReactFlow, {
   Background,
   MiniMap,
   Controls,
-} from "reactflow";
+} from "react-flow-renderer";
 
 import { Button, useDisclosure } from "@chakra-ui/react";
 
@@ -399,9 +399,9 @@ const TreeEditor = () => {
     }
 
     setAllAuthUserEmails().catch((e) => {
-      throw new Error("Invalid token!" + e);
+        throw new Error("Invalid token!" + e);;
     });
-  }, [session]);
+}, [session]);
 
   const nodeTypes = useMemo(
     () => ({ root: RootNode, text: TextNode, option: OptionNode }),
@@ -414,26 +414,31 @@ const TreeEditor = () => {
     onClose: onInstructionsClose,
   } = useDisclosure();
 
-  console.log(status);
-  console.log(authUser);
-
   if (status === "loading") {
-    return <></>;
-  } else if (status == "authenticated" && authUser != "allowed") {
     return (
       <>
-        <ErrorPage message="User Cannot Access this Page." />
-      </>
-    );
-  } else if (status == "unauthenticated") {
-    return (
-      <>
-        <ErrorPage message="User is not logged in." />
       </>
     );
   }
 
-  return (
+  else if (status == "authenticated" && (authUser != "allowed")) {
+    return (
+      <>
+        <ErrorPage message="User Cannot Access this Page."/>
+      </>
+    );
+  }
+
+  else if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in."/>
+      </>
+    );
+  }
+  
+
+    return (
     <>
       <InstructionsModal
         isOpen={isInstructionsOpen}
@@ -468,7 +473,7 @@ const TreeEditor = () => {
           onConnectStart={(_, { nodeId, handleType }) => {
             connectingNode.current = { nodeId, handleType };
           }}
-          onConnectEnd={(event) =>
+          onConnectStop={(event) =>
             dispatch({
               type: "connect_stop",
               event,
