@@ -145,7 +145,6 @@ const Header = () => {
                       onMouseLeave={() => {
                         killAllHovers();
                       }}
-                      _expanded={{ fontWeight: "bold" }}
                     >
                       Editor
                     </MenuButton>
