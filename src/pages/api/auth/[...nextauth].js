@@ -1,11 +1,13 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
+import { getAuthUsers } from "server/mongodb/actions/AuthUser";
 
 let allowedEmails = process.env.ALLOWED_EMAILS;
 
 if (allowedEmails) {
   allowedEmails = allowedEmails.split("+");
 }
+
 
 /** Configuration for NextAuth
  * SignIn callback only allows emails specfied in environment
@@ -21,7 +23,11 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }) {
-      if (allowedEmails && allowedEmails.includes(user.email)) return true;
+      let authUsers = await getAuthUsers();
+      let inAllowedEmails = allowedEmails && allowedEmails.includes(user.email);
+      let inAuthUsers = authUsers && authUsers.includes(user.email);
+
+      if (inAllowedEmails || inAuthUsers) return true;
       return false;
     },
   },
