@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useReducer, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 import ReactFlow, {
+  useOnSelectionChange,
   useKeyPress,
   useReactFlow,
   addEdge,
@@ -52,6 +53,7 @@ const deleteNode = (nodes, edges, nodeId) => {
 };
 
 const reducer = (state, action) => {
+  console.log(action);
   switch (action.type) {
     case "open_edit_modal":
       return {
@@ -88,6 +90,7 @@ const reducer = (state, action) => {
       };
     }
     case "selection_change":
+      console.log(action);
       return {
         ...state,
         selectedNode: action.nodes[0],
@@ -372,6 +375,10 @@ const TreeEditor = () => {
     initializeQuestions();
   }, [state.navigationTree]);
 
+  useOnSelectionChange({
+    onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
+  });
+
   React.useEffect(() => {
     async function setAllAuthUserEmails() {
       const newAuthUsers = [];
@@ -448,9 +455,6 @@ const TreeEditor = () => {
           }
           onEdgesChange={(changes) =>
             dispatch({ type: "edge_change", changes })
-          }
-          onSelectionChange={({ nodes }) =>
-            dispatch({ type: "selection_change", nodes })
           }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onNodesDelete={(nodes) =>

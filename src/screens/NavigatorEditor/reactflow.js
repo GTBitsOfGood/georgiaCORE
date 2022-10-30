@@ -68,6 +68,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
         height: question.options.length * OPTION_HEIGHT + 50,
       },
       position: { x, y },
+      deletable: question.isRoot ? false : true,
       type: question.isRoot ? "root" : "output",
     });
 
