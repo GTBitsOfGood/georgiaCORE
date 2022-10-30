@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useReducer, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 import ReactFlow, {
+  useOnSelectionChange,
   useKeyPress,
   useReactFlow,
   addEdge,
@@ -11,7 +12,7 @@ import ReactFlow, {
   Background,
   MiniMap,
   Controls,
-} from "react-flow-renderer";
+} from "reactflow";
 
 import { Button, useDisclosure } from "@chakra-ui/react";
 
@@ -24,6 +25,7 @@ import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
+import OptionNode from "src/components/Nodes/OptionNode";
 import TextNode from "src/components/Nodes/TextNode";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
@@ -88,6 +90,7 @@ const reducer = (state, action) => {
       };
     }
     case "selection_change":
+      console.log(action);
       return {
         ...state,
         selectedNode: action.nodes[0],
@@ -372,6 +375,10 @@ const TreeEditor = () => {
     initializeQuestions();
   }, [state.navigationTree]);
 
+  useOnSelectionChange({
+    onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
+  });
+
   React.useEffect(() => {
     async function setAllAuthUserEmails() {
       const newAuthUsers = [];
@@ -391,11 +398,14 @@ const TreeEditor = () => {
     }
 
     setAllAuthUserEmails().catch((e) => {
-        throw new Error("Invalid token!" + e);;
+      throw new Error("Invalid token!" + e);
     });
-}, [session]);
+  }, [session]);
 
-  const nodeTypes = useMemo(() => ({ root: RootNode, text: TextNode }), []);
+  const nodeTypes = useMemo(
+    () => ({ root: RootNode, text: TextNode, option: OptionNode }),
+    []
+  );
 
   const {
     isOpen: isInstructionsOpen,
@@ -404,30 +414,22 @@ const TreeEditor = () => {
   } = useDisclosure();
 
   if (status === "loading") {
+    return <></>;
+  } else if (status == "authenticated" && authUser != "allowed") {
     return (
       <>
+        <ErrorPage message="User Cannot Access this Page." />
+      </>
+    );
+  } else if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
       </>
     );
   }
 
-  else if (status == "authenticated" && (authUser != "allowed")) {
-    return (
-      <>
-        <ErrorPage message="User Cannot Access this Page."/>
-      </>
-    );
-  }
-
-  else if (status == "unauthenticated") {
-    return (
-      <>
-        <ErrorPage message="User is not logged in."/>
-      </>
-    );
-  }
-  
-
-    return (
+  return (
     <>
       <InstructionsModal
         isOpen={isInstructionsOpen}
@@ -454,9 +456,6 @@ const TreeEditor = () => {
           onEdgesChange={(changes) =>
             dispatch({ type: "edge_change", changes })
           }
-          onSelectionChange={({ nodes }) =>
-            dispatch({ type: "selection_change", nodes })
-          }
           onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
           onNodesDelete={(nodes) =>
             dispatch({ type: "delete_question", nodes })
@@ -465,7 +464,7 @@ const TreeEditor = () => {
           onConnectStart={(_, { nodeId, handleType }) => {
             connectingNode.current = { nodeId, handleType };
           }}
-          onConnectStop={(event) =>
+          onConnectEnd={(event) =>
             dispatch({
               type: "connect_stop",
               event,
