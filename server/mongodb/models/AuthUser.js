@@ -8,4 +8,5 @@ const AuthUserSchema = new Schema({
   role: String,
 });
 
-export default mongoose.models.AuthUser ?? mongoose.model("AuthUser", AuthUserSchema);
+export default mongoose.models.AuthUser ??
+  mongoose.model("AuthUser", AuthUserSchema);
