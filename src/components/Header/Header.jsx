@@ -9,7 +9,7 @@ import {
   MenuList,
   MenuItem,
   Button,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -25,14 +25,14 @@ const Header = () => {
    *  Right stack contains user's profile image and profile menu
    *  Every link in the stack of links is a link to a page, and the Problem Tree holds a menu
    *  of other links that currently route to "/" (home).
-   *  The Problem Tree link routes to the nav editor, the Realtime link routes to the navigator, the Admin link 
+   *  The Problem Tree link routes to the nav editor, the Realtime link routes to the navigator, the Admin link
    *  routes to the admin page for authenticated users, and the Home link
    *  routes to home. Each link reveals an orange bar above it if it is currently active.
    *  The user's profile menu contains a link to sign out which signs the user out and redirects to the
    *  login page. The profile menu reveals an orange bar above it when it is hovered over.
    * If not authenticated, shows the following contents:
    *  Logo and Login button. Login button routes to login page.
-   */ 
+   */
   const { data: session, status } = useSession();
 
   const [active1, setActive1] = React.useState(false);
@@ -52,7 +52,7 @@ const Header = () => {
     if (i == 2) {
       setActive2(true);
     }
-    
+
     if (i == 3) {
       setActive3(true);
     }
@@ -64,7 +64,7 @@ const Header = () => {
     if (i == 5) {
       setActiveProfile(true);
     }
-  }
+  };
 
   const killAllHovers = () => {
     setActive1(false);
@@ -72,17 +72,17 @@ const Header = () => {
     setActive3(false);
     setActive4(false);
     setActiveProfile(false);
-  }
+  };
 
   const { onOpen } = useDisclosure();
   const [activeProfile, setActiveProfile] = React.useState(false);
   if (status === "authenticated") {
     return (
-      <Flex  bgColor="#59784D">
+      <Flex  bgColor="#59784D" zIndex={100}>
         <Stack  direction="row" width="100%" justifyContent="space-between">
           <Stack direction="row"  justifyContent="space-between">
             <Flex bgColor="gray" margin="10px">
-            <Image
+              <Image
                 src="/static/images/georgiacore_navbar_logo.png/"
                 alt="Logo"
                 backgroundColor="lightgreen"
@@ -93,8 +93,12 @@ const Header = () => {
             </Flex>
             <Stack direction="row" justifyContent="space-evenly" width="50%">
               <Stack>
-                {(router.pathname == "/" || active1) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!(router.pathname == "/" || active1) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/" || active1) && (
+                  <Flex bgColor="#F6893C" padding="2px"></Flex>
+                )}
+                {!(router.pathname == "/" || active1) && (
+                  <Flex bgColor="#59784D" padding="2px"></Flex>
+                )}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
@@ -112,13 +116,19 @@ const Header = () => {
                     killAllHovers();
                   }}
                 >
-                  <NavLink backgroundColor="red" color="red" href="/">Home</NavLink>
+                  <NavLink backgroundColor="red" color="red" href="/">
+                    Home
+                  </NavLink>
                 </Text>
               </Stack>
               <NavLink href="/navigation-editor">
                 <Stack>
-                  {(router.pathname == "/navigation-editor" || active2) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                  {!(router.pathname == "/navigation-editor" || active2)&& <Flex bgColor="#59784D" padding="2px"></Flex>}
+                  {(router.pathname == "/navigation-editor" || active2) && (
+                    <Flex bgColor="#F6893C" padding="2px"></Flex>
+                  )}
+                  {!(router.pathname == "/navigation-editor" || active2) && (
+                    <Flex bgColor="#59784D" padding="2px"></Flex>
+                  )}
                   <Menu>
                     <MenuButton
                       as={Button}
@@ -133,56 +143,21 @@ const Header = () => {
                         onOpen();
                       }}
                       onMouseLeave={() => {
-                        killAllHovers()
+                        killAllHovers();
                       }}
-                      _expanded={{ fontWeight: "bold" }}
                     >
-                      Problem Tree
+                      Editor
                     </MenuButton>
-                    <MenuList
-                        bgColor="#59784D"
-                        zIndex="100"
-                      >
-                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
-                        <Flex
-                          bgColor="#59784D"
-                          paddingLeft="55px"
-                          paddingRight="55px"
-                          paddingTop="30px"
-                          width="100%"
-                          justifyContent="center"
-                        >
-                          <NavLink href="/">Preview</NavLink>
-                        </Flex>
-                      </MenuItem>
-                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
-                        <Flex
-                          bgColor="#59784D"
-                          paddingTop="20px"
-                          width="100%"
-                          justifyContent="center"
-                        >
-                          <NavLink href="/">Edit</NavLink>
-                        </Flex>
-                      </MenuItem>
-                      <MenuItem color="white" fontFamily="sans-serif" _hover={{textDecoration: "underline"}}>
-                        <Flex
-                          bgColor="#59784D"
-                          paddingTop="20px"
-                          paddingBottom="10px"
-                          width="100%"
-                          justifyContent="center"
-                        >
-                          <NavLink href="/">Instruction</NavLink>
-                        </Flex>
-                      </MenuItem>
-                    </MenuList>
                   </Menu>
                 </Stack>
               </NavLink>
               <Stack>
-                {(router.pathname == "/navigator" || active3) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!(router.pathname == "/navigator" || active3) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/navigator" || active3) && (
+                  <Flex bgColor="#F6893C" padding="2px"></Flex>
+                )}
+                {!(router.pathname == "/navigator" || active3) && (
+                  <Flex bgColor="#59784D" padding="2px"></Flex>
+                )}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
@@ -198,12 +173,16 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/navigator">Realtime</NavLink>
+                  <NavLink href="/navigator">Preview</NavLink>
                 </Text>
               </Stack>
               <Stack>
-                {(router.pathname == "/admin" || active4) && <Flex bgColor="#F6893C" padding="2px"></Flex>}
-                {!(router.pathname == "/admin" || active4) && <Flex bgColor="#59784D" padding="2px"></Flex>}
+                {(router.pathname == "/admin" || active4) && (
+                  <Flex bgColor="#F6893C" padding="2px"></Flex>
+                )}
+                {!(router.pathname == "/admin" || active4) && (
+                  <Flex bgColor="#59784D" padding="2px"></Flex>
+                )}
                 <Text
                   color="white"
                   fontFamily="sans-serif"
@@ -219,15 +198,19 @@ const Header = () => {
                   }}
                   onMouseLeave={killAllHovers}
                 >
-                  <NavLink href="/admin">Admin</NavLink>
+                  <NavLink href="/admin">Employees</NavLink>
                 </Text>
               </Stack>
             </Stack>
           </Stack>
           <Stack width="15%">
             <Flex direction="row-reverse" width="100%">
-              {activeProfile && <Flex bgColor="#F6893C" padding="2px" width="220px"></Flex>}
-              {!activeProfile && <Flex bgColor="#59784D" padding="2px" width="220px"></Flex>}
+              {activeProfile && (
+                <Flex bgColor="#F6893C" padding="2px" width="220px"></Flex>
+              )}
+              {!activeProfile && (
+                <Flex bgColor="#59784D" padding="2px" width="220px"></Flex>
+              )}
             </Flex>
             <Flex
               flexDirection="row-reverse"
@@ -247,7 +230,11 @@ const Header = () => {
                   onMouseEnter={() => createHoverEffect(5)}
                   onMouseLeave={killAllHovers}
                 >
-                  <Flex direction="row" justifyContent={"center"} alignItems="center">
+                  <Flex
+                    direction="row"
+                    justifyContent={"center"}
+                    alignItems="center"
+                  >
                     <Image
                       src={session.user.image}
                       fallbackSrc="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
@@ -256,15 +243,15 @@ const Header = () => {
                       marginRight="15px"
                       alt="Logo"
                     />
-                  {session.user.name}
+                    {session.user.name}
                   </Flex>
                 </MenuButton>
                 <MenuList
-                onClick={() =>
-                  signOut({
-                    callbackUrl: `${window.location.origin}/login`,
-                  })
-                }
+                  onClick={() =>
+                    signOut({
+                      callbackUrl: `${window.location.origin}/login`,
+                    })
+                  }
                 >
                   <MenuItem
                     onClick={() =>
@@ -272,18 +259,17 @@ const Header = () => {
                         callbackUrl: `${window.location.origin}/login`,
                       })
                     }
-                      bgColor="#59784D"
-                      color="white"
-                      paddingRight="100px"
-                      paddingLeft="100px"
-                      paddingTop="10px"
-                      paddingBottom="10px"
+                    bgColor="#59784D"
+                    color="white"
+                    paddingRight="100px"
+                    paddingLeft="100px"
+                    paddingTop="10px"
+                    paddingBottom="10px"
                   >
-                      Log out
+                    Log out
                   </MenuItem>
                 </MenuList>
               </Menu>
-
             </Flex>
           </Stack>
         </Stack>
@@ -296,7 +282,7 @@ const Header = () => {
         <Stack direction="row" width="40%" justifyContent="flex-start">
           <Flex bgColor="gray" margin="10px">
             <Image
-                src="/static/images/georgiacore_navbar_logo.png/"
+              src="/static/images/georgiacore_navbar_logo.png/"
               alt="Logo"
               marginTop="-5px"
               height="60px"
@@ -315,7 +301,7 @@ const Header = () => {
             fontSize="20px"
             paddingLeft="20px"
             paddingRight="20px"
-            textDecoration="underline" 
+            textDecoration="underline"
             onClick={() => {
               setActive1(true);
               setActive2(false);
@@ -324,7 +310,7 @@ const Header = () => {
               setActiveProfile(false);
             }}
           >
-            <NavLink href="/login" >Login</NavLink>
+            <NavLink href="/login">Login</NavLink>
           </Text>
         </Stack>
       </Stack>
