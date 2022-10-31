@@ -117,67 +117,12 @@ const Header = () => {
                       killAllHovers();
                     }}
                   >
-                    <NavLink backgroundColor="red" color="red" href="/saved-trees">
+                    <NavLink backgroundColor="red" color="red" href="/">
                       Home
                     </NavLink>
                   </Text>
                 </Stack>
               </NavLink>
-              <NavLink href="/navigation-editor">
-                <Stack>
-                  {(router.pathname == "/navigation-editor" || active2) && (
-                    <Flex bgColor="#F6893C" padding="2px"></Flex>
-                  )}
-                  {!(router.pathname == "/navigation-editor" || active2) && (
-                    <Flex bgColor="#59784D" padding="2px"></Flex>
-                  )}
-                  <Menu>
-                    <MenuButton
-                      as={Button}
-                      color="white"
-                      fontFamily="sans-serif"
-                      fontSize="20px"
-                      paddingLeft="20px"
-                      paddingRight="20px"
-                      paddingTop="10px"
-                      onMouseEnter={() => {
-                        createHoverEffect(2);
-                        onOpen();
-                      }}
-                      onMouseLeave={() => {
-                        killAllHovers();
-                      }}
-                    >
-                      Editor
-                    </MenuButton>
-                  </Menu>
-                </Stack>
-              </NavLink>
-              <Stack>
-                {(router.pathname == "/navigator" || active3) && (
-                  <Flex bgColor="#F6893C" padding="2px"></Flex>
-                )}
-                {!(router.pathname == "/navigator" || active3) && (
-                  <Flex bgColor="#59784D" padding="2px"></Flex>
-                )}
-                <Text
-                  color="white"
-                  fontFamily="sans-serif"
-                  fontSize="20px"
-                  paddingRight="20px"
-                  paddingLeft="20px"
-                  paddingTop="10px"
-                  onClick={() => {
-                    createHoverEffect(3);
-                  }}
-                  onMouseEnter={() => {
-                    createHoverEffect(3);
-                  }}
-                  onMouseLeave={killAllHovers}
-                >
-                  <NavLink href="/navigator">Preview</NavLink>
-                </Text>
-              </Stack>
               <Stack>
                 {(router.pathname == "/admin" || active4) && (
                   <Flex bgColor="#F6893C" padding="2px"></Flex>
