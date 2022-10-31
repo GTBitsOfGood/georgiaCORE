@@ -13,9 +13,7 @@ export const getQuestionTreeById = async (id) => {
     .then((json) => {
       if (json == null) {
         throw new Error("Could not connect to API!");
-      } else if (!json.success) {
-        throw new Error(json.message);
-      }
+      } 
       return json.payload;
     });
 };

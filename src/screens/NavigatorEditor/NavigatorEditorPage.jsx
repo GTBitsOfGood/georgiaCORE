@@ -20,13 +20,14 @@ import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAuthUsers } from "src/actions/AuthUser";
-import { getActiveQuestionTree, updateQuestionTree } from "src/actions/Tree";
+import { getActiveQuestionTree, getQuestionTreeById, updateQuestionTree } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
 import TextNode from "src/components/Nodes/TextNode";
+import { useRouter } from 'next/router'
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -325,11 +326,15 @@ const TreeEditor = () => {
   const connectingNode = useRef(null);
   const copiedNode = useRef(null);
 
+  const router = useRouter()
+  const { query } = router;
+  const [invalidID, setInvalidId] = React.useState(false);
+
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
 
   const { project } = useReactFlow();
-  
+
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree({questions: []});
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
@@ -357,13 +362,27 @@ const TreeEditor = () => {
   // initialize navigationTree in reducer
   useEffect(() => {
     async function initializeQuestions() {
-      const tree = await getActiveQuestionTree();
-      state.navigationTree.setTree(tree ?? {questions: []});
-      // force reducer to recognize changed navigationTree
-      dispatch({ type: "set_state" });
+      let treeID = query.id;
+      let tree;
+
+      if (treeID) {
+        setInvalidId(false);
+        tree = await getQuestionTreeById(treeID);
+
+        if (tree) {
+          state.navigationTree.setTree(tree ?? {questions: []});
+          // force reducer to recognize changed navigationTree
+          dispatch({ type: "set_state" });
+        } else {
+          setInvalidId(true);
+        } 
+      } else {
+        setInvalidId(true);
+      }
+      
     }
     initializeQuestions();
-  }, [state.navigationTree]);
+  }, [state.navigationTree, router.isReady]);
 
   useOnSelectionChange({
     onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
@@ -416,6 +435,14 @@ const TreeEditor = () => {
     return (
       <>
         <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }
+
+  if (invalidID) {
+    return (
+      <>
+        <ErrorPage message="This tree does not exist." />
       </>
     );
   }

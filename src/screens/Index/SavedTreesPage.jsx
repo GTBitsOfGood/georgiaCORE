@@ -83,11 +83,10 @@ const SavedTreesPage = () => {
     );
   }
 
-
   return (
     <ChakraProvider theme={theme}>
       {/* <Center> */}
-      <Box boxShadow='xs' w='100%' padding='46.5' bg='#F8F8FA'>
+      <Box boxShadow='xs' w='100%' padding='46.5' bg='#F8F8FA' >
         <VStack spacing='40px'>
           <VStack w='100%'>
             <Heading w='100%' as='h4' size='lg' justifyContent='left'>
@@ -96,7 +95,13 @@ const SavedTreesPage = () => {
             <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
                 {activeTrees.map(tree => 
-                  <WrapItem key={tree._id}><TreeThumbnailCard handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} tree={tree}/></WrapItem>
+                  <WrapItem key={tree._id}>
+                    <TreeThumbnailCard 
+                      handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} 
+                      tree={tree}
+                      onClick={() => router.push('/about')}
+                    />
+                  </WrapItem>
                 )}
               </Wrap>
             </Box>

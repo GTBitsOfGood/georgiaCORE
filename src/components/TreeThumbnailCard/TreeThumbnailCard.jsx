@@ -5,8 +5,11 @@ import PropTypes from "prop-types";
 import { IconButton, Box, VStack, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
 import { FaTrash, FaRegClone } from "react-icons/fa";
 import { CopyIcon } from "@chakra-ui/icons";
+import { useRouter } from 'next/router'
 
 const TreeThumbnailCard = (props) => {
+  let router = useRouter();
+
   const editedOnString = props.tree.editedOn ? 
     `${props.tree.editedOn.toLocaleTimeString()}, ${props.tree.editedOn.toLocaleDateString().replaceAll('/', '-')}` :
     'N/A';
@@ -14,7 +17,16 @@ const TreeThumbnailCard = (props) => {
     'Currently' :
     (props.tree.lastActive?.toLocaleDateString().replaceAll('/', '-') ?? 'N/A');
   return (
-    <Box boxShadow='xs' border='1px' borderColor='gray' w={372} h={405} padding='29.5' rounded='2xl' bg='#E0E2DA'>
+    <Box 
+      boxShadow='xs' 
+      border='1px' 
+      borderColor='gray' 
+      w={372} 
+      h={405} 
+      padding='29.5' 
+      rounded='2xl' 
+      bg='#E0E2DA'
+    >
       <VStack>
         {/* Thumbnail */}
         <Image
@@ -28,7 +40,12 @@ const TreeThumbnailCard = (props) => {
           {/* Header */}
           <Flex flexDirection='row' w='100%' justifyContent='space-between'>
             {/* Title */}
-            <Heading as='h4' size='lg'>
+            <Heading 
+              as='h4' 
+              size='lg' 
+              onClick={() => router.push('/navigation-editor?id=' + props.tree._id)} 
+              cursor="pointer"
+              >
               {props.tree.title ?? 'N/A'}
             </Heading>
             
