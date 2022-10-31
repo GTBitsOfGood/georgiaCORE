@@ -27,7 +27,7 @@ const QuestionTemplate = (props) => {
                 </div>
               )}
               <h4 id={styles.optionAnswer}>{option.answer}</h4>
-              <p id={styles.optionInfo}>{option.additionalInfo}</p>
+              <p id={styles.optionInfo}>professional medical resources that may help</p> 
               <div />
             </div>
           );
