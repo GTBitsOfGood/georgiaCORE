@@ -330,6 +330,7 @@ const TreeEditor = () => {
   const router = useRouter()
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
+  const [treeID, setTreeID] = React.useState(undefined);
 
 
   const { data: session, status } = useSession();
@@ -364,7 +365,8 @@ const TreeEditor = () => {
   // initialize navigationTree in reducer
   useEffect(() => {
     async function initializeQuestions() {
-      let treeID = query.id;
+      setTreeID(query.id);
+      //let treeID = query.id;
       let tree;
 
       if (treeID) {
@@ -384,7 +386,7 @@ const TreeEditor = () => {
       
     }
     initializeQuestions();
-  }, [state.navigationTree, router.isReady]);
+  }, [state.navigationTree, router.isReady, treeID]);
 
   useOnSelectionChange({
     onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
@@ -508,7 +510,7 @@ const TreeEditor = () => {
                   backgroundColor="#AFB9A5"
                   style={{ margin: "10px" }}
                   size="lg"
-                  onClick={() => router.push('/navigatior?id=' + treeID.current)} 
+                  onClick={() => router.push('/navigator?id=' + treeID)} 
                   >
                 Preview
               </Button>

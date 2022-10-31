@@ -15,6 +15,7 @@ const ChatNavigator = (props) => {
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
 
+  
   const router = useRouter()
   const { query } = router;
 
