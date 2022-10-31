@@ -38,7 +38,13 @@ const SavedTreesPage = () => {
       var initTrees = await getAllQuestionTrees();
       if (initTrees.length == 0) {
         // temporary initial tree for debugging
-        await addQuestionTree(testTree, session.user?.name);
+        if (session && session.user && session.user.name) {
+          await addQuestionTree(testTree, session.user?.name);
+        }
+        else {
+          await addQuestionTree(testTree, "Anonymous");
+        }
+
         initTrees = await getAllQuestionTrees();
       }
       setTrees(initTrees);
