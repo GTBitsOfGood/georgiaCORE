@@ -1,15 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
 #container {
     width: 100%;
     overflow-x: scroll;
+    background-color: #F8F9FA;
+    margin:0;
+    padding: 0;
 }
 
 #question {
-    padding: 50px;
+    padding-top: 30px;
+    padding-bottom: 40px;
     text-align: center;
     margin-bottom: 0px;
-    color: #5B794E;
+    color: #343A40;
     font-size: 28px;
     font-weight: 500;
+    font-family: 'Inter', sans-serif;
 }
 
 #optionContainer {
@@ -17,6 +24,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    
 }
 
 #optionContainer > div.option {

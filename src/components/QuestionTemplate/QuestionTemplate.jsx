@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 const QuestionTemplate = (props) => {
   return (
-    <div style={styles} id={styles.container}>
+    <div style={styles} id={styles.container} >
       <h2 id={styles.question}>{props.question}</h2>
       <div id={styles.optionContainer}>
         {props.options.map((option, index) => {
