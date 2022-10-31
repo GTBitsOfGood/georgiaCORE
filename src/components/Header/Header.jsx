@@ -92,35 +92,37 @@ const Header = () => {
               />
             </Flex>
             <Stack direction="row" justifyContent="space-evenly" width="50%">
-              <Stack>
-                {(router.pathname == "/" || active1) && (
-                  <Flex bgColor="#F6893C" padding="2px"></Flex>
-                )}
-                {!(router.pathname == "/" || active1) && (
-                  <Flex bgColor="#59784D" padding="2px"></Flex>
-                )}
-                <Text
-                  color="white"
-                  fontFamily="sans-serif"
-                  fontSize="20px"
-                  paddingLeft="20px"
-                  paddingRight="20px"
-                  paddingTop="10px"
-                  onClick={() => {
-                    createHoverEffect(1);
-                  }}
-                  onMouseEnter={() => {
-                    createHoverEffect(1);
-                  }}
-                  onMouseLeave={() => {
-                    killAllHovers();
-                  }}
-                >
-                  <NavLink backgroundColor="red" color="red" href="/">
-                    Home
-                  </NavLink>
-                </Text>
-              </Stack>
+              <NavLink href="/saved-trees">
+                <Stack>
+                  {(router.pathname == "/saved-trees" || active1) && (
+                    <Flex bgColor="#F6893C" padding="2px"></Flex>
+                  )}
+                  {!(router.pathname == "/saved-trees" || active1) && (
+                    <Flex bgColor="#59784D" padding="2px"></Flex>
+                  )}
+                  <Text
+                    color="white"
+                    fontFamily="sans-serif"
+                    fontSize="20px"
+                    paddingLeft="20px"
+                    paddingRight="20px"
+                    paddingTop="10px"
+                    onClick={() => {
+                      createHoverEffect(1);
+                    }}
+                    onMouseEnter={() => {
+                      createHoverEffect(1);
+                    }}
+                    onMouseLeave={() => {
+                      killAllHovers();
+                    }}
+                  >
+                    <NavLink backgroundColor="red" color="red" href="/saved-trees">
+                      Home
+                    </NavLink>
+                  </Text>
+                </Stack>
+              </NavLink>
               <NavLink href="/navigation-editor">
                 <Stack>
                   {(router.pathname == "/navigation-editor" || active2) && (
