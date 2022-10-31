@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./QuestionTemplate.module.css";
 import Image from "next/image";
 import PropTypes from "prop-types";
+import { PhoneIcon } from "@chakra-ui/icons";
 
 const QuestionTemplate = (props) => {
   return (
@@ -13,22 +14,20 @@ const QuestionTemplate = (props) => {
           return (
             <div
               key={index}
-              className={styles.option}
+              id={styles.optionStack}
               onClick={option.triggerNext ? option.triggerNext : () => {}}
             >
               {props.options.image ? (
-                <Image
-                  layout="fixed"
-                  src={option.image}
-                  width={100}
-                  height={100}
-                  alt={option.answer}
-                />
+                <div id={styles.greenCircle}>
+                  <PhoneIcon></PhoneIcon>
+                </div>
               ) : (
-                <></>
+                <div id={styles.greenCircle}>
+                   <PhoneIcon height={50} width={50}></PhoneIcon>
+                </div>
               )}
-
-              <h4>{option.answer}</h4>
+              <h4 id={styles.optionAnswer}>{option.answer}</h4>
+              <p id={styles.optionInfo}>{option.additionalInfo}</p>
               <div />
             </div>
           );
