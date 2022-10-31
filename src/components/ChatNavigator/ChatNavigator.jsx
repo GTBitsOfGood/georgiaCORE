@@ -26,9 +26,9 @@ const ChatNavigator = (props) => {
         const questions = questionsTree.questions;
         const questionMap = {};
         for (const question of questions) {
-          const id = parseInt(question.id);
-          questionMap[id] = question;
+          questionMap[question.id] = question;
         }
+        console.log(questionMap);
         setAllQuestions(questionMap);
         setInvalidId(false);
       } catch {
@@ -76,7 +76,7 @@ const ChatNavigator = (props) => {
               answer: option.option,
               triggerNext: () => {
                 if (option.nextId) {
-                  setCurrentQuestionIndex(parseInt(option.nextId));
+                  setCurrentQuestionIndex(option.nextId);
                 }
               },
             };
