@@ -47,7 +47,7 @@ const LoginPage = ({ providers }) => {
                   rounded="md"
                   onClick={() => {
                     signIn(provider.id, {
-                      callbackUrl: `${window.location.origin}/navigation-editor`,
+                      callbackUrl: `${window.location.origin}`,
                     });
                     setLoading(true);
                   }}
