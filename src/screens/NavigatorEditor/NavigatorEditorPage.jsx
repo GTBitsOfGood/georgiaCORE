@@ -309,6 +309,7 @@ const reducer = (state, action) => {
       return state;
     }
     case "set_state": {
+      console.log(state.navigationTree.getQuestions());
       const [nodes, edges] = generateInitialNodes(
         state.navigationTree.getQuestions()
       );
@@ -328,6 +329,7 @@ const TreeEditor = () => {
   const [authUser, setAuthUser] = React.useState("");
 
   const { project } = useReactFlow();
+  
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree({questions: []});
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
@@ -409,7 +411,8 @@ const TreeEditor = () => {
         <ErrorPage message="User Cannot Access this Page." />
       </>
     );
-  } else if (status == "unauthenticated") {
+  }
+  if (status == "unauthenticated") {
     return (
       <>
         <ErrorPage message="User is not logged in." />

@@ -123,6 +123,8 @@ export const generateInitialNodes = (questions) => {
   let visited = new Set();
   let queue = [];
 
+  console.log(questions);
+
   const root = questions.find((question) => question.isRoot);
   if (!root) {
     throw new Error("No root question");

@@ -16,6 +16,7 @@ const urls = {
       logout: "/api/user/logout",
       getCurrent: "/api/user",
     },
+    question: "/api/question",
     authUser: "/api/authUser",
     tree: {
       getActive: "/api/tree/get-active",
