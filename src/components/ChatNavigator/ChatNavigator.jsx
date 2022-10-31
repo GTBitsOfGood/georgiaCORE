@@ -7,11 +7,13 @@ import PropTypes from "prop-types";
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
+import { useSession } from "next-auth/react";
 
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [allQuestions, setAllQuestions] = useState({});
   const [invalidID, setInvalidId] = useState(false);
+  const { data: session, status } = useSession();
 
   const router = useRouter()
   const { query } = router;
@@ -37,6 +39,18 @@ const ChatNavigator = (props) => {
   }, [router.isReady]);
 
   const numQs = Object.keys(allQuestions).length;
+
+  if (status === "loading") {
+    return <></>;
+  } 
+
+  if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }  
 
   if (invalidID) {
     return (

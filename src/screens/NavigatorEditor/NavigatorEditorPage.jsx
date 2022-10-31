@@ -48,6 +48,7 @@ const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   return [newNodes, newEdges];
 };
 
+
 const deleteNode = (nodes, edges, nodeId) => {
   const newNodes = nodes.filter((node) => node.id !== nodeId);
 
@@ -330,6 +331,7 @@ const TreeEditor = () => {
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
 
+
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
 
@@ -502,6 +504,14 @@ const TreeEditor = () => {
             fitView
           >
             <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
+              <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={() => router.push('/navigatior?id=' + treeID.current)} 
+                  >
+                Preview
+              </Button>
               <Button
                 backgroundColor="#AFB9A5"
                 style={{ margin: "10px" }}
