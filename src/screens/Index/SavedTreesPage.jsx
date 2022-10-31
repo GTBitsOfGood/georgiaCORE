@@ -32,21 +32,6 @@ const SavedTreesPage = () => {
 
   const { data: session, status } = useSession();
 
-  if (status === "loading") {
-    return <></>;
-  } else if (status == "authenticated" && authUser != "allowed") {
-    return (
-      <>
-        <ErrorPage message="User Cannot Access this Page." />
-      </>
-    );
-  } else if (status == "unauthenticated") {
-    return (
-      <>
-        <ErrorPage message="User is not logged in." />
-      </>
-    );
-  }
 
   useEffect(() => {
     async function initializeTrees() {
@@ -85,6 +70,19 @@ const SavedTreesPage = () => {
     updateQuestionTree(newCurTree, session.user?.name);
     setTrees([...trees]);
   };
+
+  if (status === "loading") {
+    return <></>;
+  } 
+
+  if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }
+
 
   return (
     <ChakraProvider theme={theme}>
