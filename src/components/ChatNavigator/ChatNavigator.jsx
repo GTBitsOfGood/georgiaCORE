@@ -6,6 +6,7 @@ import Image from "next/image";
 import PropTypes from "prop-types";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { MdHome } from "react-icons/md";
+import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
@@ -15,6 +16,8 @@ import { Text, Flex, Stack } from "@chakra-ui/react";
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [allQuestions, setAllQuestions] = useState({});
+  const [visibleOptionsStart, setVisibleOptionsStart] = useState(0)
+  const [visibleOptionsEnd, setVisibleOptionsEnd] = useState(5)
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
 
@@ -43,7 +46,7 @@ const ChatNavigator = (props) => {
   }, [router.isReady]);
 
   const numQs = Object.keys(allQuestions).length;
-  
+
   const progressBars = []
   for (let i = 0; i < numQs; i++){
     progressBars.push(i)
@@ -98,7 +101,7 @@ const ChatNavigator = (props) => {
                 borderRadius={2}
                 height={26}
                 width={26}
-                onClick={() => setCurrentQuestionIndex(1)}
+                onClick={() => {setCurrentQuestionIndex(1); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
                 cursor="pointer"
               >
                 <MdHome size={15} color="white"/>
@@ -110,7 +113,7 @@ const ChatNavigator = (props) => {
                 borderRadius={2}
                 height={26}
                 width={26}
-                onClick={() => currentQuestionIndex > 1 ? setCurrentQuestionIndex(currentQuestionIndex - 1): setCurrentQuestionIndex(1)}
+                onClick={() => {currentQuestionIndex > 1 ? setCurrentQuestionIndex(currentQuestionIndex - 1): setCurrentQuestionIndex(1); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
                 cursor="pointer"
               >
                 <IoChevronBackOutline size={15} color="white"/>
@@ -145,19 +148,58 @@ const ChatNavigator = (props) => {
               </Stack>
             </Flex>
           </Stack>
-          <QuestionTemplate
-            question={currentQuestion.question}
-            options={currentQuestion.options.map((option) => {
-              return {
-                answer: option.option,
-                triggerNext: () => {
-                  if (option.nextId) {
-                    setCurrentQuestionIndex(option.nextId);
-                  }
-                },
-              };
-            })}
-          ></QuestionTemplate>
+          <Stack direction="row" justifyContent="center" alignItems="center">
+            {visibleOptionsStart > 0 ? (
+              <Flex 
+                cursor="pointer" 
+                paddingTop={10} 
+                width="50px" 
+                height="250px" 
+                onClick={() => {setVisibleOptionsEnd(visibleOptionsEnd -= 1); setVisibleOptionsStart(visibleOptionsStart -= 1)}}
+              >
+                <BsChevronLeft color="#343A40" size={50}/>
+              </Flex>
+            ) : (
+              <Flex>
+                <BsChevronLeft color="white" size={50}/>
+              </Flex>
+            )}
+            <Flex>
+              <QuestionTemplate
+                question={currentQuestion.question}
+                questionStart={visibleOptionsStart}
+                questionEnd={visibleOptionsEnd}
+                options={currentQuestion.options.map((option) => {
+                  return {
+                    answer: option.option,
+                    triggerNext: () => {
+                      if (option.nextId) {
+                        setCurrentQuestionIndex(option.nextId);
+                        setVisibleOptionsStart(0);
+                        setVisibleOptionsEnd(5);
+                      }
+                    },
+                  };
+                })}
+              >
+              </QuestionTemplate>
+            </Flex>
+            {visibleOptionsEnd < Object.values(currentQuestion.options).length ? (
+              <Flex 
+                cursor="pointer" 
+                paddingTop={10} 
+                width="50px" 
+                height="250px" 
+                onClick={() => {setVisibleOptionsEnd(visibleOptionsEnd += 1); setVisibleOptionsStart(visibleOptionsStart += 1)}}
+              >
+              <BsChevronRight color="#343A40" size={50}/>
+              </Flex>
+            ) : (
+              <Flex>
+                <BsChevronRight color="white" size={50}/>
+              </Flex>
+            )}
+          </Stack>
         </Stack>
       </Flex>
     );

@@ -13,7 +13,7 @@ const QuestionTemplate = (props) => {
       textAlign="center"
       paddingBottom={50}
     >
-      {props.options.map((option, index) => {
+      {props.options.slice(props.questionStart, props.questionEnd).map((option, index) => {
         return (
           <Stack
             direction="column"
@@ -86,6 +86,8 @@ const QuestionTemplate = (props) => {
 
 QuestionTemplate.propTypes = {
   question: PropTypes.string,
+  questionStart: PropTypes.number,
+  questionEnd: PropTypes.number,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       image: PropTypes.any, // string but optional
