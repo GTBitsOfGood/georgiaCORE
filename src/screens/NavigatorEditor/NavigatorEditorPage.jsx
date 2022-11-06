@@ -20,14 +20,18 @@ import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAuthUsers } from "src/actions/AuthUser";
-import { getActiveQuestionTree, getQuestionTreeById, updateQuestionTree } from "src/actions/Tree";
+import {
+  getActiveQuestionTree,
+  getQuestionTreeById,
+  updateQuestionTree,
+} from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
 import TextNode from "src/components/Nodes/TextNode";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -47,7 +51,6 @@ const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
 
   return [newNodes, newEdges];
 };
-
 
 const deleteNode = (nodes, edges, nodeId) => {
   const newNodes = nodes.filter((node) => node.id !== nodeId);
@@ -327,11 +330,10 @@ const TreeEditor = () => {
   const connectingNode = useRef(null);
   const copiedNode = useRef(null);
 
-  const router = useRouter()
+  const router = useRouter();
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
   const [treeID, setTreeID] = React.useState(undefined);
-
 
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
@@ -339,7 +341,7 @@ const TreeEditor = () => {
   const { project } = useReactFlow();
 
   const [state, dispatch] = useReducer(reducer, {}, () => {
-    const navigationTree = new NavigationTree({questions: []});
+    const navigationTree = new NavigationTree({ questions: [] });
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
     return { nodes, edges, navigationTree, editModalOpen: false };
   });
@@ -374,16 +376,15 @@ const TreeEditor = () => {
         tree = await getQuestionTreeById(treeID);
 
         if (tree) {
-          state.navigationTree.setTree(tree ?? {questions: []});
+          state.navigationTree.setTree(tree ?? { questions: [] });
           // force reducer to recognize changed navigationTree
           dispatch({ type: "set_state" });
         } else {
           setInvalidId(true);
-        } 
+        }
       } else {
         setInvalidId(true);
       }
-      
     }
     initializeQuestions();
   }, [state.navigationTree, router.isReady, treeID]);
@@ -392,7 +393,7 @@ const TreeEditor = () => {
     onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function setAllAuthUserEmails() {
       const newAuthUsers = [];
       const newAuthUsersData = await getAuthUsers();
@@ -426,6 +427,14 @@ const TreeEditor = () => {
     onClose: onInstructionsClose,
   } = useDisclosure();
 
+  // Open instructions modal on first visit of the page
+  useEffect(() => {
+    if (!localStorage.getItem("visited")) {
+      localStorage.setItem("visited", "true");
+      openInstructions();
+    }
+  }, [openInstructions]);
+
   if (status === "loading") {
     return <></>;
   } else if (status == "authenticated" && authUser != "allowed") {
@@ -450,97 +459,108 @@ const TreeEditor = () => {
       </>
     );
   }
-  
 
   return (
     <>
-      {state.navigationTree != null && state.navigationTree.getQuestions() != null ? (
+      {state.navigationTree != null &&
+      state.navigationTree.getQuestions() != null ? (
         <>
-        <InstructionsModal
-          isOpen={isInstructionsOpen}
-          onClose={onInstructionsClose}
-        />
-        <div
-          className="wrapper"
-          ref={reactFlowWrapper}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <EditQuestionModal
-            isOpen={state.editModalOpen}
-            dispatch={dispatch}
-            question={state.navigationTree.getQuestion(state.editModalNodeId)}
+          <InstructionsModal
+            isOpen={isInstructionsOpen}
+            onClose={onInstructionsClose}
           />
-          <ReactFlow
-            nodeTypes={nodeTypes}
-            nodes={state.nodes}
-            edges={state.edges}
-            onNodesChange={(changes) =>
-              dispatch({ type: "node_change", changes })
-            }
-            onEdgesChange={(changes) =>
-              dispatch({ type: "edge_change", changes })
-            }
-            onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
-            onNodesDelete={(nodes) =>
-              dispatch({ type: "delete_question", nodes })
-            }
-            onConnect={(connection) => dispatch({ type: "connect", connection })}
-            onConnectStart={(_, { nodeId, handleType }) => {
-              connectingNode.current = { nodeId, handleType };
-            }}
-            onConnectEnd={(event) =>
-              dispatch({
-                type: "connect_stop",
-                event,
-                project,
-                reactFlowWrapper,
-                connectingNode,
-              })
-            }
-            onNodeDoubleClick={(event, node) => {
-              dispatch({
-                type: "open_edit_modal",
-                questionId: node.id,
-              });
-            }}
-            fitView
+          <div
+            className="wrapper"
+            ref={reactFlowWrapper}
+            style={{ height: "100%", width: "100%" }}
           >
-            <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
-              <Button
+            <EditQuestionModal
+              isOpen={state.editModalOpen}
+              dispatch={dispatch}
+              question={state.navigationTree.getQuestion(state.editModalNodeId)}
+            />
+            <ReactFlow
+              nodeTypes={nodeTypes}
+              nodes={state.nodes}
+              edges={state.edges}
+              onNodesChange={(changes) =>
+                dispatch({ type: "node_change", changes })
+              }
+              onEdgesChange={(changes) =>
+                dispatch({ type: "edge_change", changes })
+              }
+              onEdgesDelete={(edges) =>
+                dispatch({ type: "edge_delete", edges })
+              }
+              onNodesDelete={(nodes) =>
+                dispatch({ type: "delete_question", nodes })
+              }
+              onConnect={(connection) =>
+                dispatch({ type: "connect", connection })
+              }
+              onConnectStart={(_, { nodeId, handleType }) => {
+                connectingNode.current = { nodeId, handleType };
+              }}
+              onConnectEnd={(event) =>
+                dispatch({
+                  type: "connect_stop",
+                  event,
+                  project,
+                  reactFlowWrapper,
+                  connectingNode,
+                })
+              }
+              onNodeDoubleClick={(event, node) => {
+                dispatch({
+                  type: "open_edit_modal",
+                  questionId: node.id,
+                });
+              }}
+              fitView
+            >
+              <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
+                <Button
                   backgroundColor="#AFB9A5"
                   style={{ margin: "10px" }}
                   size="lg"
-                  onClick={() => router.push('/navigator?id=' + treeID)} 
-                  >
-                Preview
-              </Button>
-              <Button
-                backgroundColor="#AFB9A5"
-                style={{ margin: "10px" }}
-                size="lg"
-                onClick={openInstructions}
-              >
-                Instructions
-              </Button>
-              <Button
-                color="white"
-                backgroundColor="#F6893C" // georgiacore orange
-                style={{
-                  margin: "10px",
-                }}
-                size="lg"
-                onClick={() => updateQuestionTree(state.navigationTree.getTree(), session.user?.name)}
-              >
-                Save
-              </Button>
-            </div>
-            <MiniMap />
-            <Controls />
-            <Background />
-          </ReactFlow>
-        </div>
-        </>) :
-        <p>No Active Tree</p>}
+                  onClick={() => router.push("/navigator?id=" + treeID)}
+                >
+                  Preview
+                </Button>
+                <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={openInstructions}
+                >
+                  Instructions
+                </Button>
+                <Button
+                  color="white"
+                  backgroundColor="#F6893C" // georgiacore orange
+                  style={{
+                    margin: "10px",
+                  }}
+                  size="lg"
+                  onClick={() =>
+                    updateQuestionTree(
+                      state.navigationTree.getTree(),
+                      session.user?.name
+                    )
+                  }
+                >
+                  Save
+                </Button>
+              </div>
+              <MiniMap />
+              <Controls />
+              <Background />
+            </ReactFlow>
+          </div>
+        </>
+      ) : (
+        <p>No Active Tree</p>
+      )}
     </>
   );
 };

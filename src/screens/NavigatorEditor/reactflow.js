@@ -166,5 +166,24 @@ export const generateInitialNodes = (questions) => {
     else optionY += 50;
   }
 
+  currentLevel++;
+  // Add non-connected nodes
+  for (const question of questions) {
+    if (!visited.has(question.id)) {
+      let [newNodes, newEdges] = createNode({
+        question,
+        x: 250 * currentLevel,
+        y: optionY,
+      });
+
+      nodes = nodes.concat(newNodes);
+      edges = edges.concat(newEdges);
+
+      if (question.type === "question")
+        optionY += question.options.length * OPTION_HEIGHT + 70;
+      else optionY += 50;
+    }
+  }
+
   return [nodes, edges];
 };
