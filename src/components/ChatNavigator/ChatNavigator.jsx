@@ -13,6 +13,14 @@ import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
 import { Text, Flex, Stack } from "@chakra-ui/react";
 
+/**
+ * Displays home and back buttons, as well as progress bar and question name or error/success message.
+ * Progress bar displays current level of node in tree out of the deepest leaf node path.
+ * Home button goes to root node.
+ * Back button goes to previously visited question.
+ * Arrows are also displayed when a question has more than 5 options to enable scrolling which shifts options by 1.
+ */
+
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [allQuestions, setAllQuestions] = useState({});

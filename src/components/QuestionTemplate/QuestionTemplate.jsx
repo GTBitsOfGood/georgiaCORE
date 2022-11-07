@@ -8,6 +8,14 @@ import { GiHealthNormal } from "react-icons/gi";
 import { RiComputerFill } from "react-icons/ri";
 import { MdOutlineClose, MdOutlineCheck } from "react-icons/md";
 
+/**
+ * Row stack of question options with icons.
+ * Displays up to 5 options at a time.
+ * Default icon is phone.
+ * Does not display if node is error node or text node.
+ * Displays url if node is a url node.
+ */
+
 const QuestionTemplate = (props) => {
   return (
     <Stack
