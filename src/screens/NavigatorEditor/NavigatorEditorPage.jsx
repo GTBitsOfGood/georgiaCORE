@@ -332,6 +332,12 @@ const reducer = (state, action) => {
     case "set_react_flow_instance": {
       return { ...state, reactFlowInstance: action.reactFlowInstance };
     }
+    case "format": {
+      const [nodes, edges] = generateInitialNodes(
+        state.navigationTree.getQuestions()
+      );
+      return { ...state, nodes, edges };
+    }
     default:
       throw Error("Unknown action: " + action.type);
   }
@@ -555,6 +561,16 @@ const TreeEditor = () => {
                   onClick={openInstructions}
                 >
                   Instructions
+                </Button>
+                <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={() => {
+                    dispatch({ type: "format" });
+                  }}
+                >
+                  Format
                 </Button>
                 <Button
                   color="white"
