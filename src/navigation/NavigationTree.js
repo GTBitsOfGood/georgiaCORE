@@ -108,6 +108,7 @@ export default class NavigationTree {
         return {
           id: uuidv4(),
           option: o.option,
+          icon: o.icon,
           nextId: o.nextId,
         };
       }),
@@ -139,7 +140,7 @@ export default class NavigationTree {
 
   createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
-      { option: "Option 1", nextId: null },
+      { option: "Option 1", icon: "QuestionMark", nextId: null },
     ]);
   }
 

@@ -21,6 +21,7 @@ const TreeSchema = new Schema({
         {
           id: String,
           option: String,
+          icon: String,
           nextId: String,
         },
       ],

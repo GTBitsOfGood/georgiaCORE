@@ -14,7 +14,13 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 
-import { Button, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  useDisclosure,
+  Box,
+  HStack,
+  IconButton,
+} from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
@@ -30,8 +36,12 @@ import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
+import QuestionNode from "src/components/Nodes/QuestionNode";
+import ErrorNode from "src/components/Nodes/ErrorNode";
 import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
+import URLNode from "src/components/Nodes/URLNode";
+import { LockIcon, QuestionIcon } from "@chakra-ui/icons";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -338,6 +348,8 @@ const reducer = (state, action) => {
       );
       return { ...state, nodes, edges };
     }
+    case "toggle_lock":
+      return { ...state, locked: !state.locked };
     default:
       throw Error("Unknown action: " + action.type);
   }
@@ -367,6 +379,7 @@ const TreeEditor = () => {
       navigationTree,
       editModalOpen: false,
       reactFlowInstance: null,
+      locked: false,
     };
   });
 
@@ -441,7 +454,14 @@ const TreeEditor = () => {
   }, [session]);
 
   const nodeTypes = useMemo(
-    () => ({ root: RootNode, text: TextNode, option: OptionNode }),
+    () => ({
+      root: RootNode,
+      text: TextNode,
+      option: OptionNode,
+      question: QuestionNode,
+      error: ErrorNode,
+      url: URLNode,
+    }),
     []
   );
 
@@ -489,6 +509,79 @@ const TreeEditor = () => {
       {state.navigationTree != null &&
       state.navigationTree.getQuestions() != null ? (
         <>
+          <QuestionIcon
+            onClick={openInstructions}
+            position="absolute"
+            bottom={10}
+            right={10}
+            color="#59784D"
+            variant="ghost"
+            w={10}
+            h={10}
+            zIndex={2}
+            cursor="pointer"
+          />
+          <Box
+            left="10%"
+            right="10%"
+            top="100px"
+            background="#D9D9D9"
+            borderRadius={"10px"}
+            zIndex={1}
+            position="fixed"
+          >
+            <HStack>
+              <Button
+                size="md"
+                style={{ margin: "10px", backgroundColor: "#59784D" }}
+                border={state.locked ? "2px solid #F6893C" : ""}
+                onClick={() => dispatch({ type: "toggle_lock" })}
+              >
+                <LockIcon color="white" size="lg" />
+              </Button>
+              <Button
+                backgroundColor="#AFB9A5"
+                style={{ margin: "10px" }}
+                size="lg"
+                onClick={() => {
+                  dispatch({ type: "format" });
+                }}
+              >
+                Format
+              </Button>
+              <HStack style={{ marginLeft: "auto" }}>
+                <Button
+                  color="white"
+                  backgroundColor="#F6893C" // georgiacore orange
+                  style={{
+                    margin: "10px",
+                  }}
+                  size="lg"
+                  onClick={() => {
+                    // Save the state of the ReactFlow nodes
+                    if (state.reactFlowInstance) {
+                      const reactFlowState = state.reactFlowInstance.toObject();
+                      state.navigationTree.updateReactFlowState(reactFlowState);
+                    }
+                    updateQuestionTree(
+                      state.navigationTree.getTree(),
+                      session.user?.name
+                    );
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={() => router.push("/navigator?id=" + treeID)}
+                >
+                  Preview
+                </Button>
+              </HStack>
+            </HStack>
+          </Box>
           <InstructionsModal
             isOpen={isInstructionsOpen}
             onClose={onInstructionsClose}
@@ -496,7 +589,12 @@ const TreeEditor = () => {
           <div
             className="wrapper"
             ref={reactFlowWrapper}
-            style={{ height: "100%", width: "100%" }}
+            style={{
+              height: "90%",
+              width: "100%",
+              position: "fixed",
+              zIndex: 0,
+            }}
           >
             <EditQuestionModal
               isOpen={state.editModalOpen}
@@ -504,6 +602,11 @@ const TreeEditor = () => {
               question={state.navigationTree.getQuestion(state.editModalNodeId)}
             />
             <ReactFlow
+              nodesDraggable={!state.locked}
+              nodesConnectable={!state.locked}
+              nodesFocusable={!state.locked}
+              edgesFocusable={!state.locked}
+              elementsSelectable={!state.locked}
               nodeTypes={nodeTypes}
               nodes={state.nodes}
               edges={state.edges}
@@ -545,58 +648,9 @@ const TreeEditor = () => {
               }}
               fitView
             >
-              <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
-                <Button
-                  backgroundColor="#AFB9A5"
-                  style={{ margin: "10px" }}
-                  size="lg"
-                  onClick={() => router.push("/navigator?id=" + treeID)}
-                >
-                  Preview
-                </Button>
-                <Button
-                  backgroundColor="#AFB9A5"
-                  style={{ margin: "10px" }}
-                  size="lg"
-                  onClick={openInstructions}
-                >
-                  Instructions
-                </Button>
-                <Button
-                  backgroundColor="#AFB9A5"
-                  style={{ margin: "10px" }}
-                  size="lg"
-                  onClick={() => {
-                    dispatch({ type: "format" });
-                  }}
-                >
-                  Format
-                </Button>
-                <Button
-                  color="white"
-                  backgroundColor="#F6893C" // georgiacore orange
-                  style={{
-                    margin: "10px",
-                  }}
-                  size="lg"
-                  onClick={() => {
-                    // Save the state of the ReactFlow nodes
-                    if (state.reactFlowInstance) {
-                      const reactFlowState = state.reactFlowInstance.toObject();
-                      state.navigationTree.updateReactFlowState(reactFlowState);
-                    }
-                    updateQuestionTree(
-                      state.navigationTree.getTree(),
-                      session.user?.name
-                    );
-                  }}
-                >
-                  Save
-                </Button>
-              </div>
-              <MiniMap />
-              <Controls />
               <Background />
+
+              <Controls />
             </ReactFlow>
           </div>
         </>
