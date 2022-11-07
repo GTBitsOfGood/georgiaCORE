@@ -96,10 +96,11 @@ export default class NavigationTree {
     this.tree.questions.splice(index, 1);
   }
 
-  createQuestion(questionContent, type, options) {
+  static createQuestion(questionContent, type, options) {
     const id = uuidv4();
 
     const question = {
+      isRoot: false,
       id,
       question: questionContent,
       type,
@@ -115,7 +116,7 @@ export default class NavigationTree {
     return question;
   }
 
-  copyQuestion(question) {
+  static copyQuestion(question) {
     const id = uuidv4();
 
     const newQuestion = {
@@ -136,9 +137,22 @@ export default class NavigationTree {
     return newQuestion;
   }
 
-  createUntitledQuestion() {
+  static createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
       { option: "Option 1", nextId: null },
+    ]);
+  }
+
+  static createInitialQuestion() {
+    return this.createQuestion("Do you want to continue?", "question", [
+      {
+        option: "Yes",
+        nextId: null,
+      },
+      {
+        option: "No",
+        nextId: null,
+      },
     ]);
   }
 

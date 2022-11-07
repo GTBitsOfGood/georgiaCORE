@@ -9,6 +9,21 @@ import { FaSearch, FaPlus } from "react-icons/fa";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { testTree } from "../NavigatorEditor/testQuestions";
 import ErrorPage from "src/components/ErrorPage";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  useModalContext,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+} from '@chakra-ui/react'
 
 const theme = extendTheme({
   colors: {
@@ -31,6 +46,10 @@ const SavedTreesPage = () => {
   const [trees, setTrees] = useState([]);
 
   const { data: session, status } = useSession();
+
+  const { isOpen: isOpenCreate, onOpen: onOpenCreate, onClose: onCloseCreate } = useDisclosure();
+
+  const [title, setTitle] = useState('');
 
   async function initializeTrees() {
     var initTrees = await getAllQuestionTrees();
@@ -88,6 +107,28 @@ const SavedTreesPage = () => {
     );
   }
 
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const onTitleClick = async () => {
+    if (title.trim() == '') {
+      return;
+    }
+
+    const basicTree = {
+      active: false,
+      title: title,
+      thumbnailImage: null,
+      questions: [
+        NavigationTree.createInitialQuestion()
+      ],
+    };
+
+    await addQuestionTree(basicTree, session.user?.name);
+    await initializeTrees();
+  };
+
   return (
     <ChakraProvider theme={theme}>
       {/* <Center> */}
@@ -132,9 +173,34 @@ const SavedTreesPage = () => {
                 </Button>
               </HStack>
               <Spacer />
-              <Button leftIcon={<AddIcon />} colorScheme='georgia-core-green' variant='solid'>
+              <Button onClick={onOpenCreate} leftIcon={<AddIcon />} colorScheme='georgia-core-green' variant='solid'>
                 Create New Question List
               </Button>
+              <>
+                <Modal isOpen={isOpenCreate} onClose={onCloseCreate} isCentered>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Create New Question List</ModalHeader>
+                    <ModalCloseButton />
+
+                    <Divider />
+                    <ModalBody>
+                    <FormControl isRequired>
+                      <FormLabel>Question List Title</FormLabel>
+                      <Input placeholder='Title' type='text' onChange={handleTitleChange} />
+                    </FormControl>
+                    </ModalBody>
+                    <Divider />
+
+                    <ModalFooter>
+                      <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseCreate}>
+                        Close
+                      </Button>
+                      <Button onClick={onTitleClick} colorScheme='georgia-core-green' variant='solid'>Create</Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+              </>
             </Flex>
             <Flex w='100%'>
               <Flex w='35%' justifyContent='space-between'>
