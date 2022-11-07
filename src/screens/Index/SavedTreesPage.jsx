@@ -130,7 +130,6 @@ const SavedTreesPage = () => {
       ...curTree,
       title,
     };
-    console.log(newTree)
 
     await updateQuestionTree(newTree, session.user?.name);
     await initializeTrees();

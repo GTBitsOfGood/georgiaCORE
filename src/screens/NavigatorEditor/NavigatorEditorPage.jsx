@@ -311,7 +311,6 @@ const reducer = (state, action) => {
       return state;
     }
     case "set_state": {
-      console.log(state.navigationTree.getQuestions());
       const [nodes, edges] = generateInitialNodes(
         state.navigationTree.getQuestions()
       );
