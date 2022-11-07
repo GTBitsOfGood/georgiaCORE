@@ -40,7 +40,7 @@ export const getActiveQuestionTree = async () => {
     const tree = await Tree.findOne({ active: true });
 
     if (tree == null) {
-      console.error("Questions from database null");
+      console.error("active tree from database is null");
     }
 
     return {
@@ -58,7 +58,7 @@ export const getAllQuestionTrees = async () => {
     const trees = await Tree.find({});
 
     if (trees == null) {
-      throw new Error("Questions from database null");
+      throw new Error("all question trees from database is null");
     }
 
     return {
@@ -73,6 +73,15 @@ export const addQuestionTree = async (tree, username) => {
   await mongoDB();
 
   try {
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && tree.active) {
+      // don't allow multiple trees to be active, user should set first to inactive before
+      // setting new one to active.
+      return {
+        success: false,
+      }
+    }
+
     // add metadata to tree
     await addMetadataModifications(tree, username, false);
     await Tree.create(tree);
@@ -103,6 +112,16 @@ export const updateQuestionTree = async (tree, username) => {
   await mongoDB();
 
   try {
+
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && tree.active) {
+      // don't allow multiple trees to be active, user should set first to inactive before
+      // setting new one to active.
+      return {
+        success: false,
+      }
+    }
+
     const curTree = (await getQuestionTreeById(tree._id)).tree;
     const changingToInactive = !tree.active && curTree.active;
     // add metadata to tree

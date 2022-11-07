@@ -74,7 +74,7 @@ const SavedTreesPage = () => {
   const activeTrees = trees.filter(tree => tree.active);
   const inactiveTrees = trees.filter(tree => !tree.active);
 
-  const handeActiveSwitch = (e, id) => {
+  const handeActiveSwitch = async (e, id) => {
     const newActive = e.target.checked;
     if (newActive) {
       // set cur active to inactive
@@ -84,14 +84,15 @@ const SavedTreesPage = () => {
         const newCurActiveTree = {...trees[curActiveTreeInd]};
         newCurActiveTree.active = false;
         trees[curActiveTreeInd] = newCurActiveTree;
-        updateQuestionTree(newCurActiveTree, session.user?.name);
+        await updateQuestionTree(newCurActiveTree, session.user?.name);
       }
     }
     const curTreeInd = trees.findIndex(tree => tree._id == id);
     const newCurTree = {...trees[curTreeInd]};
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
-    updateQuestionTree(newCurTree, session.user?.name).then(initializeTrees);
+    await updateQuestionTree(newCurTree, session.user?.name)
+    await initializeTrees();
   };
 
   if (status === "loading") {
