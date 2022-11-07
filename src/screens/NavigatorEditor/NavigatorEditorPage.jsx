@@ -14,13 +14,7 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 
-import {
-  Button,
-  useDisclosure,
-  Box,
-  HStack,
-  IconButton,
-} from "@chakra-ui/react";
+import { Button, useDisclosure, Box, HStack, Text } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
@@ -70,6 +64,11 @@ const deleteNode = (nodes, edges, nodeId) => {
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case "save":
+      return {
+        ...state,
+        unsavedChanges: false,
+      };
     case "open_edit_modal":
       return {
         ...state,
@@ -99,6 +98,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: [...state.nodes, ...newNodes],
         edges: [...state.edges, ...newEdges],
       };
@@ -139,6 +139,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: newNodes,
         edges: newEdges,
       };
@@ -162,6 +163,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: deletedNodes,
         edges: deletedEdges,
       };
@@ -190,13 +192,21 @@ const reducer = (state, action) => {
         state.navigationTree.updateQuestion(newQuestion);
       });
 
-      return state;
+      return { ...state, unsavedChanges: true };
     case "close_edit_modal":
       return { ...state, editModalOpen: false };
     case "node_change":
-      return { ...state, nodes: applyNodeChanges(action.changes, state.nodes) };
+      return {
+        ...state,
+        nodes: applyNodeChanges(action.changes, state.nodes),
+        unsavedChanges: true,
+      };
     case "edge_change":
-      return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
+      return {
+        ...state,
+        edges: applyEdgeChanges(action.changes, state.edges),
+        unsavedChanges: true,
+      };
     case "connect": {
       // Assert that the connection is valid
       // 1. The edge does not already exist
@@ -265,7 +275,11 @@ const reducer = (state, action) => {
       };
 
       state.navigationTree.updateQuestion(newQuestion);
-      return { ...state, edges: addEdge(action.connection, state.edges) };
+      return {
+        ...state,
+        edges: addEdge(action.connection, state.edges),
+        unsavedChanges: true,
+      };
     }
     case "connect_stop": {
       const event = action.event;
@@ -319,6 +333,7 @@ const reducer = (state, action) => {
           ...state,
           nodes: state.nodes.concat(newNodes),
           edges: state.edges.concat(newEdges),
+          unsavedChanges: true,
         };
       }
       return state;
@@ -346,7 +361,7 @@ const reducer = (state, action) => {
       const [nodes, edges] = generateInitialNodes(
         state.navigationTree.getQuestions()
       );
-      return { ...state, nodes, edges };
+      return { ...state, nodes, edges, unsavedChanges: true };
     }
     case "toggle_lock":
       return { ...state, locked: !state.locked };
@@ -380,6 +395,7 @@ const TreeEditor = () => {
       editModalOpen: false,
       reactFlowInstance: null,
       locked: false,
+      unsavedChanges: false,
     };
   });
 
@@ -479,6 +495,29 @@ const TreeEditor = () => {
     }
   }, [openInstructions]);
 
+  // prompt the user if they try and leave with unsaved changes
+  useEffect(() => {
+    const warningText =
+      "You have unsaved changes - are you sure you wish to leave this page?";
+    const handleWindowClose = (e) => {
+      if (!state.unsavedChanges) return;
+      e.preventDefault();
+      return (e.returnValue = warningText);
+    };
+    const handleBrowseAway = () => {
+      if (!state.unsavedChanges) return;
+      if (window.confirm(warningText)) return;
+      router.events.emit("routeChangeError");
+      throw "routeChange aborted.";
+    };
+    window.addEventListener("beforeunload", handleWindowClose);
+    router.events.on("routeChangeStart", handleBrowseAway);
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+      router.events.off("routeChangeStart", handleBrowseAway);
+    };
+  }, [state.unsavedChanges, router.events]);
+
   if (status === "loading") {
     return <></>;
   } else if (status == "authenticated" && authUser != "allowed") {
@@ -504,6 +543,24 @@ const TreeEditor = () => {
     );
   }
 
+  let lastUpdated = "Loading...";
+
+  if (state.navigationTree.getTree().editedOn) {
+    const d = new Date(state.navigationTree.getTree().editedOn);
+    lastUpdated =
+      d.getFullYear() +
+      "/" +
+      ("0" + (d.getMonth() + 1)).slice(-2) +
+      "/" +
+      ("0" + d.getDate()).slice(-2) +
+      " " +
+      ("0" + d.getHours()).slice(-2) +
+      ":" +
+      ("0" + d.getMinutes()).slice(-2) +
+      ":" +
+      ("0" + d.getSeconds()).slice(-2);
+  }
+
   return (
     <>
       {state.navigationTree != null &&
@@ -521,6 +578,9 @@ const TreeEditor = () => {
             zIndex={2}
             cursor="pointer"
           />
+          <Text right="10%" top="170px" position="absolute">
+            Last Saved: {lastUpdated}
+          </Text>
           <Box
             left="10%"
             right="10%"
@@ -563,6 +623,8 @@ const TreeEditor = () => {
                       const reactFlowState = state.reactFlowInstance.toObject();
                       state.navigationTree.updateReactFlowState(reactFlowState);
                     }
+
+                    dispatch({ type: "save" });
                     updateQuestionTree(
                       state.navigationTree.getTree(),
                       session.user?.name
