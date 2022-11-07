@@ -36,26 +36,35 @@ const ChatNavigator = (props) => {
           questionMap[question.id] = question;
         }
         console.log(questionMap);
+
         const distanceMap = {};
+        const finalDistanceMap = {};
         for (const question of questions) {
-          distanceMap[question.id] = 1000;
-        }
-        const queue = [];
-        distanceMap[questions[0].id] = 0;
-        queue.push(questions[0]);
-        while (queue.length != 0) {
-          const ejectQuestion = queue.shift();
-          for (const opt of ejectQuestion.options) {
-            if (opt.nextId) {
-              if (distanceMap[opt.nextId] == 1000) {
-                queue.push(questionMap[opt.nextId]);
-                distanceMap[opt.nextId] = distanceMap[ejectQuestion.id] + 1;
-              }
-            }
+          for (const tempQuestion of questions) {
+            distanceMap[tempQuestion.id] = 1000;
           }
-        }
+          const maxDist = 0;
+          const queue = [];
+          distanceMap[question.id] = 0;
+          queue.push(question);
+          while (queue.length != 0) {
+            const ejectQuestion = queue.shift();
+            for (const opt of ejectQuestion.options) {
+              if (opt.nextId) {
+                if (distanceMap[opt.nextId] == 1000) {
+                  queue.push(questionMap[opt.nextId]);
+                  distanceMap[opt.nextId] = distanceMap[ejectQuestion.id] + 1;
+                  if (distanceMap[opt.nextId] > maxDist) {
+                    maxDist = distanceMap[opt.nextId];
+                  };
+                };
+              };
+            };
+          };
+          finalDistanceMap[question.id] = maxDist;
+        };
         setAllQuestions(questionMap);
-        setAllDistances(distanceMap);
+        setAllDistances(finalDistanceMap);
         setInvalidId(false);
       } catch {
         setInvalidId(true);
@@ -69,7 +78,7 @@ const ChatNavigator = (props) => {
   const tempQuestionStack = [];
 
   const progressBars = [];
-  for (let i = 0; i < Object.values(allDistances)[Object.values(allDistances).length - 1] + 1; i++){
+  for (let i = 0; i < Object.values(allDistances)[0] + 1; i++){
     progressBars.push(i);
   }
 
@@ -173,8 +182,8 @@ const ChatNavigator = (props) => {
                   return (
                     <Flex 
                       key={index} 
-                      backgroundColor={(allDistances[currentQuestion.id] >= index) ? "#58794E" : "#343A40"} 
-                      opacity={allDistances[currentQuestion.id] >= index ? 1 : .25} 
+                      backgroundColor={( Object.values(allDistances)[0] - allDistances[currentQuestion.id] >= index) ? "#58794E" : "#343A40"} 
+                      opacity={Object.values(allDistances)[0] - allDistances[currentQuestion.id] >= index ? 1 : .25} 
                       width="25px" 
                       height="6px"
                     >
