@@ -39,10 +39,6 @@ export const getActiveQuestionTree = async () => {
   try {
     const tree = await Tree.findOne({ active: true });
 
-    if (tree == null) {
-      console.error("active tree from database is null");
-    }
-
     return {
       tree
     };
