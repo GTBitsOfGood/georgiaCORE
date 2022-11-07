@@ -2,13 +2,30 @@
 import React from "react";
 import styles from "./TreeThumbnailCard.module.css";
 import PropTypes from "prop-types";
-import { IconButton, Box, VStack, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
+import { IconButton, Box, VStack, Divider, Button, InputLeftElement, Input, InputGroup, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
 import { FaTrash, FaRegClone } from "react-icons/fa";
 import { CopyIcon } from "@chakra-ui/icons";
 import { useRouter } from 'next/router'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  useModalContext,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+} from '@chakra-ui/react'
 
 const TreeThumbnailCard = (props) => {
   let router = useRouter();
+
+  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
 
   const editedOnString = props.tree.editedOn ? 
     `${props.tree.editedOn.toLocaleTimeString()}, ${props.tree.editedOn.toLocaleDateString().replaceAll('/', '-')}` :
@@ -76,11 +93,50 @@ const TreeThumbnailCard = (props) => {
                 colorScheme='red'
                 aria-label='delete'
                 size='sm'
+                onClick={onOpenDelete}
                 icon={<FaTrash />}
               />
             </ButtonGroup>
           </Flex>
         </VStack>
+        <>
+          <Modal isOpen={isOpenDelete} onClose={onCloseDelete} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <Center><ModalHeader><Text fontSize='2xl' as='b'>Warning!</Text></ModalHeader></Center>
+              <ModalCloseButton />
+
+              <Divider />
+              <ModalBody>
+                {props.tree.active ? (
+                  <>The active tree cant be deleted. Please make the tree inactive before deleting.</>
+                ) : (
+                  <>Are you sure you want to <Text as='b'>delete</Text> this tree?</>
+                )}
+              </ModalBody>
+
+              <Divider />
+              
+              {!props.tree.active && (
+              <ModalFooter>
+                <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseDelete}>
+                  Close
+                </Button>
+                <Button onClick={(e) => {
+                  if (!props.tree.active) {
+                    props.handleDeleteClick(e);
+                  }
+                  }}
+                  colorScheme='georgia-core-green'
+                  variant='solid'
+                >
+                  Continue
+                </Button>
+              </ModalFooter>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
       </VStack>
     </Box>
   );

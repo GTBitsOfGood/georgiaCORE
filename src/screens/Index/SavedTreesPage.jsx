@@ -1,7 +1,7 @@
 import React, { useState, useRef, useReducer, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-import { getAllQuestionTrees, updateQuestionTree, addQuestionTree } from "src/actions/Tree";
+import { getAllQuestionTrees, updateQuestionTree, addQuestionTree, removeQuestionTreeById } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
 import { Text, Button, Divider, VStack, HStack, Box, Center, Heading, SimpleGrid, Flex, Wrap, WrapItem, InputLeftElement, Input, InputGroup, Spacer, extendTheme, ChakraProvider } from "@chakra-ui/react";
 import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCard";
@@ -95,6 +95,17 @@ const SavedTreesPage = () => {
     await initializeTrees();
   };
 
+  const handleDeleteClick = async (e, id) => {
+    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTree = trees[curTreeInd];
+    if (curTree.active) {
+      return;
+    }
+    
+    await removeQuestionTreeById(id);
+    await initializeTrees();
+  };
+
   if (status === "loading") {
     return <></>;
   } 
@@ -148,6 +159,7 @@ const SavedTreesPage = () => {
                       handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} 
                       tree={tree}
                       onClick={() => router.push('/about')}
+                      handleDeleteClick={e => handleDeleteClick(e, tree._id)}
                     />
                   </WrapItem>
                 )}
@@ -216,7 +228,13 @@ const SavedTreesPage = () => {
             <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
               <Wrap spacing='20px'>
                 {inactiveTrees.map(tree => 
-                  <WrapItem key={tree._id}><TreeThumbnailCard handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} tree={tree}/></WrapItem>
+                  <WrapItem key={tree._id}>
+                    <TreeThumbnailCard
+                      handeActiveSwitch={e => handeActiveSwitch(e, tree._id)}
+                      tree={tree}
+                      handleDeleteClick={e => handleDeleteClick(e, tree._id)}
+                    />
+                  </WrapItem>
                 )}
               </Wrap>
             </Box>

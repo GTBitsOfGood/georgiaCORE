@@ -94,6 +94,14 @@ export const removeQuestionTreeById = async (id) => {
   await mongoDB();
 
   try {
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && id == activeTree._id) {
+      // don't allow active tree to be deleted
+      return {
+        success: false,
+      }
+    }
+
     await Tree.deleteOne({ _id: id });
 
     return {

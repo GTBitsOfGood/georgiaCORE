@@ -6,7 +6,7 @@ import { removeQuestionTreeById } from "server/mongodb/actions/Tree";
 // @access  Public
 const handler = async (req, res) => {
   try {
-    await removeQuestionTreeById(req.body);
+    await removeQuestionTreeById(req.body.id);
 
     await req.session.save();
     return res.status(200).json({
