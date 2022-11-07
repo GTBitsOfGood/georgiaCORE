@@ -74,8 +74,7 @@ const SavedTreesPage = () => {
   const activeTrees = trees.filter(tree => tree.active);
   const inactiveTrees = trees.filter(tree => !tree.active);
 
-  const handeActiveSwitch = async (e, id) => {
-    const newActive = e.target.checked;
+  const handeActiveSwitch = async (newActive, id) => {
     if (newActive) {
       // set cur active to inactive
       if (activeTrees.length > 0) {

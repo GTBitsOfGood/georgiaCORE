@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import styles from "./TreeThumbnailCard.module.css";
 import PropTypes from "prop-types";
 import { IconButton, Box, VStack, Divider, Button, InputLeftElement, Input, InputGroup, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
@@ -26,6 +26,9 @@ const TreeThumbnailCard = (props) => {
   let router = useRouter();
 
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+  const { isOpen: isOpenActive, onOpen: onOpenActive, onClose: onCloseActive } = useDisclosure();
+
+  const [ futureActive, setFutureActive ] = useState(props.tree.active);
 
   const editedOnString = props.tree.editedOn ? 
     `${props.tree.editedOn.toLocaleTimeString()}, ${props.tree.editedOn.toLocaleDateString().replaceAll('/', '-')}` :
@@ -71,9 +74,57 @@ const TreeThumbnailCard = (props) => {
               <Text>
                 Active
               </Text>
-              <Switch onChange={(e) => props.handeActiveSwitch(e)} isChecked={props.tree.active} id='active-button' colorScheme='georgia-core-green' />
+              <Switch
+                onChange={(e) => {
+                  setFutureActive(e.target.checked);
+                  onOpenActive();
+                }}
+                isChecked={props.tree.active}
+                id='active-button'
+                colorScheme='georgia-core-green'
+              />
             </HStack>
           </Flex>
+          <>
+          <Modal isOpen={isOpenActive} onClose={onCloseActive} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <Center><ModalHeader><Text fontSize='2xl' as='b'>Warning!</Text></ModalHeader></Center>
+              <ModalCloseButton />
+
+              <Divider />
+              <ModalBody>
+                {futureActive ? (
+                  <>This tree will replace the one that is currently active. Are you sure you want to continue?</>
+                ) : (
+                  <>This tree will be deactivated, causing there to be no active tree. Are you sure you want to continue?</>
+                )}
+              </ModalBody>
+
+              <Divider />
+              
+              <ModalFooter>
+                <Button
+                  colorScheme='georgia-core-green'
+                  variant='ghost' mr={3}
+                  onClick={(e) => {
+                    setFutureActive(props.tree.active);
+                    onCloseActive();
+                  }}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={(e) => props.handeActiveSwitch(futureActive)}
+                  colorScheme='georgia-core-green'
+                  variant='solid'
+                >
+                  Continue
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </>
           {/* Details */}
           <Text w='100%' lineHeight={'100%'} justifyContent='left'>
             Edited on: {editedOnString}<br />
