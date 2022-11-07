@@ -8,22 +8,25 @@ const TreeSchema = new Schema({
   active: Boolean,
   title: String,
   thumbnailImage: Buffer,
-  questions: [{
-    id: String,
-    isRoot: { type: Boolean, default: false },
-    question: String,
-    type: { type: String, enum: QUESTION_TYPES },
-    heading: String,
-    bodyText: String,
-    url: { type: String, default: null },
-    options: [
-      {
-        id: String,
-        option: String,
-        nextId: String,
-      },
-    ],
-  }],
+  questions: [
+    {
+      id: String,
+      isRoot: { type: Boolean, default: false },
+      question: String,
+      type: { type: String, enum: QUESTION_TYPES },
+      heading: String,
+      bodyText: String,
+      url: { type: String, default: null },
+      options: [
+        {
+          id: String,
+          option: String,
+          nextId: String,
+        },
+      ],
+    },
+  ],
+  reactFlowState: Object,
   // Metadata
   editedOn: Date, // updated internally by mongodb/actions
   // (will be updated when tree goes active => inactive, so will be wrong for the active tree)

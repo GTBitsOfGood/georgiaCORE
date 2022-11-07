@@ -7,6 +7,7 @@ export default class NavigationTree {
     active: Boolean,
     title: String,
     thumbnailImage: Buffer,
+    reactFlowState: Object,
     questions: [{
       id: String,
       question: String,
@@ -140,6 +141,14 @@ export default class NavigationTree {
     return this.createQuestion("Untitled Question", "question", [
       { option: "Option 1", nextId: null },
     ]);
+  }
+
+  updateReactFlowState(reactFlowState) {
+    this.tree.reactFlowState = reactFlowState;
+  }
+
+  getReactFlowState() {
+    return this.tree.reactFlowState;
   }
 
   printTree() {

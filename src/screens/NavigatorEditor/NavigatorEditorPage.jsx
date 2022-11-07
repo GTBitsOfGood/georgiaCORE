@@ -314,11 +314,23 @@ const reducer = (state, action) => {
       return state;
     }
     case "set_state": {
-      console.log(state.navigationTree.getQuestions());
+      const flow = state.navigationTree.getReactFlowState();
+      if (flow) {
+        return {
+          ...state,
+          nodes: flow.nodes || [],
+          edges: flow.edges || [],
+          editModalOpen: false,
+        };
+      }
+
       const [nodes, edges] = generateInitialNodes(
         state.navigationTree.getQuestions()
       );
       return { ...state, nodes, edges, editModalOpen: false };
+    }
+    case "set_react_flow_instance": {
+      return { ...state, reactFlowInstance: action.reactFlowInstance };
     }
     default:
       throw Error("Unknown action: " + action.type);
@@ -343,7 +355,13 @@ const TreeEditor = () => {
   const [state, dispatch] = useReducer(reducer, {}, () => {
     const navigationTree = new NavigationTree({ questions: [] });
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
-    return { nodes, edges, navigationTree, editModalOpen: false };
+    return {
+      nodes,
+      edges,
+      navigationTree,
+      editModalOpen: false,
+      reactFlowInstance: null,
+    };
   });
 
   // Copy and paste nodes
@@ -387,7 +405,7 @@ const TreeEditor = () => {
       }
     }
     initializeQuestions();
-  }, [state.navigationTree, router.isReady, treeID]);
+  }, [state.navigationTree, router.isReady, treeID, query.id]);
 
   useOnSelectionChange({
     onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
@@ -483,6 +501,9 @@ const TreeEditor = () => {
               nodeTypes={nodeTypes}
               nodes={state.nodes}
               edges={state.edges}
+              onInit={(reactFlowInstance) =>
+                dispatch({ type: "set_react_flow_instance", reactFlowInstance })
+              }
               onNodesChange={(changes) =>
                 dispatch({ type: "node_change", changes })
               }
@@ -542,12 +563,17 @@ const TreeEditor = () => {
                     margin: "10px",
                   }}
                   size="lg"
-                  onClick={() =>
+                  onClick={() => {
+                    // Save the state of the ReactFlow nodes
+                    if (state.reactFlowInstance) {
+                      const reactFlowState = state.reactFlowInstance.toObject();
+                      state.navigationTree.updateReactFlowState(reactFlowState);
+                    }
                     updateQuestionTree(
                       state.navigationTree.getTree(),
                       session.user?.name
-                    )
-                  }
+                    );
+                  }}
                 >
                   Save
                 </Button>
