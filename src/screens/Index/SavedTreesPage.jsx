@@ -281,7 +281,7 @@ const SavedTreesPage = () => {
                   setSortByDateCreated(sortByDateCreated == 0 ? 1 : -sortByDateCreated);
                   setSortByLastActive(0);
                   setSortByAuthor(0);
-                }} colorScheme='black' variant='link' textDecoration='underline' >Date Created</Button>
+                }} colorScheme='black' variant='link' textDecoration='underline' >Date Edited</Button>
                 <Button onClick={e => {
                   setSortByName(0);
                   setSortByDateCreated(0);
