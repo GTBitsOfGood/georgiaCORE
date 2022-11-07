@@ -116,9 +116,10 @@ export const updateQuestionTree = async (tree, username) => {
   await mongoDB();
 
   try {
+    const curTree = (await getQuestionTreeById(tree._id)).tree;
 
     const activeTree = (await getActiveQuestionTree()).tree;
-    if (activeTree != null && tree.active) {
+    if (activeTree != null && tree.active && !activeTree._id.equals(curTree._id)) {
       // don't allow multiple trees to be active, user should set first to inactive before
       // setting new one to active.
       return {
@@ -126,7 +127,6 @@ export const updateQuestionTree = async (tree, username) => {
       }
     }
 
-    const curTree = (await getQuestionTreeById(tree._id)).tree;
     const changingToInactive = !tree.active && curTree.active;
     // add metadata to tree
     await addMetadataModifications(tree, username, changingToInactive);

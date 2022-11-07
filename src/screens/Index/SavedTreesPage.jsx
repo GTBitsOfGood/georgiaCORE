@@ -6,7 +6,7 @@ import NavigationTree from "src/navigation/NavigationTree";
 import { Text, Button, Divider, VStack, HStack, Box, Center, Heading, SimpleGrid, Flex, Wrap, WrapItem, InputLeftElement, Input, InputGroup, Spacer, extendTheme, ChakraProvider } from "@chakra-ui/react";
 import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCard";
 import { FaSearch, FaPlus } from "react-icons/fa";
-import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { AddIcon, SearchIcon, EditIcon } from "@chakra-ui/icons";
 import { testTree } from "../NavigatorEditor/testQuestions";
 import ErrorPage from "src/components/ErrorPage";
 import {
@@ -122,6 +122,20 @@ const SavedTreesPage = () => {
     await initializeTrees();
   };
 
+  const handleTitleEdit = async (title, id) => {
+    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTree = trees[curTreeInd];
+
+    const newTree = {
+      ...curTree,
+      title,
+    };
+    console.log(newTree)
+
+    await updateQuestionTree(newTree, session.user?.name);
+    await initializeTrees();
+  };
+
   if (status === "loading") {
     return <></>;
   } 
@@ -177,6 +191,7 @@ const SavedTreesPage = () => {
                       onClick={() => router.push('/about')}
                       handleDeleteClick={e => handleDeleteClick(e, tree._id)}
                       handleCloneClick={e => handleCloneClick(e, tree._id)}
+                      handleTitleEdit={title => handleTitleEdit(title, tree._id)}
                     />
                   </WrapItem>
                 )}
@@ -251,6 +266,7 @@ const SavedTreesPage = () => {
                       tree={tree}
                       handleDeleteClick={e => handleDeleteClick(e, tree._id)}
                       handleCloneClick={e => handleCloneClick(e, tree._id)}
+                      handleTitleEdit={title => handleTitleEdit(title, tree._id)}
                     />
                   </WrapItem>
                 )}
