@@ -32,23 +32,23 @@ const SavedTreesPage = () => {
 
   const { data: session, status } = useSession();
 
+  async function initializeTrees() {
+    var initTrees = await getAllQuestionTrees();
+    if (initTrees.length == 0) {
+      // temporary initial tree for debugging
+      if (session && session.user && session.user.name) {
+        await addQuestionTree(testTree, session.user?.name);
+      }
+      else {
+        await addQuestionTree(testTree, "Anonymous");
+      }
+
+      initTrees = await getAllQuestionTrees();
+    }
+    setTrees(initTrees);
+  }
 
   useEffect(() => {
-    async function initializeTrees() {
-      var initTrees = await getAllQuestionTrees();
-      if (initTrees.length == 0) {
-        // temporary initial tree for debugging
-        if (session && session.user && session.user.name) {
-          await addQuestionTree(testTree, session.user?.name);
-        }
-        else {
-          await addQuestionTree(testTree, "Anonymous");
-        }
-
-        initTrees = await getAllQuestionTrees();
-      }
-      setTrees(initTrees);
-    }
     initializeTrees();
   }, []);
 
@@ -57,7 +57,6 @@ const SavedTreesPage = () => {
 
   const handeActiveSwitch = (e, id) => {
     const newActive = e.target.checked;
-  
     if (newActive) {
       // set cur active to inactive
       if (activeTrees.length > 0) {
@@ -73,7 +72,7 @@ const SavedTreesPage = () => {
     const newCurTree = {...trees[curTreeInd]};
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
-    updateQuestionTree(newCurTree, session.user?.name);
+    updateQuestionTree(newCurTree, session.user?.name).then(initializeTrees);
     setTrees([...trees]);
   };
 

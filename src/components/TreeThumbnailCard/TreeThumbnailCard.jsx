@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 
 const TreeThumbnailCard = (props) => {
   let router = useRouter();
+  console.log(props)
 
   const editedOnString = props.tree.editedOn ? 
     `${props.tree.editedOn.toLocaleTimeString()}, ${props.tree.editedOn.toLocaleDateString().replaceAll('/', '-')}` :
