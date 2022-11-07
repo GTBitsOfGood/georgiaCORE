@@ -16,11 +16,12 @@ import { Text, Flex, Stack } from "@chakra-ui/react";
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [allQuestions, setAllQuestions] = useState({});
-  const [visibleOptionsStart, setVisibleOptionsStart] = useState(0)
-  const [visibleOptionsEnd, setVisibleOptionsEnd] = useState(5)
+  const [questionStack, setQuestionStack] = useState([]);
+  const [visibleOptionsStart, setVisibleOptionsStart] = useState(0);
+  const [visibleOptionsEnd, setVisibleOptionsEnd] = useState(5);
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
-
+  const [allDistances, setAllDistances] = useState({});
   
   const router = useRouter()
   const { query } = router;
@@ -35,7 +36,26 @@ const ChatNavigator = (props) => {
           questionMap[question.id] = question;
         }
         console.log(questionMap);
+        const distanceMap = {};
+        for (const question of questions) {
+          distanceMap[question.id] = 1000;
+        }
+        const queue = [];
+        distanceMap[questions[0].id] = 0;
+        queue.push(questions[0]);
+        while (queue.length != 0) {
+          const ejectQuestion = queue.shift();
+          for (const opt of ejectQuestion.options) {
+            if (opt.nextId) {
+              if (distanceMap[opt.nextId] == 1000) {
+                queue.push(questionMap[opt.nextId]);
+                distanceMap[opt.nextId] = distanceMap[ejectQuestion.id] + 1;
+              }
+            }
+          }
+        }
         setAllQuestions(questionMap);
+        setAllDistances(distanceMap);
         setInvalidId(false);
       } catch {
         setInvalidId(true);
@@ -46,10 +66,11 @@ const ChatNavigator = (props) => {
   }, [router.isReady]);
 
   const numQs = Object.keys(allQuestions).length;
+  const tempQuestionStack = [];
 
-  const progressBars = []
-  for (let i = 0; i < numQs; i++){
-    progressBars.push(i)
+  const progressBars = [];
+  for (let i = 0; i < Object.values(allDistances)[Object.values(allDistances).length - 1] + 1; i++){
+    progressBars.push(i);
   }
 
   if (status === "loading") {
@@ -101,7 +122,7 @@ const ChatNavigator = (props) => {
                 borderRadius={2}
                 height={26}
                 width={26}
-                onClick={() => {setCurrentQuestionIndex(1); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
+                onClick={() => {setCurrentQuestionIndex(1); setQuestionStack([]); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
                 cursor="pointer"
               >
                 <MdHome size={15} color="white"/>
@@ -113,7 +134,14 @@ const ChatNavigator = (props) => {
                 borderRadius={2}
                 height={26}
                 width={26}
-                onClick={() => {currentQuestionIndex > 1 ? setCurrentQuestionIndex(currentQuestionIndex - 1): setCurrentQuestionIndex(1); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
+                onClick={() => {
+                  tempQuestionStack = questionStack;
+                  setCurrentQuestionIndex(tempQuestionStack.pop());
+                  setQuestionStack(tempQuestionStack); 
+                  setQuestionStack(questionStack); 
+                  setVisibleOptionsStart(0); 
+                  setVisibleOptionsEnd(5);
+                }}
                 cursor="pointer"
               >
                 <IoChevronBackOutline size={15} color="white"/>
@@ -128,7 +156,15 @@ const ChatNavigator = (props) => {
                 fontWeight= {600}
                 fontFamily="sans-serif"
               >
-                {currentQuestion.question}
+                {currentQuestion.type == "question" && (
+                    currentQuestion.question
+                )}
+                {currentQuestion.type == "url" && (
+                  "We have found a resource for you!"
+                )}
+                {currentQuestion.type == "error" && (
+                  "Unfortunately, we cannot find a resource for you!"
+                )}
               </Text>
             </Flex>
             <Flex width="33%" justifyContent="flex-end" paddingRight={20}>
@@ -137,8 +173,8 @@ const ChatNavigator = (props) => {
                   return (
                     <Flex 
                       key={index} 
-                      backgroundColor={currentQuestionIndex - 1 >= index ? "#58794E" : "#343A40"} 
-                      opacity={currentQuestionIndex - 1 >= index ? 1 : .25} 
+                      backgroundColor={(allDistances[currentQuestion.id] >= index) ? "#58794E" : "#343A40"} 
+                      opacity={allDistances[currentQuestion.id] >= index ? 1 : .25} 
                       width="25px" 
                       height="6px"
                     >
@@ -161,12 +197,14 @@ const ChatNavigator = (props) => {
               </Flex>
             ) : (
               <Flex>
-                <BsChevronLeft color="white" size={50}/>
+                <BsChevronLeft color="#F8F9FA" size={50}/>
               </Flex>
             )}
             <Flex>
               <QuestionTemplate
                 question={currentQuestion.question}
+                url={currentQuestion.url}
+                type={currentQuestion.type}
                 questionStart={visibleOptionsStart}
                 questionEnd={visibleOptionsEnd}
                 options={currentQuestion.options.map((option) => {
@@ -174,10 +212,14 @@ const ChatNavigator = (props) => {
                     answer: option.option,
                     triggerNext: () => {
                       if (option.nextId) {
+                        
                         setCurrentQuestionIndex(option.nextId);
                         setVisibleOptionsStart(0);
                         setVisibleOptionsEnd(5);
                       }
+                      tempQuestionStack = questionStack;
+                      tempQuestionStack.push(currentQuestion.id);
+                      setQuestionStack(tempQuestionStack);
                     },
                   };
                 })}
@@ -196,7 +238,7 @@ const ChatNavigator = (props) => {
               </Flex>
             ) : (
               <Flex>
-                <BsChevronRight color="white" size={50}/>
+                <BsChevronRight color="#F8F9FA" size={50}/>
               </Flex>
             )}
           </Stack>
