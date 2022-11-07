@@ -126,6 +126,8 @@ const SavedTreesPage = () => {
 
     await addQuestionTree(basicTree, session.user?.name);
     await initializeTrees();
+    onCloseCreate();
+    setTitle('');
   };
 
   return (

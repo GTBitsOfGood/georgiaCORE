@@ -144,7 +144,7 @@ export default class NavigationTree {
   }
 
   static createInitialQuestion() {
-    return this.createQuestion("Do you want to continue?", "question", [
+    const question = this.createQuestion("Do you want to continue?", "question", [
       {
         option: "Yes",
         nextId: null,
@@ -154,6 +154,8 @@ export default class NavigationTree {
         nextId: null,
       },
     ]);
+    question.isRoot = true;
+    return question;
   }
 
   printTree() {
