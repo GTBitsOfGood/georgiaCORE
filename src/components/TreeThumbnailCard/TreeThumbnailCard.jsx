@@ -27,6 +27,7 @@ const TreeThumbnailCard = (props) => {
 
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
   const { isOpen: isOpenActive, onOpen: onOpenActive, onClose: onCloseActive } = useDisclosure();
+  const { isOpen: isOpenClone, onOpen: onOpenClone, onClose: onCloseClone } = useDisclosure();
 
   const [ futureActive, setFutureActive ] = useState(props.tree.active);
 
@@ -97,7 +98,7 @@ const TreeThumbnailCard = (props) => {
                 {futureActive ? (
                   <>This tree will replace the one that is currently active. Are you sure you want to continue?</>
                 ) : (
-                  <>This tree will be deactivated, causing there to be no active tree. Are you sure you want to continue?</>
+                  <>This tree will be deactivated, causing there to be no active tree. It is recommended to set an inactive tree to active first. Are you sure you want to continue?</>
                 )}
               </ModalBody>
 
@@ -138,6 +139,7 @@ const TreeThumbnailCard = (props) => {
                 colorScheme='blue'
                 aria-label='copy'
                 size='sm'
+                onClick={onOpenClone}
                 icon={<CopyIcon />}
               />
               <IconButton
@@ -151,10 +153,41 @@ const TreeThumbnailCard = (props) => {
           </Flex>
         </VStack>
         <>
+          <Modal isOpen={isOpenClone} onClose={onCloseClone} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader><Center><Text fontSize='2xl' as='b'>Create a Copy</Text></Center></ModalHeader>
+              <ModalCloseButton />
+
+              <Divider />
+              <ModalBody>
+                Do you want to create a copy of this tree?
+              </ModalBody>
+
+              <Divider />
+              
+              <ModalFooter>
+                <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseClone}>
+                  Close
+                </Button>
+                <Button onClick={(e) => {
+                  onCloseClone();
+                  props.handleCloneClick(e);
+                }}
+                  colorScheme='georgia-core-green'
+                  variant='solid'
+                >
+                  Continue
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </>
+        <>
           <Modal isOpen={isOpenDelete} onClose={onCloseDelete} isCentered>
             <ModalOverlay />
             <ModalContent>
-              <Center><ModalHeader><Text fontSize='2xl' as='b'>Warning!</Text></ModalHeader></Center>
+              <ModalHeader><Center><Text fontSize='2xl' as='b'>Warning!</Text></Center></ModalHeader>
               <ModalCloseButton />
 
               <Divider />

@@ -116,7 +116,22 @@ export default class NavigationTree {
     return question;
   }
 
-  static copyQuestion(question) {
+  static copyQuestionSameEverything(question) {
+    const newQuestion = {
+      ...question,
+    };
+
+    delete newQuestion._id;
+
+    newQuestion.options = question.options.map((o) => {
+      const newO = {...o};
+      delete newO._id;
+      return newO;
+    });
+    return newQuestion;
+  }
+
+  static copyQuestionNotRootNewUids(question) {
     const id = uuidv4();
 
     const newQuestion = {
@@ -126,13 +141,11 @@ export default class NavigationTree {
     };
 
     delete newQuestion._id;
-    delete newQuestion.__v;
 
-    newQuestion.options = newQuestion.options.map((o) => {
-      return {
-        ...o,
-        id: uuidv4(),
-      };
+    newQuestion.options = question.options.map((o) => {
+      const newO = {...o, id: uuidv4()};
+      delete newO._id;
+      return newO;
     });
     return newQuestion;
   }

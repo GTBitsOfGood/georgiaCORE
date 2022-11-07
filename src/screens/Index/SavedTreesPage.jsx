@@ -105,6 +105,23 @@ const SavedTreesPage = () => {
     await initializeTrees();
   };
 
+  const handleCloneClick = async (e, id) => {
+    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTree = trees[curTreeInd];
+
+    const newTree = {
+      ...curTree,
+      questions: curTree.questions.map(q => NavigationTree.copyQuestionSameEverything(q))
+    };
+    newTree.title += ' Copy';
+    newTree.active = false;
+    delete newTree._id;
+    delete newTree.__v;
+
+    await addQuestionTree(newTree, session.user?.name);
+    await initializeTrees();
+  };
+
   if (status === "loading") {
     return <></>;
   } 
@@ -159,6 +176,7 @@ const SavedTreesPage = () => {
                       tree={tree}
                       onClick={() => router.push('/about')}
                       handleDeleteClick={e => handleDeleteClick(e, tree._id)}
+                      handleCloneClick={e => handleCloneClick(e, tree._id)}
                     />
                   </WrapItem>
                 )}
@@ -232,6 +250,7 @@ const SavedTreesPage = () => {
                       handeActiveSwitch={e => handeActiveSwitch(e, tree._id)}
                       tree={tree}
                       handleDeleteClick={e => handleDeleteClick(e, tree._id)}
+                      handleCloneClick={e => handleCloneClick(e, tree._id)}
                     />
                   </WrapItem>
                 )}
