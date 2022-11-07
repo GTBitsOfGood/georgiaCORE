@@ -92,7 +92,6 @@ const SavedTreesPage = () => {
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
     updateQuestionTree(newCurTree, session.user?.name).then(initializeTrees);
-    setTrees([...trees]);
   };
 
   if (status === "loading") {
