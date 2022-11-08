@@ -1,8 +1,7 @@
 .react-flow__node-root {
     font-size: 13px;
-    background: #eee;
-    border-radius: 5px;
-    text-align: center;
+    border-radius: 10px; 
+    /* text-align: center; */
   }
 
 /* Needs to be imported in _app because it needs to be a global CSS to overwrite the default react flow CSS. */
