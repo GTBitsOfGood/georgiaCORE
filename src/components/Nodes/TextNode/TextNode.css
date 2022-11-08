@@ -1,11 +1,11 @@
-.react-flow__node-text {
-    background: #eee;
-    border: 1px solid #555;
-    border-radius: 5px;
+ .react-flow__node-text {
+    font-size: 13px;
+    border-radius: 10px; 
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/*
 .react-flow__node-text h1 {
   font-size: 13px;
   text-align: center;
@@ -15,6 +15,6 @@
   font-size: 9px;
   text-align: left;
   margin: 2%;
-}
+} */
 
 /* Needs to be imported in _app because it needs to be a global CSS to overwrite the default react flow CSS. */

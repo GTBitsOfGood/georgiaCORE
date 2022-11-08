@@ -2,14 +2,14 @@ import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { Handle, Position } from "reactflow";
 
-export default memo(TextNode);
+export default memo(URLNode);
 
-function TextNode({ data, isConnectable, selected }) {
+function URLNode({ data, isConnectable, selected }) {
   return (
     <div
       style={{
         border: selected ? "2px solid #FF8A00" : "",
-        background: "#abb0bf",
+        background: "#AEAEAE",
         minHeight: "100%",
         borderRadius: "10px",
       }}
@@ -24,14 +24,14 @@ function TextNode({ data, isConnectable, selected }) {
         style={{
           padding: 4,
           fontSize: 13,
-          backgroundColor: "#dedee5",
+          backgroundColor: "#D8D2D0",
           borderRadius: "10px 10px 0px 0px",
           textOverflow: "ellipsis",
           overflow: "hidden",
           whiteSpace: "nowrap",
         }}
       >
-        {data.heading}
+        URL Node
       </h1>
 
       <p
@@ -43,14 +43,14 @@ function TextNode({ data, isConnectable, selected }) {
           whiteSpace: "nowrap",
         }}
       >
-        {data.bodyText}
+        {data.label}
       </p>
     </div>
   );
 }
 
-TextNode.propTypes = {
+URLNode.propTypes = {
   data: PropTypes.object,
-  isConnectable: PropTypes.bool,
   selected: PropTypes.bool,
+  isConnectable: PropTypes.bool,
 };

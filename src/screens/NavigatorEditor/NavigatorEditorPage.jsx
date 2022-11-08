@@ -14,20 +14,28 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 
-import { Button, useDisclosure } from "@chakra-ui/react";
+import { Button, useDisclosure, Box, HStack, Text } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAuthUsers } from "src/actions/AuthUser";
-import { getActiveQuestionTree, getQuestionTreeById, updateQuestionTree } from "src/actions/Tree";
+import {
+  getActiveQuestionTree,
+  getQuestionTreeById,
+  updateQuestionTree,
+} from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
 import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
+import QuestionNode from "src/components/Nodes/QuestionNode";
+import ErrorNode from "src/components/Nodes/ErrorNode";
 import TextNode from "src/components/Nodes/TextNode";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
+import URLNode from "src/components/Nodes/URLNode";
+import { LockIcon, QuestionIcon } from "@chakra-ui/icons";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -48,7 +56,6 @@ const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   return [newNodes, newEdges];
 };
 
-
 const deleteNode = (nodes, edges, nodeId) => {
   const newNodes = nodes.filter((node) => node.id !== nodeId);
 
@@ -57,6 +64,11 @@ const deleteNode = (nodes, edges, nodeId) => {
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case "save":
+      return {
+        ...state,
+        unsavedChanges: false,
+      };
     case "open_edit_modal":
       return {
         ...state,
@@ -86,6 +98,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: [...state.nodes, ...newNodes],
         edges: [...state.edges, ...newEdges],
       };
@@ -126,6 +139,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: newNodes,
         edges: newEdges,
       };
@@ -149,6 +163,7 @@ const reducer = (state, action) => {
 
       return {
         ...state,
+        unsavedChanges: true,
         nodes: deletedNodes,
         edges: deletedEdges,
       };
@@ -177,13 +192,21 @@ const reducer = (state, action) => {
         state.navigationTree.updateQuestion(newQuestion);
       });
 
-      return state;
+      return { ...state, unsavedChanges: true };
     case "close_edit_modal":
       return { ...state, editModalOpen: false };
     case "node_change":
-      return { ...state, nodes: applyNodeChanges(action.changes, state.nodes) };
+      return {
+        ...state,
+        nodes: applyNodeChanges(action.changes, state.nodes),
+        unsavedChanges: true,
+      };
     case "edge_change":
-      return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
+      return {
+        ...state,
+        edges: applyEdgeChanges(action.changes, state.edges),
+        unsavedChanges: true,
+      };
     case "connect": {
       // Assert that the connection is valid
       // 1. The edge does not already exist
@@ -252,7 +275,11 @@ const reducer = (state, action) => {
       };
 
       state.navigationTree.updateQuestion(newQuestion);
-      return { ...state, edges: addEdge(action.connection, state.edges) };
+      return {
+        ...state,
+        edges: addEdge(action.connection, state.edges),
+        unsavedChanges: true,
+      };
     }
     case "connect_stop": {
       const event = action.event;
@@ -306,16 +333,38 @@ const reducer = (state, action) => {
           ...state,
           nodes: state.nodes.concat(newNodes),
           edges: state.edges.concat(newEdges),
+          unsavedChanges: true,
         };
       }
       return state;
     }
     case "set_state": {
+      const flow = state.navigationTree.getReactFlowState();
+      if (flow) {
+        return {
+          ...state,
+          nodes: flow.nodes || [],
+          edges: flow.edges || [],
+          editModalOpen: false,
+        };
+      }
+
       const [nodes, edges] = generateInitialNodes(
         state.navigationTree.getQuestions()
       );
       return { ...state, nodes, edges, editModalOpen: false };
     }
+    case "set_react_flow_instance": {
+      return { ...state, reactFlowInstance: action.reactFlowInstance };
+    }
+    case "format": {
+      const [nodes, edges] = generateInitialNodes(
+        state.navigationTree.getQuestions()
+      );
+      return { ...state, nodes, edges, unsavedChanges: true };
+    }
+    case "toggle_lock":
+      return { ...state, locked: !state.locked };
     default:
       throw Error("Unknown action: " + action.type);
   }
@@ -326,11 +375,10 @@ const TreeEditor = () => {
   const connectingNode = useRef(null);
   const copiedNode = useRef(null);
 
-  const router = useRouter()
+  const router = useRouter();
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
   const [treeID, setTreeID] = React.useState(undefined);
-
 
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
@@ -338,9 +386,17 @@ const TreeEditor = () => {
   const { project } = useReactFlow();
 
   const [state, dispatch] = useReducer(reducer, {}, () => {
-    const navigationTree = new NavigationTree({questions: []});
+    const navigationTree = new NavigationTree({ questions: [] });
     const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
-    return { nodes, edges, navigationTree, editModalOpen: false };
+    return {
+      nodes,
+      edges,
+      navigationTree,
+      editModalOpen: false,
+      reactFlowInstance: null,
+      locked: false,
+      unsavedChanges: false,
+    };
   });
 
   // Copy and paste nodes
@@ -373,25 +429,24 @@ const TreeEditor = () => {
         tree = await getQuestionTreeById(treeID);
 
         if (tree) {
-          state.navigationTree.setTree(tree ?? {questions: []});
+          state.navigationTree.setTree(tree ?? { questions: [] });
           // force reducer to recognize changed navigationTree
           dispatch({ type: "set_state" });
         } else {
           setInvalidId(true);
-        } 
+        }
       } else {
         setInvalidId(true);
       }
-      
     }
     initializeQuestions();
-  }, [state.navigationTree, router.isReady, treeID]);
+  }, [state.navigationTree, router.isReady, treeID, query.id]);
 
   useOnSelectionChange({
     onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function setAllAuthUserEmails() {
       const newAuthUsers = [];
       const newAuthUsersData = await getAuthUsers();
@@ -415,7 +470,14 @@ const TreeEditor = () => {
   }, [session]);
 
   const nodeTypes = useMemo(
-    () => ({ root: RootNode, text: TextNode, option: OptionNode }),
+    () => ({
+      root: RootNode,
+      text: TextNode,
+      option: OptionNode,
+      question: QuestionNode,
+      error: ErrorNode,
+      url: URLNode,
+    }),
     []
   );
 
@@ -424,6 +486,37 @@ const TreeEditor = () => {
     onOpen: openInstructions,
     onClose: onInstructionsClose,
   } = useDisclosure();
+
+  // Open instructions modal on first visit of the page
+  useEffect(() => {
+    if (!localStorage.getItem("visited")) {
+      localStorage.setItem("visited", "true");
+      openInstructions();
+    }
+  }, [openInstructions]);
+
+  // prompt the user if they try and leave with unsaved changes
+  useEffect(() => {
+    const warningText =
+      "You have unsaved changes - are you sure you wish to leave this page?";
+    const handleWindowClose = (e) => {
+      if (!state.unsavedChanges) return;
+      e.preventDefault();
+      return (e.returnValue = warningText);
+    };
+    const handleBrowseAway = () => {
+      if (!state.unsavedChanges) return;
+      if (window.confirm(warningText)) return;
+      router.events.emit("routeChangeError");
+      throw "routeChange aborted.";
+    };
+    window.addEventListener("beforeunload", handleWindowClose);
+    router.events.on("routeChangeStart", handleBrowseAway);
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+      router.events.off("routeChangeStart", handleBrowseAway);
+    };
+  }, [state.unsavedChanges, router.events]);
 
   if (status === "loading") {
     return <></>;
@@ -449,97 +542,183 @@ const TreeEditor = () => {
       </>
     );
   }
-  
+
+  let lastUpdated = "Loading...";
+
+  if (state.navigationTree.getTree().editedOn) {
+    const d = new Date(state.navigationTree.getTree().editedOn);
+    lastUpdated =
+      d.getFullYear() +
+      "/" +
+      ("0" + (d.getMonth() + 1)).slice(-2) +
+      "/" +
+      ("0" + d.getDate()).slice(-2) +
+      " " +
+      ("0" + d.getHours()).slice(-2) +
+      ":" +
+      ("0" + d.getMinutes()).slice(-2) +
+      ":" +
+      ("0" + d.getSeconds()).slice(-2);
+  }
 
   return (
     <>
-      {state.navigationTree != null && state.navigationTree.getQuestions() != null ? (
+      {state.navigationTree != null &&
+      state.navigationTree.getQuestions() != null ? (
         <>
-        <InstructionsModal
-          isOpen={isInstructionsOpen}
-          onClose={onInstructionsClose}
-        />
-        <div
-          className="wrapper"
-          ref={reactFlowWrapper}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <EditQuestionModal
-            isOpen={state.editModalOpen}
-            dispatch={dispatch}
-            question={state.navigationTree.getQuestion(state.editModalNodeId)}
+          <QuestionIcon
+            onClick={openInstructions}
+            position="absolute"
+            bottom={10}
+            right={10}
+            color="#59784D"
+            variant="ghost"
+            w={10}
+            h={10}
+            zIndex={2}
+            cursor="pointer"
           />
-          <ReactFlow
-            nodeTypes={nodeTypes}
-            nodes={state.nodes}
-            edges={state.edges}
-            onNodesChange={(changes) =>
-              dispatch({ type: "node_change", changes })
-            }
-            onEdgesChange={(changes) =>
-              dispatch({ type: "edge_change", changes })
-            }
-            onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
-            onNodesDelete={(nodes) =>
-              dispatch({ type: "delete_question", nodes })
-            }
-            onConnect={(connection) => dispatch({ type: "connect", connection })}
-            onConnectStart={(_, { nodeId, handleType }) => {
-              connectingNode.current = { nodeId, handleType };
-            }}
-            onConnectEnd={(event) =>
-              dispatch({
-                type: "connect_stop",
-                event,
-                project,
-                reactFlowWrapper,
-                connectingNode,
-              })
-            }
-            onNodeDoubleClick={(event, node) => {
-              dispatch({
-                type: "open_edit_modal",
-                questionId: node.id,
-              });
-            }}
-            fitView
+          <Text right="10%" top="170px" position="absolute">
+            Last Saved: {lastUpdated}
+          </Text>
+          <Box
+            left="10%"
+            right="10%"
+            top="100px"
+            background="#D9D9D9"
+            borderRadius={"10px"}
+            zIndex={1}
+            position="fixed"
           >
-            <div style={{ position: "absolute", zIndex: 5, right: 0 }}>
+            <HStack>
               <Button
-                  backgroundColor="#AFB9A5"
-                  style={{ margin: "10px" }}
-                  size="lg"
-                  onClick={() => router.push('/navigator?id=' + treeID)} 
-                  >
-                Preview
+                size="md"
+                style={{ margin: "10px", backgroundColor: "#59784D" }}
+                border={state.locked ? "2px solid #F6893C" : ""}
+                onClick={() => dispatch({ type: "toggle_lock" })}
+              >
+                <LockIcon color="white" size="lg" />
               </Button>
               <Button
                 backgroundColor="#AFB9A5"
                 style={{ margin: "10px" }}
                 size="lg"
-                onClick={openInstructions}
-              >
-                Instructions
-              </Button>
-              <Button
-                color="white"
-                backgroundColor="#F6893C" // georgiacore orange
-                style={{
-                  margin: "10px",
+                onClick={() => {
+                  dispatch({ type: "format" });
                 }}
-                size="lg"
-                onClick={() => updateQuestionTree(state.navigationTree.getTree(), session.user?.name)}
               >
-                Save
+                Format
               </Button>
-            </div>
-            <MiniMap />
-            <Controls />
-            <Background />
-          </ReactFlow>
-        </div>
-        </>) :
-        <p>No Active Tree</p>}
+              <HStack style={{ marginLeft: "auto" }}>
+                <Button
+                  color="white"
+                  backgroundColor="#F6893C" // georgiacore orange
+                  style={{
+                    margin: "10px",
+                  }}
+                  size="lg"
+                  onClick={() => {
+                    // Save the state of the ReactFlow nodes
+                    if (state.reactFlowInstance) {
+                      const reactFlowState = state.reactFlowInstance.toObject();
+                      state.navigationTree.updateReactFlowState(reactFlowState);
+                    }
+
+                    dispatch({ type: "save" });
+                    updateQuestionTree(
+                      state.navigationTree.getTree(),
+                      session.user?.name
+                    );
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={() => router.push("/navigator?id=" + treeID)}
+                >
+                  Preview
+                </Button>
+              </HStack>
+            </HStack>
+          </Box>
+          <InstructionsModal
+            isOpen={isInstructionsOpen}
+            onClose={onInstructionsClose}
+          />
+          <div
+            className="wrapper"
+            ref={reactFlowWrapper}
+            style={{
+              height: "90%",
+              width: "100%",
+              position: "fixed",
+              zIndex: 0,
+            }}
+          >
+            <EditQuestionModal
+              isOpen={state.editModalOpen}
+              dispatch={dispatch}
+              question={state.navigationTree.getQuestion(state.editModalNodeId)}
+            />
+            <ReactFlow
+              nodesDraggable={!state.locked}
+              nodesConnectable={!state.locked}
+              nodesFocusable={!state.locked}
+              edgesFocusable={!state.locked}
+              elementsSelectable={!state.locked}
+              nodeTypes={nodeTypes}
+              nodes={state.nodes}
+              edges={state.edges}
+              onInit={(reactFlowInstance) =>
+                dispatch({ type: "set_react_flow_instance", reactFlowInstance })
+              }
+              onNodesChange={(changes) =>
+                dispatch({ type: "node_change", changes })
+              }
+              onEdgesChange={(changes) =>
+                dispatch({ type: "edge_change", changes })
+              }
+              onEdgesDelete={(edges) =>
+                dispatch({ type: "edge_delete", edges })
+              }
+              onNodesDelete={(nodes) =>
+                dispatch({ type: "delete_question", nodes })
+              }
+              onConnect={(connection) =>
+                dispatch({ type: "connect", connection })
+              }
+              onConnectStart={(_, { nodeId, handleType }) => {
+                connectingNode.current = { nodeId, handleType };
+              }}
+              onConnectEnd={(event) =>
+                dispatch({
+                  type: "connect_stop",
+                  event,
+                  project,
+                  reactFlowWrapper,
+                  connectingNode,
+                })
+              }
+              onNodeDoubleClick={(event, node) => {
+                dispatch({
+                  type: "open_edit_modal",
+                  questionId: node.id,
+                });
+              }}
+              fitView
+            >
+              <Background />
+
+              <Controls />
+            </ReactFlow>
+          </div>
+        </>
+      ) : (
+        <p>No Active Tree</p>
+      )}
     </>
   );
 };

@@ -7,6 +7,7 @@ export default class NavigationTree {
     active: Boolean,
     title: String,
     thumbnailImage: Buffer,
+    reactFlowState: Object,
     questions: [{
       id: String,
       question: String,
@@ -108,6 +109,7 @@ export default class NavigationTree {
         return {
           id: uuidv4(),
           option: o.option,
+          icon: o.icon,
           nextId: o.nextId,
         };
       }),
@@ -152,10 +154,18 @@ export default class NavigationTree {
 
   static createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
-      { option: "Option 1", nextId: null },
+      { option: "Option 1", icon: "QuestionMark", nextId: null },
     ]);
   }
 
+  updateReactFlowState(reactFlowState) {
+    this.tree.reactFlowState = reactFlowState;
+  }
+
+  getReactFlowState() {
+    return this.tree.reactFlowState;
+  }
+  
   static createInitialQuestion() {
     const question = this.createQuestion("Do you want to continue?", "question", [
       {
