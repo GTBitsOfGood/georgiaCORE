@@ -39,10 +39,6 @@ export const getActiveQuestionTree = async () => {
   try {
     const tree = await Tree.findOne({ active: true });
 
-    if (tree == null) {
-      console.error("Questions from database null");
-    }
-
     return {
       tree
     };
@@ -58,7 +54,7 @@ export const getAllQuestionTrees = async () => {
     const trees = await Tree.find({});
 
     if (trees == null) {
-      throw new Error("Questions from database null");
+      throw new Error("all question trees from database is null");
     }
 
     return {
@@ -73,6 +69,15 @@ export const addQuestionTree = async (tree, username) => {
   await mongoDB();
 
   try {
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && tree.active) {
+      // don't allow multiple trees to be active, user should set first to inactive before
+      // setting new one to active.
+      return {
+        success: false,
+      }
+    }
+
     // add metadata to tree
     await addMetadataModifications(tree, username, false);
     await Tree.create(tree);
@@ -89,6 +94,14 @@ export const removeQuestionTreeById = async (id) => {
   await mongoDB();
 
   try {
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && id == activeTree._id) {
+      // don't allow active tree to be deleted
+      return {
+        success: false,
+      }
+    }
+
     await Tree.deleteOne({ _id: id });
 
     return {
@@ -103,7 +116,18 @@ export const updateQuestionTree = async (tree, username) => {
   await mongoDB();
 
   try {
-    const changingToInactive = !tree.active && (await getQuestionTreeById(tree._id)).active;
+    const curTree = (await getQuestionTreeById(tree._id)).tree;
+
+    const activeTree = (await getActiveQuestionTree()).tree;
+    if (activeTree != null && tree.active && !activeTree._id.equals(curTree._id)) {
+      // don't allow multiple trees to be active, user should set first to inactive before
+      // setting new one to active.
+      return {
+        success: false,
+      }
+    }
+
+    const changingToInactive = !tree.active && curTree.active;
     // add metadata to tree
     await addMetadataModifications(tree, username, changingToInactive);
     await Tree.updateOne({ _id: tree._id }, tree, {upsert: true});

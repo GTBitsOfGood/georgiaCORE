@@ -1,14 +1,37 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import styles from "./TreeThumbnailCard.module.css";
 import PropTypes from "prop-types";
-import { IconButton, Box, VStack, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
+import { IconButton, Box, VStack, Divider, Button, InputLeftElement, Input, InputGroup, HStack, Heading, Image, Text, Flex, Switch, extendTheme, ChakraProvider, Center, Spacer, ButtonGroup } from "@chakra-ui/react";
 import { FaTrash, FaRegClone } from "react-icons/fa";
-import { CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon, EditIcon } from "@chakra-ui/icons";
 import { useRouter } from 'next/router'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  useModalContext,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+} from '@chakra-ui/react'
 
 const TreeThumbnailCard = (props) => {
   let router = useRouter();
+
+  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+  const { isOpen: isOpenActive, onOpen: onOpenActive, onClose: onCloseActive } = useDisclosure();
+  const { isOpen: isOpenClone, onOpen: onOpenClone, onClose: onCloseClone } = useDisclosure();
+  const { isOpen: isOpenTitle, onOpen: onOpenTitle, onClose: onCloseTitle } = useDisclosure();
+
+  const [ futureActive, setFutureActive ] = useState(props.tree.active);
+  const [ title, setTitle ] = useState(props.tree.title);
 
   const editedOnString = props.tree.editedOn ? 
     `${props.tree.editedOn.toLocaleTimeString()}, ${props.tree.editedOn.toLocaleDateString().replaceAll('/', '-')}` :
@@ -40,23 +63,106 @@ const TreeThumbnailCard = (props) => {
           {/* Header */}
           <Flex flexDirection='row' w='100%' justifyContent='space-between'>
             {/* Title */}
-            <Heading 
-              as='h4' 
-              size='lg' 
-              onClick={() => router.push('/navigation-editor?id=' + props.tree._id)} 
-              cursor="pointer"
-              >
-              {props.tree.title ?? 'N/A'}
-            </Heading>
+            <ButtonGroup >
+              <Heading 
+                as='h4' 
+                size='lg' 
+                onClick={() => router.push('/navigation-editor?id=' + props.tree._id)} 
+                cursor="pointer"
+                >
+                {props.tree.title ?? 'N/A'}
+              </Heading>
+              <IconButton
+                colorScheme='georgia-core-green'
+                aria-label='edit-title'
+                size='md'
+                variant='link'
+                onClick={onOpenTitle}
+                icon={<EditIcon />}
+              />
+            </ButtonGroup>
+            <>
+                <Modal isOpen={isOpenTitle} onClose={onCloseTitle} isCentered>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Change Title</ModalHeader>
+                    <ModalCloseButton />
+
+                    <Divider />
+                    <ModalBody>
+                    <FormControl isRequired>
+                      <FormLabel>Question List Title</FormLabel>
+                      <Input placeholder='Title' type='text' onChange={e => setTitle(e.target.value)} />
+                    </FormControl>
+                    </ModalBody>
+                    <Divider />
+
+                    <ModalFooter>
+                      <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseTitle}>
+                        Close
+                      </Button>
+                      <Button onClick={e => props.handleTitleEdit(title)} colorScheme='georgia-core-green' variant='solid'>Create</Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+              </>
             
             {/* Active */}
             <HStack spacing='5px' p='5px' h='100%'>
               <Text>
                 Active
               </Text>
-              <Switch onChange={(e) => props.handeActiveSwitch(e)} isChecked={props.tree.active} id='active-button' colorScheme='georgia-core-green' />
+              <Switch
+                onChange={(e) => {
+                  setFutureActive(e.target.checked);
+                  onOpenActive();
+                }}
+                isChecked={props.tree.active}
+                id='active-button'
+                colorScheme='georgia-core-green'
+              />
             </HStack>
           </Flex>
+          <>
+            <Modal isOpen={isOpenActive} onClose={onCloseActive} isCentered>
+              <ModalOverlay />
+              <ModalContent>
+                <Center><ModalHeader><Text fontSize='2xl' as='b'>Warning!</Text></ModalHeader></Center>
+                <ModalCloseButton />
+
+                <Divider />
+                <ModalBody>
+                  {futureActive ? (
+                    <>This tree will replace the one that is currently active. Are you sure you want to continue?</>
+                  ) : (
+                    <>This tree will be deactivated, causing there to be no active tree. It is recommended to set an inactive tree to active first. Are you sure you want to continue?</>
+                  )}
+                </ModalBody>
+
+                <Divider />
+                
+                <ModalFooter>
+                  <Button
+                    colorScheme='georgia-core-green'
+                    variant='ghost' mr={3}
+                    onClick={(e) => {
+                      setFutureActive(props.tree.active);
+                      onCloseActive();
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={(e) => props.handeActiveSwitch(futureActive)}
+                    colorScheme='georgia-core-green'
+                    variant='solid'
+                  >
+                    Continue
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </>
           {/* Details */}
           <Text w='100%' lineHeight={'100%'} justifyContent='left'>
             Edited on: {editedOnString}<br />
@@ -65,22 +171,95 @@ const TreeThumbnailCard = (props) => {
           </Text>
           {/* Buttons */}
           <Flex w='100%' justifyContent='flex-end'>
-            <ButtonGroup >
+            {/* <ButtonGroup > */}
               <IconButton
-                colorScheme='blue'
+                colorScheme='gray'
                 aria-label='copy'
-                size='sm'
+                size='lg'
+                variant='ghost'
+                onClick={onOpenClone}
                 icon={<CopyIcon />}
               />
               <IconButton
                 colorScheme='red'
                 aria-label='delete'
-                size='sm'
+                size='lg'
+                variant={'ghost'}
+                onClick={onOpenDelete}
                 icon={<FaTrash />}
               />
-            </ButtonGroup>
+            {/* </ButtonGroup> */}
           </Flex>
         </VStack>
+        <>
+          <Modal isOpen={isOpenClone} onClose={onCloseClone} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader><Center><Text fontSize='2xl' as='b'>Create a Copy</Text></Center></ModalHeader>
+              <ModalCloseButton />
+
+              <Divider />
+              <ModalBody>
+                Do you want to create a copy of this tree?
+              </ModalBody>
+
+              <Divider />
+              
+              <ModalFooter>
+                <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseClone}>
+                  Close
+                </Button>
+                <Button onClick={(e) => {
+                  onCloseClone();
+                  props.handleCloneClick(e);
+                }}
+                  colorScheme='georgia-core-green'
+                  variant='solid'
+                >
+                  Continue
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </>
+        <>
+          <Modal isOpen={isOpenDelete} onClose={onCloseDelete} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader><Center><Text fontSize='2xl' as='b'>Warning!</Text></Center></ModalHeader>
+              <ModalCloseButton />
+
+              <Divider />
+              <ModalBody>
+                {props.tree.active ? (
+                  <>The active tree cant be deleted. Please make the tree inactive before deleting.</>
+                ) : (
+                  <>Are you sure you want to <Text as='b'>delete</Text> this tree?</>
+                )}
+              </ModalBody>
+
+              <Divider />
+              
+              {!props.tree.active && (
+              <ModalFooter>
+                <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseDelete}>
+                  Close
+                </Button>
+                <Button onClick={(e) => {
+                  if (!props.tree.active) {
+                    props.handleDeleteClick(e);
+                  }
+                  }}
+                  colorScheme='georgia-core-green'
+                  variant='solid'
+                >
+                  Continue
+                </Button>
+              </ModalFooter>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
       </VStack>
     </Box>
   );
