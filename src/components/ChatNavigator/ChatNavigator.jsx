@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import styles from "./ChatNavigator.module.css";
@@ -15,14 +16,16 @@ const ChatNavigator = (props) => {
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
 
-  
-  const router = useRouter()
+  const router = useRouter();
   const { query } = router;
 
   useEffect(() => {
     const setup = async () => {
       try {
-        const questionsTree = await getQuestionTreeById(query.id);
+        const questionsTree =
+          props.isActive === true
+            ? await getActiveQuestionTree()
+            : await getQuestionTreeById(query.id);
         const questions = questionsTree.questions;
         const questionMap = {};
         for (const question of questions) {
@@ -42,15 +45,15 @@ const ChatNavigator = (props) => {
 
   if (status === "loading") {
     return <></>;
-  } 
+  }
 
-  if (status == "unauthenticated") {
+  if (status == "unauthenticated" && props.isActive !== true) {
     return (
       <>
         <ErrorPage message="User is not logged in." />
       </>
     );
-  }  
+  }
 
   if (invalidID) {
     return (

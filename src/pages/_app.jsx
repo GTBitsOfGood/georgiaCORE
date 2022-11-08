@@ -16,7 +16,7 @@ import "src/components/Nodes/OptionNode/OptionNode.css";
 import "src/components/Nodes/TextNode/TextNode.css";
 
 const MyApp = ({ Component, pageProps, session }) => {
-  const PAGES_WITH_NO_HEADER = new Set(["Login"]);
+  const PAGES_WITH_NO_HEADER = new Set(["Login", "RenderPage"]);
   const renderHeader = !PAGES_WITH_NO_HEADER.has(Component.name);
 
   return (
