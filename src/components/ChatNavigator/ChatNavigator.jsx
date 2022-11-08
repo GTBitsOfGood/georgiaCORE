@@ -27,10 +27,12 @@ const ChatNavigator = (props) => {
             ? await getActiveQuestionTree()
             : await getQuestionTreeById(query.id);
         const questions = questionsTree.questions;
+        
         const questionMap = {};
         for (const question of questions) {
           questionMap[question.id] = question;
         }
+
         setAllQuestions(questionMap);
         setInvalidId(false);
       } catch {
@@ -65,6 +67,7 @@ const ChatNavigator = (props) => {
 
   if (numQs > 0) {
     const currentQuestion = allQuestions[currentQuestionIndex];
+
     return (
       <div style={styles} id={styles.main}>
         <div
