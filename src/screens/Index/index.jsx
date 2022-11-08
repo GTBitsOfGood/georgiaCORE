@@ -1,3 +1,3 @@
-import IndexPage from "./IndexPage";
+import SavedTreesPage from "./SavedTreesPage";
 
-export default IndexPage;
+export default SavedTreesPage;

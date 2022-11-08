@@ -1,141 +1,196 @@
-import NavigationNode from "./NavigationNode.js";
-import NavigationTerminalNode from "./NavigationTerminalNode.js";
-
-// TODO:
-// allow adding/removing/moving answers at specific indices
+import { v4 as uuidv4 } from "uuid";
 
 export default class NavigationTree {
-  constructor() {
-    this.root = null; // Node
-    this.questions = new Map(); // Map<question: string, next: Node>
+  constructor(tree) {
+    this.tree = tree;
+    /*
+    active: Boolean,
+    title: String,
+    thumbnailImage: Buffer,
+    reactFlowState: Object,
+    questions: [{
+      id: String,
+      question: String,
+      type: { type: String, enum: QUESTION_TYPES },
+      options: [
+        {
+          id: String,
+          option: String,
+          nextId: String,
+          url: String,
+        }
+      ],
+    }],
+    // Metadata
+    editedOn: Date, // updated internally by mongodb/actions
+    // (will be updated when tree goes active => inactive, so will be wrong for the active tree)
+    lastActive: Date, // updated internally by mongodb/actions
+    author: String, // updated internally by mongodb/actions
+
+      Array<
+        {
+          id: "1",
+          question: "Do you want to continue?",
+          type: "question",
+          options: [
+            {
+              id: "1-1",
+              option: "Yes",
+              nextId: "2",
+              url: null,
+            },
+            {
+              id: "1-2",
+              option: "No",
+              nextId: "3",
+              url: null,
+            },
+          ],
+        },
+      >
+    */
   }
 
   // Getters/Setters
 
-  getRoot() {
-    return this.root;
+  getTree() {
+    return this.tree;
+  }
+
+  setTree(tree) {
+    this.tree = tree;
   }
 
   getQuestions() {
-    return this.questions;
+    return this.tree.questions;
   }
 
-  /**
-   * @param {string} question
-   * @returns {NavigationNode}
-   */
-  getNode(question) {
-    return this.questions.get(question);
+  setQuestions(questions) {
+    this.tree.questions = questions;
   }
 
-  /**
-   * @param {string} question
-   * @returns {Array<string>}
-   */
-  getAnswers(question) {
-    return this.getNode(question).getAnswers();
+  getQuestion(id) {
+    return this.tree.questions.find((q) => q.id === id);
   }
 
-  addQuestion(parentQuestion, parentAnswer, question) {
-    return this.addQuestion(parentQuestion, parentAnswer, question, null);
+  getQuestionByOptionId(optionId) {
+    return this.tree.questions.find((q) => {
+      return q.options.some((option) => option.id == optionId);
+    });
   }
 
-  /**
-   * @param {string} parentQuestion
-   * @param {string} parentAnswer
-   * @param {string} question
-   * @param {Array<string>} answers
-   * @returns {void}
-   */
-  addQuestion(parentQuestion, parentAnswer, question, answers) {
-    const node = this.getNode(parentQuestion);
+  getQuestionIndex(id) {
+    return this.tree.questions.findIndex((q) => q.id == id);
+  }
 
-    const newNode = new NavigationNode(question);
-    if (answers != null) {
-      answers.forEach((answer) => newNode.addAnswer(answer));
+  addQuestion(question) {
+    this.tree.questions.push(question);
+  }
+
+  updateQuestion(question) {
+    const index = this.getQuestionIndex(question.id);
+    this.tree.questions[index] = question;
+  }
+
+  deleteQuestion(id) {
+    const index = this.getQuestionIndex(id);
+    this.tree.questions.splice(index, 1);
+  }
+
+  static createQuestion(questionContent, type, options, initial = false) {
+    let id = uuidv4();
+
+    if (initial) {
+      id = "1";
     }
 
-    node.addAnswer(parentAnswer, newNode);
-    this.questions.set(question, newNode);
+    const question = {
+      isRoot: false,
+      id,
+      question: questionContent,
+      type,
+      options: options.map((o) => {
+        return {
+          id: uuidv4(),
+          option: o.option,
+          icon: o.icon,
+          nextId: o.nextId,
+        };
+      }),
+    };
+
+    return question;
   }
 
-  /**
-   * @param {string} parentQuestion
-   * @param {string} parentAnswer
-   * @param {string} question
-   * @returns {NavigationNode} the removed node
-   */
-  removeQuestion(parentQuestion, parentAnswer, question) {
-    const node = this.getNode(parentQuestion);
+  static copyQuestionSameEverything(question) {
+    const newQuestion = {
+      ...question,
+    };
 
-    const removedNode = node.unlinkChildQuestion(parentAnswer);
-    this.questions.delete(question);
-    return removedNode;
+    delete newQuestion._id;
+
+    newQuestion.options = question.options.map((o) => {
+      const newO = { ...o };
+      delete newO._id;
+      return newO;
+    });
+    return newQuestion;
   }
 
-  /**
-   * @param {{<question: string, children: Array<{answer: string, nextInput: input}>}} input
-   * @returns {void}
-   */
-  setTree(input) {
-    if (input == null) {
-      this.root = null;
-      this.questions = new Map();
-    }
+  static copyQuestionNotRootNewUids(question) {
+    const id = uuidv4();
 
-    const questionMap = new Map();
-    this.root = this.createTree(input, questionMap);
-    this.questions = questionMap;
+    const newQuestion = {
+      ...question,
+      isRoot: false,
+      id,
+    };
+
+    delete newQuestion._id;
+
+    newQuestion.options = question.options.map((o) => {
+      const newO = { ...o, id: uuidv4() };
+      delete newO._id;
+      return newO;
+    });
+    return newQuestion;
   }
 
-  /**
-   * Updates questionMap to contain mapping to each node
-   * @param {{<question: string, children: Array<{answer: string, nextInput: curInput}>}} curInput
-   * @param {Map<question: string, next: NavigationNode>} questionMap
-   * @returns {NavigationNode} the created tree
-   */
-  createTree(curInput, questionMap) {
-    const { terminal, question, children, url } = curInput;
-    var newNode;
-    if (terminal) {
-      newNode = new NavigationTerminalNode(url);
-    } else {
-      newNode = new NavigationNode(question);
-      questionMap.set(question, newNode);
+  static createUntitledQuestion() {
+    return this.createQuestion("Untitled Question", "question", [
+      { option: "Option 1", icon: "QuestionMark", nextId: null },
+    ]);
+  }
 
-      children.forEach(({ answer, nextInput }) => {
-        newNode.addAnswer(answer, this.createTree(nextInput, questionMap));
-      });
-    }
+  updateReactFlowState(reactFlowState) {
+    this.tree.reactFlowState = reactFlowState;
+  }
 
-    return newNode;
+  getReactFlowState() {
+    return this.tree.reactFlowState;
+  }
+
+  static createInitialQuestion() {
+    const question = this.createQuestion(
+      "Do you want to continue?",
+      "question",
+      [
+        {
+          option: "Yes",
+          nextId: null,
+        },
+        {
+          option: "No",
+          nextId: null,
+        },
+      ],
+      true
+    );
+    question.isRoot = true;
+    return question;
   }
 
   printTree() {
-    console.log(JSON.stringify(this.objectRepresentation(this.root), null, 4));
-  }
-
-  /**
-   * @param {NavigationNode} curNode
-   * @returns {{}}} pretty object representation of tree
-   */
-  objectRepresentation(curNode) {
-    if (curNode == null) {
-      return null;
-    }
-
-    var ret;
-    if (curNode instanceof NavigationTerminalNode) {
-      ret = curNode.getUrl();
-    } else {
-      const question = curNode.getQuestion();
-      ret = { [question]: {} };
-
-      curNode.children.forEach((nextNode, answer) => {
-        ret[question][answer] = this.objectRepresentation(nextNode);
-      });
-    }
-
-    return ret;
+    console.log(JSON.stringify(this.tree.questions));
   }
 }

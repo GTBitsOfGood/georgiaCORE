@@ -7,18 +7,23 @@ import {
   Select,
   Input,
   Button,
+  Checkbox,
 } from "@chakra-ui/react";
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import PropTypes from "prop-types";
 
-const editOptionText = ({ question, optionId, text }) => {
+import { v4 as uuidv4 } from "uuid";
+import icons from "src/utils/icons";
+
+const editOption = ({ question, optionId, text, icon }) => {
   return {
     ...question,
     options: question.options.map((o) => {
       if (o.id === optionId) {
         return {
           ...o,
-          option: text,
+          option: text || o.option,
+          icon: icon || o.icon,
         };
       }
       return o;
@@ -33,10 +38,16 @@ const removeOption = (question, optionId) => {
   };
 };
 
-const NewOption = ({ optionId, optionText, question, setQuestion }) => {
-  const handleChange = (event) => {
+const EditOption = ({
+  optionId,
+  optionText,
+  optionIcon,
+  question,
+  setQuestion,
+}) => {
+  const handleTextChange = (event) => {
     setQuestion(
-      editOptionText({
+      editOption({
         question,
         optionId,
         text: event.target.value,
@@ -44,9 +55,33 @@ const NewOption = ({ optionId, optionText, question, setQuestion }) => {
     );
   };
 
+  const handleIconChange = (event) => {
+    setQuestion(
+      editOption({
+        question,
+        optionId,
+        icon: event.target.value,
+      })
+    );
+  };
+
   return (
     <HStack w="100%">
-      <Input variant="flushed" value={optionText} onChange={handleChange} />
+      <Select
+        variant="filled"
+        w="21%"
+        size="sm"
+        value={optionIcon || "QuestionMark"}
+        onChange={handleIconChange}
+        icon={icons[optionIcon] || icons["QuestionMark"]}
+      >
+        {Object.keys(icons).map((icon) => (
+          <option key={icon} value={icon}>
+            {icon}
+          </option>
+        ))}
+      </Select>
+      <Input variant="flushed" value={optionText} onChange={handleTextChange} />
       <Button onClick={() => setQuestion(removeOption(question, optionId))}>
         <SmallCloseIcon color="teal" />
       </Button>
@@ -54,9 +89,10 @@ const NewOption = ({ optionId, optionText, question, setQuestion }) => {
   );
 };
 
-NewOption.propTypes = {
+EditOption.propTypes = {
   optionId: PropTypes.string,
   optionText: PropTypes.string,
+  optionIcon: PropTypes.string,
   question: PropTypes.object,
   setQuestion: PropTypes.func,
 };
@@ -67,8 +103,9 @@ const addOption = (question) => {
     options: [
       ...question.options,
       {
-        id: question.id + "-" + (question.options.length + 1),
+        id: uuidv4(),
         option: "Option " + (question.options.length + 1),
+        icon: "QuestionMark",
         nextId: null,
       },
     ],
@@ -94,6 +131,8 @@ const QuestionForm = ({ question, setQuestion }) => {
               >
                 <option value="question">Question</option>
                 <option value="url">URL</option>
+                <option value="text">TEXT</option>
+                <option value="error">ERROR</option>
               </Select>
               {question.type === "question" && (
                 <Input
@@ -114,29 +153,59 @@ const QuestionForm = ({ question, setQuestion }) => {
                   }
                 />
               )}
+              {question.type === "text" && (
+                <Input
+                  w="70%"
+                  value={question.heading}
+                  placeholder="Heading"
+                  onChange={(e) =>
+                    setQuestion({ ...question, heading: e.target.value })
+                  }
+                />
+              )}
             </HStack>
 
-            {question.type === "question" &&
-              question.options.map((option) => (
-                <NewOption
-                  key={option.id}
-                  optionId={option.id}
-                  optionText={option.option}
-                  question={question}
-                  setQuestion={setQuestion}
-                />
-              ))}
             {question.type === "question" && (
-              <HStack w="100%">
-                <Button
-                  variant="link"
-                  color="teal"
-                  onClick={() => setQuestion(addOption(question))}
-                >
-                  New Option
-                </Button>
-              </HStack>
+              <>
+                {question.options.map((option) => (
+                  <EditOption
+                    key={option.id}
+                    optionId={option.id}
+                    optionText={option.option}
+                    optionIcon={option.icon}
+                    question={question}
+                    setQuestion={setQuestion}
+                  />
+                ))}
+                <HStack w="100%">
+                  <Button
+                    variant="link"
+                    color="teal"
+                    onClick={() => setQuestion(addOption(question))}
+                  >
+                    New Option
+                  </Button>
+                </HStack>
+              </>
             )}
+
+            {question.type === "text" && (
+              <Input
+                value={question.bodyText}
+                placeholder="Body Text"
+                onChange={(e) =>
+                  setQuestion({ ...question, bodyText: e.target.value })
+                }
+              />
+            )}
+
+            <Checkbox
+              style={{ marginLeft: "auto" }}
+              isChecked={question.type !== "question"}
+              disabled
+            >
+              Leaf Node
+            </Checkbox>
           </VStack>
         </FormControl>
       </Box>

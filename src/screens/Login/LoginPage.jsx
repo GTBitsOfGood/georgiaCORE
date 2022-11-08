@@ -1,11 +1,19 @@
 import React from "react";
-import { Box, Flex, Stack, Text, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Stack,
+  Text,
+  Image,
+  Button,
+  Center,
+} from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 import PropTypes from "prop-types";
 
 const LoginPage = ({ providers }) => {
   const [resSuccess, setResSuccess] = React.useState(true);
-  //setResSuccess(true);
+  const [isLoading, setLoading] = React.useState(false);
   /**
    * Login page UI
    * Creates a main green background with a white box in the middle
@@ -16,6 +24,8 @@ const LoginPage = ({ providers }) => {
    * Success/failure is determined by resSuccess state which is currently set to false (success failed)
    * ResSuccess will be updated later with login functionality
    * Logo is at the bottom of the stack for the white box
+   * Authentication button has hover and button loader which activates on click, but has a bug where it is
+   * transparent on hover after click
    */
   return (
     <Flex
@@ -36,19 +46,23 @@ const LoginPage = ({ providers }) => {
             <>
               {Object.values(providers).map((provider) => (
                 <Box
+                  as={Button}
                   bgColor="#4285F4"
                   color="white"
                   fontFamily="sans-serif"
                   padding={1.5}
                   width="100%"
                   rounded="md"
-                  onClick={() =>
+                  onClick={() => {
                     signIn(provider.id, {
-                      callbackUrl: `${window.location.origin}/navigation-editor`,
-                    })
-                  }
+                      callbackUrl: `${window.location.origin}`,
+                    });
+                    setLoading(true);
+                  }}
                   cursor="pointer"
                   key={provider.id}
+                  isLoading={isLoading}
+                  _hover={{ bgColor: "#8fafe3" }}
                 >
                   <Stack
                     direction="row"
@@ -57,15 +71,16 @@ const LoginPage = ({ providers }) => {
                     paddingRight={4}
                   >
                     <Box bgColor="#ffffff" rounded="100%" width="%">
-                      <Flex justifyContent="center" paddingTop={0.5}>
+                      <Flex justifyContent="center" padding={0.5}>
                         <Image
-                          boxSize="20px"
                           src="https://freesvg.org/img/1534129544.png"
                           alt="Google Image"
+                          borderRadius="100%"
+                          height="20px"
                         />
                       </Flex>
                     </Box>
-                    <Text>Continue with {provider.name}</Text>
+                    <Center> Continue with {provider.name}</Center>
                   </Stack>
                 </Box>
               ))}

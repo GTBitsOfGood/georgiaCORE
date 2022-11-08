@@ -14,10 +14,40 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       style: {
         background: "#fff",
         width: 160,
-        height: 50,
+        height: 70,
       },
       position: { x, y },
-      type: "output",
+      type: "url",
+    });
+  } else if (question.type == "error") {
+    nodes.push({
+      id: question.id,
+      targetPosition: "left",
+      data: {
+        label: "Error Node",
+      },
+      style: {
+        width: 160,
+        height: 70,
+      },
+      position: { x, y },
+      type: "error",
+    });
+  } else if (question.type == "text") {
+    nodes.push({
+      id: question.id,
+      targetPosition: "left",
+      data: {
+        heading: question.heading,
+        bodyText: question.bodyText,
+      },
+      style: {
+        background: "#90EE90",
+        width: 160,
+        height: 70,
+      },
+      position: { x, y },
+      type: "text",
     });
   } else if (question.type === "question") {
     // Create node for question
@@ -30,12 +60,13 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       dataType: "question",
       data: { label: question.question },
       style: {
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        // backgroundColor: question.isRoot ? "#F7C5A3" : "rgba(255, 0, 0, 0.2)",
         width: 160,
         height: question.options.length * OPTION_HEIGHT + 50,
       },
       position: { x, y },
-      type: "output",
+      deletable: question.isRoot ? false : true,
+      type: question.isRoot ? "root" : "question",
     });
 
     for (const [i, option] of question.options.entries()) {
@@ -45,18 +76,18 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
 
         sourcePosition: "right",
         dataType: "option",
-        type: "input",
-        data: { label: option.option },
+        type: "option",
+        data: { label: option.option, icon: option.icon },
         parentNode: question.id,
         draggable: false,
         selectable: false,
-        position: { x: 5, y: 50 + i * OPTION_HEIGHT },
+        position: { x: 5, y: (question.isRoot ? 70 : 50) + i * OPTION_HEIGHT },
       });
 
       // Edges between option and next question
       if (option.nextId) {
         edges.push({
-          id: option.id + "-next",
+          id: option.id + "-" + option.nextId,
           source: option.id,
           target: option.nextId,
         });
@@ -67,7 +98,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
   // Edge between question and connecting node
   if (connectingNodeId) {
     edges.push({
-      id: connectingNodeId + "-next",
+      id: connectingNodeId + "-" + question.id,
       source: connectingNodeId,
       target: question.id,
     });
@@ -84,11 +115,20 @@ export const generateInitialNodes = (questions) => {
   let nodes = [];
   let edges = [];
 
+  if (!questions || questions.length === 0) {
+    return [[], []];
+  }
+
   let visited = new Set();
   let queue = [];
 
-  queue.push([questions[0].id, 0]);
-  visited.add(questions[0].id);
+  const root = questions.find((question) => question.isRoot);
+  if (!root) {
+    throw new Error("No root question");
+  }
+
+  queue.push([root.id, 0]);
+  visited.add(root.id);
 
   let optionY = 0;
   let currentLevel = 0;
@@ -99,9 +139,7 @@ export const generateInitialNodes = (questions) => {
       currentLevel = level;
       optionY = 0;
     }
-
     const question = questions.find((q) => q.id === sourceId);
-
     if (question.type === "question") {
       for (const option of question.options) {
         if (option.nextId && !visited.has(option.nextId)) {
@@ -122,7 +160,26 @@ export const generateInitialNodes = (questions) => {
 
     if (question.type === "question")
       optionY += question.options.length * OPTION_HEIGHT + 70;
-    if (question.type === "url") optionY += 50;
+    else optionY += 70;
+  }
+
+  currentLevel++;
+  // Add non-connected nodes
+  for (const question of questions) {
+    if (!visited.has(question.id)) {
+      let [newNodes, newEdges] = createNode({
+        question,
+        x: 250 * currentLevel,
+        y: optionY,
+      });
+
+      nodes = nodes.concat(newNodes);
+      edges = edges.concat(newEdges);
+
+      if (question.type === "question")
+        optionY += question.options.length * OPTION_HEIGHT + 70;
+      else optionY += 70;
+    }
   }
 
   return [nodes, edges];

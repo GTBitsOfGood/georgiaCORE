@@ -6,6 +6,7 @@ import { withSessionRoute } from "src/utils/lib/session";
 // @access  Public
 const handler = async (req, res) => {
   if (!req.session.user) {
+    await req.session.save();
     return res.status(200).json({
       success: true,
       payload: {
@@ -17,6 +18,7 @@ const handler = async (req, res) => {
   const id = req.session.user?.id;
   try {
     const user = await getUserFromId(id);
+    await req.session.save();
     return res.status(200).json({
       success: true,
       payload: {

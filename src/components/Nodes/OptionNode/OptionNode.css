@@ -1,0 +1,13 @@
+.react-flow__node-option {
+    font-size: 13px;
+    padding: 4px;
+    width: 150px;
+    font-size: 12px;
+    color: #222;
+    text-align: left;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-color: #1a192b;
+  }
+
+/* Needs to be imported in _app because it needs to be a global CSS to overwrite the default react flow CSS. */

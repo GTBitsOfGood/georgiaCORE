@@ -40,8 +40,12 @@ const EditQuestionModal = ({ isOpen, dispatch, question: q }) => {
           </ModalBody>
 
           <ModalFooter>
+            <Button backgroundColor="#AFB9A5" mr={3} onClick={onClose}>
+              Close
+            </Button>
             <Button
-              colorScheme="teal"
+              color="white"
+              backgroundColor="#F6893C" // GeorgiaCore orange
               mr={3}
               onClick={() => {
                 dispatch({ type: "update_question", question });

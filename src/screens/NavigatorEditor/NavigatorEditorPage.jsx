@@ -1,27 +1,50 @@
-import React, { useRef, useReducer } from "react";
+import React, { useMemo, useRef, useReducer, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
 import ReactFlow, {
+  useOnSelectionChange,
+  useKeyPress,
   useReactFlow,
   addEdge,
   ReactFlowProvider,
   applyNodeChanges,
   applyEdgeChanges,
-} from "react-flow-renderer";
+  Background,
+  MiniMap,
+  Controls,
+} from "reactflow";
+
+import { Button, useDisclosure, Box, HStack, Text } from "@chakra-ui/react";
 
 import EditQuestionModal from "./EditQuestionModal";
-import {
-  createUntitledQuestion,
-  getQuestion,
-  getQuestions,
-  updateQuestion,
-} from "./questions";
+import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
+import { getAuthUsers } from "src/actions/AuthUser";
+import {
+  getActiveQuestionTree,
+  getQuestionTreeById,
+  updateQuestionTree,
+} from "src/actions/Tree";
+import NavigationTree from "src/navigation/NavigationTree";
+import testQuestions from "./testQuestions";
+import InstructionsModal from "./InstructionsModal";
+import RootNode from "src/components/Nodes/RootNode";
+import OptionNode from "src/components/Nodes/OptionNode";
+import QuestionNode from "src/components/Nodes/QuestionNode";
+import ErrorNode from "src/components/Nodes/ErrorNode";
+import TextNode from "src/components/Nodes/TextNode";
+import { useRouter } from "next/router";
+import URLNode from "src/components/Nodes/URLNode";
+import { LockIcon, QuestionIcon } from "@chakra-ui/icons";
 
-const deleteNodesAndEdges = (nodes, edges, questionId) => {
+const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
     (node) => node.id !== questionId && node.parentNode !== questionId
   );
 
-  const optionIds = getQuestion(questionId).options.map((o) => o.id);
+  const optionIds = navigationTree
+    .getQuestion(questionId)
+    .options.map((o) => o.id);
 
   const newEdges = edges.filter(
     (edge) =>
@@ -33,50 +56,115 @@ const deleteNodesAndEdges = (nodes, edges, questionId) => {
   return [newNodes, newEdges];
 };
 
+const deleteNode = (nodes, edges, nodeId) => {
+  const newNodes = nodes.filter((node) => node.id !== nodeId);
+
+  return [newNodes, edges];
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
+    case "save":
+      return {
+        ...state,
+        unsavedChanges: false,
+      };
     case "open_edit_modal":
       return {
         ...state,
         editModalOpen: true,
         editModalNodeId: action.questionId,
       };
+    case "copy":
+      return {
+        ...state,
+        copiedNode: state.selectedNode,
+      };
+    case "paste": {
+      const copiedNode = action.copiedNode;
+      if (!copiedNode) {
+        return state;
+      }
+
+      const question = state.navigationTree.getQuestion(copiedNode.id);
+      const copyOfQuestion =
+        NavigationTree.copyQuestionNotRootNewUids(question);
+      state.navigationTree.addQuestion(copyOfQuestion);
+
+      const [newNodes, newEdges] = createNode({
+        question: copyOfQuestion,
+        x: copiedNode.position.x + 100,
+        y: copiedNode.position.y + 100,
+      });
+
+      return {
+        ...state,
+        unsavedChanges: true,
+        nodes: [...state.nodes, ...newNodes],
+        edges: [...state.edges, ...newEdges],
+      };
+    }
+    case "selection_change":
+      console.log(action);
+      return {
+        ...state,
+        selectedNode: action.nodes[0],
+      };
     case "update_question": {
-      updateQuestion(action.question);
+      state.navigationTree.updateQuestion(action.question);
       // get the current question x and y
       const node = state.nodes.find((n) => n.id === action.question.id);
-      const connectingNodeId = state.edges.find(
-        (e) => e.target === node.id
-      ).source;
+      const connectingEdge = state.edges.find((e) => e.target === node.id);
 
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
+      // delete and recreate the corresponding nodes and edges
+      let [newNodes, newEdges] = deleteNodesAndEdges(
         state.nodes,
         state.edges,
+        state.navigationTree,
         action.question.id
       );
 
-      const [newNodes, newEdges] = createNode({
+      let connectingNodeId = null;
+      if (connectingEdge) {
+        connectingNodeId = connectingEdge.source;
+      }
+      const [recreatedNodes, recreatedEdges] = createNode({
         question: action.question,
         x: node.position.x,
         y: node.position.y,
         connectingNodeId,
       });
 
-      return {
-        ...state,
-        nodes: [...deletedNodes, ...newNodes],
-        edges: [...deletedEdges, ...newEdges],
-      };
-    }
-    case "delete_question": {
-      const [deletedNodes, deletedEdges] = deleteNodesAndEdges(
-        state.nodes,
-        state.edges,
-        action.questionId
-      );
+      newNodes = [...newNodes, ...recreatedNodes];
+      newEdges = [...newEdges, ...recreatedEdges];
 
       return {
         ...state,
+        unsavedChanges: true,
+        nodes: newNodes,
+        edges: newEdges,
+      };
+    }
+    case "delete_question": {
+      var [deletedNodes, deletedEdges] = [state.nodes, state.edges];
+      action.nodes.forEach((node) => {
+        const question = state.navigationTree.getQuestion(node.id);
+        // option nodes will be deleted with update_question so we
+        // just delete questions from tree
+        if (question && !question.isRoot) {
+          state.navigationTree.deleteQuestion(node.id);
+
+          [deletedNodes, deletedEdges] = deleteNode(
+            deletedNodes,
+            deletedEdges,
+            node.id
+          );
+        }
+      });
+
+      return {
+        ...state,
+        unsavedChanges: true,
         nodes: deletedNodes,
         edges: deletedEdges,
       };
@@ -84,72 +172,133 @@ const reducer = (state, action) => {
     case "edge_delete":
       action.edges.forEach((edge) => {
         const optionId = edge.source;
-        const questionId = state.nodes.find(
+        const parentId = state.nodes.find(
           (node) => node.id == optionId
         ).parentNode;
+        const parentQuestion = state.navigationTree.getQuestion(parentId);
 
-        const question = getQuestion(questionId);
-
-        const option = question.options.find((o) => o.id === optionId);
+        const option = parentQuestion.options.find((o) => o.id === optionId);
         const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
-              ...option,
-              nextId: null,
-            },
-          ],
+          ...parentQuestion,
+          options: parentQuestion.options.map((o) => {
+            if (o.id == optionId) {
+              return {
+                ...option,
+                nextId: null,
+              };
+            }
+            return o;
+          }),
         };
-        updateQuestion(newQuestion);
+        state.navigationTree.updateQuestion(newQuestion);
       });
 
-      return state;
+      return { ...state, unsavedChanges: true };
     case "close_edit_modal":
       return { ...state, editModalOpen: false };
     case "node_change":
-      return { ...state, nodes: applyNodeChanges(action.changes, state.nodes) };
+      return {
+        ...state,
+        nodes: applyNodeChanges(action.changes, state.nodes),
+        unsavedChanges: true,
+      };
     case "edge_change":
-      return { ...state, edges: applyEdgeChanges(action.changes, state.edges) };
+      return {
+        ...state,
+        edges: applyEdgeChanges(action.changes, state.edges),
+        unsavedChanges: true,
+      };
     case "connect": {
+      // Assert that the connection is valid
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      // 3. The edge connects an option to a non-option node
+      // 4. The edge connects an option to a question that is not the parent of the option
       const { source, target } = action.connection;
       const sourceNode = state.nodes.find((n) => n.id === source);
       const targetNode = state.nodes.find((n) => n.id === target);
 
-      const existingEdge = state.edges.find(
-        (e) => e.source === source && e.target === target
+      // 1. The edge does not already exist
+      // 2. The option is not already connected to another question
+      if (sourceNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.source === source || e.target === source)
+        ) {
+          return state;
+        }
+      } else if (targetNode.dataType === "option") {
+        if (
+          state.edges.some((e) => e.target === target || e.source === target)
+        ) {
+          return state;
+        }
+      }
+
+      // 3. The edge connects an option to a non-option node
+      if (
+        sourceNode.dataType !== "option" &&
+        targetNode.dataType !== "option"
+      ) {
+        return state;
+      }
+
+      // 4. The edge connects an option to a question that is not the parent of the option
+      if (
+        sourceNode.parentNode === target ||
+        targetNode.parentNode === source
+      ) {
+        return state;
+      }
+
+      let questionId = "";
+      if (sourceNode.dataType === "option") {
+        questionId = sourceNode.parentNode;
+      } else {
+        questionId = targetNode.parentNode;
+      }
+
+      const question = state.navigationTree.getQuestion(questionId);
+      const option = question.options.find(
+        (o) => o.id === source || o.id === target
       );
 
-      if (
-        !existingEdge &&
-        targetNode.dataType !== "option" &&
-        sourceNode.dataType === "option"
-      ) {
-        const questionId = sourceNode.parentNode;
-        const question = getQuestion(questionId);
-        const option = question.options.find((o) => o.id === source);
-
-        const newQuestion = {
-          ...question,
-          options: [
-            ...question.options,
-            {
+      const newQuestion = {
+        ...question,
+        options: question.options.map((o) => {
+          if (o.id === option.id) {
+            return {
               ...option,
               nextId: target,
-            },
-          ],
-        };
-        updateQuestion(newQuestion);
-        return { ...state, edges: addEdge(action.connection, state.edges) };
-      }
-      return state;
+            };
+          }
+          return o;
+        }),
+      };
+
+      state.navigationTree.updateQuestion(newQuestion);
+      return {
+        ...state,
+        edges: addEdge(action.connection, state.edges),
+        unsavedChanges: true,
+      };
     }
     case "connect_stop": {
       const event = action.event;
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       // User ended a connection not to a node
-      if (targetIsPane) {
+      if (
+        targetIsPane &&
+        action.connectingNode.current.handleType === "source"
+      ) {
+        // Check if the source node already has an edge
+        const sourceNodeHasEdge = state.edges.some(
+          (e) =>
+            e.source === action.connectingNode.current.nodeId ||
+            e.target === action.connectingNode.current.nodeId
+        );
+        if (sourceNodeHasEdge) return state;
+
         // we need to remove the wrapper bounds, in order to get the correct position
         const { top, left } =
           action.reactFlowWrapper.current.getBoundingClientRect();
@@ -158,21 +307,65 @@ const reducer = (state, action) => {
           y: event.clientY - top,
         });
 
-        const question = createUntitledQuestion();
+        const question = NavigationTree.createUntitledQuestion();
+        state.navigationTree.addQuestion(question);
+        const parentQuestion = state.navigationTree.getQuestionByOptionId(
+          action.connectingNode.current.nodeId
+        );
+        state.navigationTree.updateQuestion({
+          ...parentQuestion,
+          options: parentQuestion.options.map((option) => {
+            return {
+              ...option,
+              nextId:
+                option.id === action.connectingNode.current.nodeId
+                  ? question.id
+                  : option.nextId,
+            };
+          }),
+        });
         const [newNodes, newEdges] = createNode({
           question,
           x,
           y,
-          connectingNodeId: action.connectingNodeId.current,
+          connectingNodeId: action.connectingNode.current.nodeId,
         });
         return {
           ...state,
           nodes: state.nodes.concat(newNodes),
           edges: state.edges.concat(newEdges),
+          unsavedChanges: true,
         };
       }
       return state;
     }
+    case "set_state": {
+      const flow = state.navigationTree.getReactFlowState();
+      if (flow) {
+        return {
+          ...state,
+          nodes: flow.nodes || [],
+          edges: flow.edges || [],
+          editModalOpen: false,
+        };
+      }
+
+      const [nodes, edges] = generateInitialNodes(
+        state.navigationTree.getQuestions()
+      );
+      return { ...state, nodes, edges, editModalOpen: false };
+    }
+    case "set_react_flow_instance": {
+      return { ...state, reactFlowInstance: action.reactFlowInstance };
+    }
+    case "format": {
+      const [nodes, edges] = generateInitialNodes(
+        state.navigationTree.getQuestions()
+      );
+      return { ...state, nodes, edges, unsavedChanges: true };
+    }
+    case "toggle_lock":
+      return { ...state, locked: !state.locked };
     default:
       throw Error("Unknown action: " + action.type);
   }
@@ -180,56 +373,354 @@ const reducer = (state, action) => {
 
 const TreeEditor = () => {
   const reactFlowWrapper = useRef(null);
-  const connectingNodeId = useRef(null);
+  const connectingNode = useRef(null);
+  const copiedNode = useRef(null);
+
+  const router = useRouter();
+  const { query } = router;
+  const [invalidID, setInvalidId] = React.useState(false);
+  const [treeID, setTreeID] = React.useState(undefined);
+
+  const { data: session, status } = useSession();
+  const [authUser, setAuthUser] = React.useState("");
 
   const { project } = useReactFlow();
-  const [state, dispatch] = useReducer(reducer, {}, () => {
-    const [nodes, edges] = generateInitialNodes(getQuestions());
 
-    return { nodes, edges, editModalOpen: false };
+  const [state, dispatch] = useReducer(reducer, {}, () => {
+    const navigationTree = new NavigationTree({ questions: [] });
+    const [nodes, edges] = generateInitialNodes(navigationTree.getQuestions());
+    return {
+      nodes,
+      edges,
+      navigationTree,
+      editModalOpen: false,
+      reactFlowInstance: null,
+      locked: false,
+      unsavedChanges: false,
+    };
   });
 
-  console.log(state.edges);
+  // Copy and paste nodes
+  const cmdCPressed = useKeyPress(["Meta+c", "Strg+c"]);
+  const cmdVPressed = useKeyPress(["Meta+v", "Strg+v"]);
+
+  useEffect(() => {
+    if (cmdCPressed) {
+      copiedNode.current = state.selectedNode;
+    }
+  }, [cmdCPressed, state.selectedNode]);
+  useEffect(() => {
+    if (cmdVPressed) {
+      dispatch({
+        type: "paste",
+        copiedNode: copiedNode.current,
+      });
+    }
+  }, [cmdVPressed]);
+
+  // initialize navigationTree in reducer
+  useEffect(() => {
+    async function initializeQuestions() {
+      setTreeID(query.id);
+      //let treeID = query.id;
+      let tree;
+
+      if (treeID) {
+        setInvalidId(false);
+        tree = await getQuestionTreeById(treeID);
+
+        if (tree) {
+          state.navigationTree.setTree(tree ?? { questions: [] });
+          // force reducer to recognize changed navigationTree
+          dispatch({ type: "set_state" });
+        } else {
+          setInvalidId(true);
+        }
+      } else {
+        setInvalidId(true);
+      }
+    }
+    initializeQuestions();
+  }, [state.navigationTree, router.isReady, treeID, query.id]);
+
+  useOnSelectionChange({
+    onChange: ({ nodes }) => dispatch({ type: "selection_change", nodes }),
+  });
+
+  useEffect(() => {
+    async function setAllAuthUserEmails() {
+      const newAuthUsers = [];
+      const newAuthUsersData = await getAuthUsers();
+      newAuthUsers.push(newAuthUsersData);
+      if (newAuthUsers[0] && session) {
+        let emailsArray = [];
+        for (let i = 0; i < Object.values(newAuthUsers[0]).length; i++) {
+          emailsArray.push(newAuthUsers[0][i].email);
+        }
+        if (emailsArray.includes(session.user.email)) {
+          setAuthUser("allowed");
+        } else if (!emailsArray.includes(session.user.email)) {
+          setAuthUser("not allowed");
+        }
+      }
+    }
+
+    setAllAuthUserEmails().catch((e) => {
+      throw new Error("Invalid token!" + e);
+    });
+  }, [session]);
+
+  const nodeTypes = useMemo(
+    () => ({
+      root: RootNode,
+      text: TextNode,
+      option: OptionNode,
+      question: QuestionNode,
+      error: ErrorNode,
+      url: URLNode,
+    }),
+    []
+  );
+
+  const {
+    isOpen: isInstructionsOpen,
+    onOpen: openInstructions,
+    onClose: onInstructionsClose,
+  } = useDisclosure();
+
+  // Open instructions modal on first visit of the page
+  useEffect(() => {
+    if (!localStorage.getItem("visited")) {
+      localStorage.setItem("visited", "true");
+      openInstructions();
+    }
+  }, [openInstructions]);
+
+  // prompt the user if they try and leave with unsaved changes
+  useEffect(() => {
+    const warningText =
+      "You have unsaved changes - are you sure you wish to leave this page?";
+    const handleWindowClose = (e) => {
+      if (!state.unsavedChanges) return;
+      e.preventDefault();
+      return (e.returnValue = warningText);
+    };
+    const handleBrowseAway = () => {
+      if (!state.unsavedChanges) return;
+      if (window.confirm(warningText)) return;
+      router.events.emit("routeChangeError");
+      throw "routeChange aborted.";
+    };
+    window.addEventListener("beforeunload", handleWindowClose);
+    router.events.on("routeChangeStart", handleBrowseAway);
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+      router.events.off("routeChangeStart", handleBrowseAway);
+    };
+  }, [state.unsavedChanges, router.events]);
+
+  if (status === "loading") {
+    return <></>;
+  } else if (status == "authenticated" && authUser != "allowed") {
+    return (
+      <>
+        <ErrorPage message="User Cannot Access this Page." />
+      </>
+    );
+  }
+  if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }
+
+  if (invalidID) {
+    return (
+      <>
+        <ErrorPage message="This tree does not exist." />
+      </>
+    );
+  }
+
+  let lastUpdated = "Loading...";
+
+  if (state.navigationTree.getTree().editedOn) {
+    const d = new Date(state.navigationTree.getTree().editedOn);
+    lastUpdated =
+      d.getFullYear() +
+      "/" +
+      ("0" + (d.getMonth() + 1)).slice(-2) +
+      "/" +
+      ("0" + d.getDate()).slice(-2) +
+      " " +
+      ("0" + d.getHours()).slice(-2) +
+      ":" +
+      ("0" + d.getMinutes()).slice(-2) +
+      ":" +
+      ("0" + d.getSeconds()).slice(-2);
+  }
 
   return (
-    <div
-      className="wrapper"
-      ref={reactFlowWrapper}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <EditQuestionModal
-        isOpen={state.editModalOpen}
-        dispatch={dispatch}
-        question={getQuestion(state.editModalNodeId)}
-      />
-      <ReactFlow
-        nodes={state.nodes}
-        edges={state.edges}
-        onNodesChange={(changes) => dispatch({ type: "node_change", changes })}
-        onEdgesChange={(changes) => dispatch({ type: "edge_change", changes })}
-        onEdgesDelete={(edges) => dispatch({ type: "edge_delete", edges })}
-        onConnect={(connection) => dispatch({ type: "connect", connection })}
-        onConnectStart={(_, { nodeId }) => {
-          connectingNodeId.current = nodeId;
-        }}
-        onConnectStop={(event) =>
-          dispatch({
-            type: "connect_stop",
-            event,
-            project,
-            reactFlowWrapper,
-            connectingNodeId,
-          })
-        }
-        onNodeDoubleClick={(event, node) => {
-          dispatch({
-            type: "open_edit_modal",
-            questionId: node.id,
-          });
-        }}
-        fitView
-      />
-    </div>
+    <>
+      {state.navigationTree != null &&
+      state.navigationTree.getQuestions() != null ? (
+        <>
+          <QuestionIcon
+            onClick={openInstructions}
+            position="absolute"
+            bottom={10}
+            right={10}
+            color="#59784D"
+            variant="ghost"
+            w={10}
+            h={10}
+            zIndex={2}
+            cursor="pointer"
+          />
+          <Text right="10%" top="170px" position="absolute">
+            Last Saved: {lastUpdated}
+          </Text>
+          <Box
+            left="10%"
+            right="10%"
+            top="100px"
+            background="#D9D9D9"
+            borderRadius={"10px"}
+            zIndex={1}
+            position="fixed"
+          >
+            <HStack>
+              <Button
+                size="md"
+                style={{ margin: "10px", backgroundColor: "#59784D" }}
+                border={state.locked ? "2px solid #F6893C" : ""}
+                onClick={() => dispatch({ type: "toggle_lock" })}
+              >
+                <LockIcon color="white" size="lg" />
+              </Button>
+              <Button
+                backgroundColor="#AFB9A5"
+                style={{ margin: "10px" }}
+                size="lg"
+                onClick={() => {
+                  dispatch({ type: "format" });
+                }}
+              >
+                Format
+              </Button>
+              <HStack style={{ marginLeft: "auto" }}>
+                <Button
+                  color="white"
+                  backgroundColor="#F6893C" // georgiacore orange
+                  style={{
+                    margin: "10px",
+                  }}
+                  size="lg"
+                  onClick={() => {
+                    // Save the state of the ReactFlow nodes
+                    if (state.reactFlowInstance) {
+                      const reactFlowState = state.reactFlowInstance.toObject();
+                      state.navigationTree.updateReactFlowState(reactFlowState);
+                    }
+
+                    dispatch({ type: "save" });
+                    updateQuestionTree(
+                      state.navigationTree.getTree(),
+                      session.user?.name
+                    );
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  backgroundColor="#AFB9A5"
+                  style={{ margin: "10px" }}
+                  size="lg"
+                  onClick={() => router.push("/navigator?id=" + treeID)}
+                >
+                  Preview
+                </Button>
+              </HStack>
+            </HStack>
+          </Box>
+          <InstructionsModal
+            isOpen={isInstructionsOpen}
+            onClose={onInstructionsClose}
+          />
+          <div
+            className="wrapper"
+            ref={reactFlowWrapper}
+            style={{
+              height: "90%",
+              width: "100%",
+              position: "fixed",
+              zIndex: 0,
+            }}
+          >
+            <EditQuestionModal
+              isOpen={state.editModalOpen}
+              dispatch={dispatch}
+              question={state.navigationTree.getQuestion(state.editModalNodeId)}
+            />
+            <ReactFlow
+              nodesDraggable={!state.locked}
+              nodesConnectable={!state.locked}
+              nodesFocusable={!state.locked}
+              edgesFocusable={!state.locked}
+              elementsSelectable={!state.locked}
+              nodeTypes={nodeTypes}
+              nodes={state.nodes}
+              edges={state.edges}
+              onInit={(reactFlowInstance) =>
+                dispatch({ type: "set_react_flow_instance", reactFlowInstance })
+              }
+              onNodesChange={(changes) =>
+                dispatch({ type: "node_change", changes })
+              }
+              onEdgesChange={(changes) =>
+                dispatch({ type: "edge_change", changes })
+              }
+              onEdgesDelete={(edges) =>
+                dispatch({ type: "edge_delete", edges })
+              }
+              onNodesDelete={(nodes) =>
+                dispatch({ type: "delete_question", nodes })
+              }
+              onConnect={(connection) =>
+                dispatch({ type: "connect", connection })
+              }
+              onConnectStart={(_, { nodeId, handleType }) => {
+                connectingNode.current = { nodeId, handleType };
+              }}
+              onConnectEnd={(event) =>
+                dispatch({
+                  type: "connect_stop",
+                  event,
+                  project,
+                  reactFlowWrapper,
+                  connectingNode,
+                })
+              }
+              onNodeDoubleClick={(event, node) => {
+                dispatch({
+                  type: "open_edit_modal",
+                  questionId: node.id,
+                });
+              }}
+              fitView
+            >
+              <Background />
+
+              <Controls />
+            </ReactFlow>
+          </div>
+        </>
+      ) : (
+        <p>No Active Tree</p>
+      )}
+    </>
   );
 };
 
