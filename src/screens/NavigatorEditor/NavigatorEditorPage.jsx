@@ -87,7 +87,7 @@ const reducer = (state, action) => {
       }
 
       const question = state.navigationTree.getQuestion(copiedNode.id);
-      const copyOfQuestion = state.navigationTree.copyQuestion(question);
+      const copyOfQuestion = NavigationTree.copyQuestionNotRootNewUids(question);
       state.navigationTree.addQuestion(copyOfQuestion);
 
       const [newNodes, newEdges] = createNode({
@@ -306,7 +306,7 @@ const reducer = (state, action) => {
           y: event.clientY - top,
         });
 
-        const question = state.navigationTree.createUntitledQuestion();
+        const question = NavigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
         const parentQuestion = state.navigationTree.getQuestionByOptionId(
           action.connectingNode.current.nodeId

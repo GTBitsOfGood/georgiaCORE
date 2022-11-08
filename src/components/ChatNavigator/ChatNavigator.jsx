@@ -28,7 +28,6 @@ const ChatNavigator = (props) => {
         for (const question of questions) {
           questionMap[question.id] = question;
         }
-        console.log(questionMap);
         setAllQuestions(questionMap);
         setInvalidId(false);
       } catch {
