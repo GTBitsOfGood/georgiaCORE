@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import styles from "./ChatNavigator.module.css";
@@ -37,13 +38,16 @@ const ChatNavigator = (props) => {
   useEffect(() => {
     const setup = async () => {
       try {
-        const questionsTree = await getQuestionTreeById(query.id);
+        const questionsTree =
+          props.isActive === true
+            ? await getActiveQuestionTree()
+            : await getQuestionTreeById(query.id);
         const questions = questionsTree.questions;
+        
         const questionMap = {};
         for (const question of questions) {
           questionMap[question.id] = question;
         }
-        console.log(questionMap);
 
         const distanceMap = {};
         const finalDistanceMap = {};
@@ -92,15 +96,15 @@ const ChatNavigator = (props) => {
 
   if (status === "loading") {
     return <></>;
-  } 
+  }
 
-  if (status == "unauthenticated") {
+  if (status == "unauthenticated" && props.isActive !== true) {
     return (
       <>
         <ErrorPage message="User is not logged in." />
       </>
     );
-  }  
+  }
 
   if (invalidID) {
     return (
@@ -112,6 +116,7 @@ const ChatNavigator = (props) => {
 
   if (numQs > 0) {
     const currentQuestion = allQuestions[currentQuestionIndex];
+
     return (
       <Flex
         width="100%"

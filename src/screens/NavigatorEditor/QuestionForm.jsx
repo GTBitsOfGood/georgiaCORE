@@ -13,15 +13,17 @@ import { SmallCloseIcon } from "@chakra-ui/icons";
 import PropTypes from "prop-types";
 
 import { v4 as uuidv4 } from "uuid";
+import icons from "src/utils/icons";
 
-const editOptionText = ({ question, optionId, text }) => {
+const editOption = ({ question, optionId, text, icon }) => {
   return {
     ...question,
     options: question.options.map((o) => {
       if (o.id === optionId) {
         return {
           ...o,
-          option: text,
+          option: text || o.option,
+          icon: icon || o.icon,
         };
       }
       return o;
@@ -36,10 +38,16 @@ const removeOption = (question, optionId) => {
   };
 };
 
-const NewOption = ({ optionId, optionText, question, setQuestion }) => {
-  const handleChange = (event) => {
+const EditOption = ({
+  optionId,
+  optionText,
+  optionIcon,
+  question,
+  setQuestion,
+}) => {
+  const handleTextChange = (event) => {
     setQuestion(
-      editOptionText({
+      editOption({
         question,
         optionId,
         text: event.target.value,
@@ -47,9 +55,33 @@ const NewOption = ({ optionId, optionText, question, setQuestion }) => {
     );
   };
 
+  const handleIconChange = (event) => {
+    setQuestion(
+      editOption({
+        question,
+        optionId,
+        icon: event.target.value,
+      })
+    );
+  };
+
   return (
     <HStack w="100%">
-      <Input variant="flushed" value={optionText} onChange={handleChange} />
+      <Select
+        variant="filled"
+        w="21%"
+        size="sm"
+        value={optionIcon || "QuestionMark"}
+        onChange={handleIconChange}
+        icon={icons[optionIcon] || icons["QuestionMark"]}
+      >
+        {Object.keys(icons).map((icon) => (
+          <option key={icon} value={icon}>
+            {icon}
+          </option>
+        ))}
+      </Select>
+      <Input variant="flushed" value={optionText} onChange={handleTextChange} />
       <Button onClick={() => setQuestion(removeOption(question, optionId))}>
         <SmallCloseIcon color="teal" />
       </Button>
@@ -57,9 +89,10 @@ const NewOption = ({ optionId, optionText, question, setQuestion }) => {
   );
 };
 
-NewOption.propTypes = {
+EditOption.propTypes = {
   optionId: PropTypes.string,
   optionText: PropTypes.string,
+  optionIcon: PropTypes.string,
   question: PropTypes.object,
   setQuestion: PropTypes.func,
 };
@@ -72,6 +105,7 @@ const addOption = (question) => {
       {
         id: uuidv4(),
         option: "Option " + (question.options.length + 1),
+        icon: "QuestionMark",
         nextId: null,
       },
     ],
@@ -134,10 +168,11 @@ const QuestionForm = ({ question, setQuestion }) => {
             {question.type === "question" && (
               <>
                 {question.options.map((option) => (
-                  <NewOption
+                  <EditOption
                     key={option.id}
                     optionId={option.id}
                     optionText={option.option}
+                    optionIcon={option.icon}
                     question={question}
                     setQuestion={setQuestion}
                   />

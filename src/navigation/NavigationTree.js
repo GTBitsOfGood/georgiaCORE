@@ -7,6 +7,7 @@ export default class NavigationTree {
     active: Boolean,
     title: String,
     thumbnailImage: Buffer,
+    reactFlowState: Object,
     questions: [{
       id: String,
       question: String,
@@ -96,10 +97,15 @@ export default class NavigationTree {
     this.tree.questions.splice(index, 1);
   }
 
-  createQuestion(questionContent, type, options) {
-    const id = uuidv4();
+  static createQuestion(questionContent, type, options, initial=false) {
+    let id = uuidv4();
+
+    if (initial) {
+      id = '1';
+    }
 
     const question = {
+      isRoot: false,
       id,
       question: questionContent,
       type,
@@ -107,6 +113,7 @@ export default class NavigationTree {
         return {
           id: uuidv4(),
           option: o.option,
+          icon: o.icon,
           nextId: o.nextId,
         };
       }),
@@ -115,7 +122,22 @@ export default class NavigationTree {
     return question;
   }
 
-  copyQuestion(question) {
+  static copyQuestionSameEverything(question) {
+    const newQuestion = {
+      ...question,
+    };
+
+    delete newQuestion._id;
+
+    newQuestion.options = question.options.map((o) => {
+      const newO = {...o};
+      delete newO._id;
+      return newO;
+    });
+    return newQuestion;
+  }
+
+  static copyQuestionNotRootNewUids(question) {
     const id = uuidv4();
 
     const newQuestion = {
@@ -125,21 +147,42 @@ export default class NavigationTree {
     };
 
     delete newQuestion._id;
-    delete newQuestion.__v;
 
-    newQuestion.options = newQuestion.options.map((o) => {
-      return {
-        ...o,
-        id: uuidv4(),
-      };
+    newQuestion.options = question.options.map((o) => {
+      const newO = {...o, id: uuidv4()};
+      delete newO._id;
+      return newO;
     });
     return newQuestion;
   }
 
-  createUntitledQuestion() {
+  static createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
-      { option: "Option 1", nextId: null },
+      { option: "Option 1", icon: "QuestionMark", nextId: null },
     ]);
+  }
+
+  updateReactFlowState(reactFlowState) {
+    this.tree.reactFlowState = reactFlowState;
+  }
+
+  getReactFlowState() {
+    return this.tree.reactFlowState;
+  }
+  
+  static createInitialQuestion() {
+    const question = this.createQuestion("Do you want to continue?", "question", [
+      {
+        option: "Yes",
+        nextId: null,
+      },
+      {
+        option: "No",
+        nextId: null,
+      },
+    ], true);
+    question.isRoot = true;
+    return question;
   }
 
   printTree() {

@@ -17,6 +17,7 @@ class MyDocument extends Document {
             type="image/png"
             href="/static/favicon.png"
           />
+          <meta name="robots" content="noindex, nofollow"></meta>
         </Head>
         <body>
           <Main />

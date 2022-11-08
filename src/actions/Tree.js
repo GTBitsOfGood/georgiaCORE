@@ -98,7 +98,9 @@ export const removeQuestionTreeById =  async(id) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: id,
+    body: JSON.stringify({
+      id,
+    }),
   })
     .then((response) => response.json())
     .then((json) => {

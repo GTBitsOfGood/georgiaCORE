@@ -2,12 +2,22 @@ import React, { memo } from "react";
 import { Handle, Position } from "reactflow";
 import PropTypes from "prop-types";
 
+import icons from "src/utils/icons";
+import { Box, HStack, Text } from "@chakra-ui/react";
+
 export default memo(OptionNode);
 
-function OptionNode({ data }) {
+function OptionNode({ data, selected }) {
   return (
     <>
-      {data.label}
+      <HStack
+        style={{
+          border: selected ? "2px solid #FF8A00" : "",
+        }}
+      >
+        <Text>{data.label}</Text>
+        <Box style={{ marginLeft: "auto" }}>{icons[data.icon]}</Box>
+      </HStack>
       <Handle type="source" position={Position.Right} />
     </>
   );
@@ -16,4 +26,5 @@ function OptionNode({ data }) {
 OptionNode.propTypes = {
   data: PropTypes.object,
   isConnectable: PropTypes.bool,
+  selected: PropTypes.bool,
 };

@@ -8,11 +8,13 @@ const testQuestions = [
       {
         id: "1-1",
         option: "Yes",
+        icon: "QuestionMark",
         nextId: "2",
       },
       {
         id: "1-2",
         option: "No",
+        icon: "QuestionMark",
         nextId: "3",
       },
     ],
@@ -25,11 +27,13 @@ const testQuestions = [
       {
         id: "2-1",
         option: "18-25",
+        icon: "QuestionMark",
         nextId: "3",
       },
       {
         id: "2-2",
         option: "26-35",
+        icon: "QuestionMark",
         nextId: "3",
       },
     ],
@@ -42,11 +46,13 @@ const testQuestions = [
       {
         id: "3-1",
         option: "Yes",
+        icon: "QuestionMark",
         nextId: null,
       },
       {
         id: "3-2",
         option: "No",
+        icon: "QuestionMark",
         nextId: "4",
       },
     ],
@@ -62,14 +68,14 @@ const testQuestions = [
 
 export const testTree = {
   active: true,
-  title: 'test title',
+  title: "test title",
   thumbnailImage: null,
   questions: testQuestions,
   // Metadata
   editedOn: new Date(), // updated internally by mongodb/actions
   // (will be updated when tree goes active => inactive, so will be wrong for the active tree)
   lastActive: new Date(), // updated internally by mongodb/actions
-  author: 'yours truly', // updated internally by mongodb/actions
+  author: "yours truly", // updated internally by mongodb/actions
 };
 
 export default testQuestions;
