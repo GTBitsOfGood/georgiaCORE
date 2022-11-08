@@ -1,5 +1,10 @@
 import { withSessionRoute } from "src/utils/lib/session";
-import { deleteAuthUser, insertAuthUser, updateAuthUser, getAuthUsers } from "server/mongodb/actions/AuthUser";
+import {
+  deleteAuthUser,
+  insertAuthUser,
+  updateAuthUser,
+  getAuthUsers,
+} from "server/mongodb/actions/AuthUser";
 
 // @route   POST/DELETE/PATCH/GET api/authUser
 // @desc    Insert/Delete/Update/Get authUser(s) into/from database
@@ -9,7 +14,7 @@ const handler = async (req, res) => {
     // Insert authUser
     try {
       await insertAuthUser(req.body);
-      
+
       await req.session.save();
       return res.status(200).json({
         success: true,

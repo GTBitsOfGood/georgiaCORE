@@ -87,7 +87,8 @@ const reducer = (state, action) => {
       }
 
       const question = state.navigationTree.getQuestion(copiedNode.id);
-      const copyOfQuestion = NavigationTree.copyQuestionNotRootNewUids(question);
+      const copyOfQuestion =
+        NavigationTree.copyQuestionNotRootNewUids(question);
       state.navigationTree.addQuestion(copyOfQuestion);
 
       const [newNodes, newEdges] = createNode({

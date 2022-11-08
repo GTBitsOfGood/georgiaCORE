@@ -2,7 +2,7 @@ import { withSessionRoute } from "src/utils/lib/session";
 import { addQuestionTree } from "server/mongodb/actions/Tree";
 
 // @route   POST api/tree/add
-// @desc    
+// @desc
 // @access  Public
 const handler = async (req, res) => {
   try {

@@ -8,7 +8,6 @@ if (allowedEmails) {
   allowedEmails = allowedEmails.split("+");
 }
 
-
 /** Configuration for NextAuth
  * SignIn callback only allows emails specfied in environment
  * variables to log in
@@ -25,7 +24,8 @@ export const authOptions = {
     async signIn({ user }) {
       let authUsers = await getAuthUsers();
       let inAllowedEmails = allowedEmails && allowedEmails.includes(user.email);
-      let inAuthUsers = authUsers && authUsers.authUsers.some(e => e.email === user.email);
+      let inAuthUsers =
+        authUsers && authUsers.authUsers.some((e) => e.email === user.email);
 
       if (inAllowedEmails || inAuthUsers) return true;
       return false;

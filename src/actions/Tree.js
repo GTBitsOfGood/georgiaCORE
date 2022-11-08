@@ -13,7 +13,7 @@ export const getQuestionTreeById = async (id) => {
     .then((json) => {
       if (json == null) {
         throw new Error("Could not connect to API!");
-      } 
+      }
       return json.payload;
     });
 };
@@ -52,7 +52,7 @@ export const getAllQuestionTrees = async () => {
       } else if (!json.success) {
         throw new Error(json.message);
       }
-      const newTrees = json.payload.map(tree => {
+      const newTrees = json.payload.map((tree) => {
         if (tree.editedOn) {
           tree.editedOn = new Date(tree.editedOn);
         }
@@ -90,7 +90,7 @@ export const addQuestionTree = async (tree, username) => {
     });
 };
 
-export const removeQuestionTreeById =  async(id) => {
+export const removeQuestionTreeById = async (id) => {
   return fetch(urls.baseUrl + urls.api.tree.removeById, {
     method: "POST",
     mode: "same-origin",

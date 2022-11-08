@@ -26,7 +26,7 @@ const urls = {
       add: "/api/tree/add",
       removeById: "/api/tree/remove-by-id",
       update: "/api/tree/update",
-    }
+    },
   },
 };
 

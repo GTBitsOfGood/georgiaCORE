@@ -97,11 +97,11 @@ export default class NavigationTree {
     this.tree.questions.splice(index, 1);
   }
 
-  static createQuestion(questionContent, type, options, initial=false) {
+  static createQuestion(questionContent, type, options, initial = false) {
     let id = uuidv4();
 
     if (initial) {
-      id = '1';
+      id = "1";
     }
 
     const question = {
@@ -130,7 +130,7 @@ export default class NavigationTree {
     delete newQuestion._id;
 
     newQuestion.options = question.options.map((o) => {
-      const newO = {...o};
+      const newO = { ...o };
       delete newO._id;
       return newO;
     });
@@ -149,7 +149,7 @@ export default class NavigationTree {
     delete newQuestion._id;
 
     newQuestion.options = question.options.map((o) => {
-      const newO = {...o, id: uuidv4()};
+      const newO = { ...o, id: uuidv4() };
       delete newO._id;
       return newO;
     });
@@ -169,18 +169,23 @@ export default class NavigationTree {
   getReactFlowState() {
     return this.tree.reactFlowState;
   }
-  
+
   static createInitialQuestion() {
-    const question = this.createQuestion("Do you want to continue?", "question", [
-      {
-        option: "Yes",
-        nextId: null,
-      },
-      {
-        option: "No",
-        nextId: null,
-      },
-    ], true);
+    const question = this.createQuestion(
+      "Do you want to continue?",
+      "question",
+      [
+        {
+          option: "Yes",
+          nextId: null,
+        },
+        {
+          option: "No",
+          nextId: null,
+        },
+      ],
+      true
+    );
     question.isRoot = true;
     return question;
   }

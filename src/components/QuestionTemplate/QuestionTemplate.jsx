@@ -25,95 +25,105 @@ const QuestionTemplate = (props) => {
       textAlign="center"
       paddingBottom={50}
     >
-      {props.type == "question" && props.options.slice(props.questionStart, props.questionEnd).map((option, index) => {
-        return (
-          <Stack
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-            key={index}
-            onClick={option.triggerNext ? option.triggerNext : () => {}}
-            padding="10px"
-            width= "250px"
-            height="250px"
-            marginRight="20px"
-            marginLeft="20px"
-            
-            cursor="pointer"
-          >
-            {props.options.image ? (
-              <Flex
-                backgroundColor= "#5B794E"
-                width="120px"
-                height="120px"
-                borderRadius="100%"
-                alignItems="center"
+      {props.type == "question" &&
+        props.options
+          .slice(props.questionStart, props.questionEnd)
+          .map((option, index) => {
+            return (
+              <Stack
+                direction="column"
                 justifyContent="center"
-                color="white"
-                marginBottom="20px"
-              >
-                {props.options.image == "doctor" && (
-                  <FaUserNurse size={50}></FaUserNurse>
-                )}
-                {props.options.image == "resources" && (
-                  <RiComputerFill size={50}></RiComputerFill>
-                )}
-                {props.options.image == "health" && (
-                  <GiHealthNormal size={50}></GiHealthNormal>
-                )}
-                {props.options.image == "x" && (
-                  <MdOutlineClose size={50}></MdOutlineClose>
-                )}
-                {props.options.image == "check" && (
-                  <MdOutlineCheck size={50}></MdOutlineCheck>
-                )}
-                {props.options.image == "phone" && (
-                  <PhoneIcon width={50} height={50}></PhoneIcon>
-                )}
-              </Flex>
-            ) : (
-              <Flex
-                backgroundColor= "#5B794E"
-                width="120px"
-                height="120px"
-                borderRadius="100%"
                 alignItems="center"
-                justifyContent="center"
-                color="white"
+                key={index}
+                onClick={option.triggerNext ? option.triggerNext : () => {}}
+                padding="10px"
+                width="250px"
+                height="250px"
+                marginRight="20px"
+                marginLeft="20px"
+                cursor="pointer"
               >
-                <PhoneIcon width={50} height={50}></PhoneIcon>
-              </Flex>
-            )}
-            <Flex width="100%" backgroundColor="#F9F8FA" justifyContent="center">
-              <Text
-                color="#343A40"
-                fontSize="24px"
-                fontWeight={700}
-                fontFamily="sans-serif"
-              >
-                {option.answer}
-              </Text>
-            </Flex>
-            <Flex width="100%" backgroundColor="#F9F8FA" justifyContent="center">
-              <Text
-                color= "#343A40"
-                opacity={0.7}
-                fontSize="16px"
-                lineHeight={1.3}
-                fontWeight={600}
-                fontFamily="sans-serif"
-              >
-                professional medical resources that may help
-              </Text>
-            </Flex>
-          </Stack>
-        );
-      })}
-      {props.type == "url"&& (
+                {props.options.image ? (
+                  <Flex
+                    backgroundColor="#5B794E"
+                    width="120px"
+                    height="120px"
+                    borderRadius="100%"
+                    alignItems="center"
+                    justifyContent="center"
+                    color="white"
+                    marginBottom="20px"
+                  >
+                    {props.options.image == "doctor" && (
+                      <FaUserNurse size={50}></FaUserNurse>
+                    )}
+                    {props.options.image == "resources" && (
+                      <RiComputerFill size={50}></RiComputerFill>
+                    )}
+                    {props.options.image == "health" && (
+                      <GiHealthNormal size={50}></GiHealthNormal>
+                    )}
+                    {props.options.image == "x" && (
+                      <MdOutlineClose size={50}></MdOutlineClose>
+                    )}
+                    {props.options.image == "check" && (
+                      <MdOutlineCheck size={50}></MdOutlineCheck>
+                    )}
+                    {props.options.image == "phone" && (
+                      <PhoneIcon width={50} height={50}></PhoneIcon>
+                    )}
+                  </Flex>
+                ) : (
+                  <Flex
+                    backgroundColor="#5B794E"
+                    width="120px"
+                    height="120px"
+                    borderRadius="100%"
+                    alignItems="center"
+                    justifyContent="center"
+                    color="white"
+                  >
+                    <PhoneIcon width={50} height={50}></PhoneIcon>
+                  </Flex>
+                )}
+                <Flex
+                  width="100%"
+                  backgroundColor="#F9F8FA"
+                  justifyContent="center"
+                >
+                  <Text
+                    color="#343A40"
+                    fontSize="24px"
+                    fontWeight={700}
+                    fontFamily="sans-serif"
+                  >
+                    {option.answer}
+                  </Text>
+                </Flex>
+                <Flex
+                  width="100%"
+                  backgroundColor="#F9F8FA"
+                  justifyContent="center"
+                >
+                  <Text
+                    color="#343A40"
+                    opacity={0.7}
+                    fontSize="16px"
+                    lineHeight={1.3}
+                    fontWeight={600}
+                    fontFamily="sans-serif"
+                  >
+                    professional medical resources that may help
+                  </Text>
+                </Flex>
+              </Stack>
+            );
+          })}
+      {props.type == "url" && (
         <Flex width="100%" backgroundColor="#F9F8FA" justifyContent="center">
           <Link>
             <Text
-              color= "#343A40"
+              color="#343A40"
               opacity={0.7}
               fontSize="20px"
               lineHeight={1.3}

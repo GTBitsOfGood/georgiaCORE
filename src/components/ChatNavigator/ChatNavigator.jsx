@@ -23,16 +23,16 @@ import { Text, Flex, Stack } from "@chakra-ui/react";
  */
 
 const ChatNavigator = (props) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
-  const [allQuestions, setAllQuestions] = useState({});
-  const [questionStack, setQuestionStack] = useState([]);
-  const [visibleOptionsStart, setVisibleOptionsStart] = useState(0);
-  const [visibleOptionsEnd, setVisibleOptionsEnd] = useState(5);
-  const [invalidID, setInvalidId] = useState(false);
-  const { data: session, status } = useSession();
-  const [allDistances, setAllDistances] = useState({});
-  
-  const router = useRouter()
+  let [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
+  let [allQuestions, setAllQuestions] = useState({});
+  let [questionStack, setQuestionStack] = useState([]);
+  let [visibleOptionsStart, setVisibleOptionsStart] = useState(0);
+  let [visibleOptionsEnd, setVisibleOptionsEnd] = useState(5);
+  let [invalidID, setInvalidId] = useState(false);
+  let { data: session, status } = useSession();
+  let [allDistances, setAllDistances] = useState({});
+
+  const router = useRouter();
   const { query } = router;
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const ChatNavigator = (props) => {
             ? await getActiveQuestionTree()
             : await getQuestionTreeById(query.id);
         const questions = questionsTree.questions;
-        
+
         const questionMap = {};
         for (const question of questions) {
           questionMap[question.id] = question;
@@ -55,7 +55,7 @@ const ChatNavigator = (props) => {
           for (const tempQuestion of questions) {
             distanceMap[tempQuestion.id] = 1000;
           }
-          const maxDist = 0;
+          let maxDist = 0;
           const queue = [];
           distanceMap[question.id] = 0;
           queue.push(question);
@@ -68,13 +68,13 @@ const ChatNavigator = (props) => {
                   distanceMap[opt.nextId] = distanceMap[ejectQuestion.id] + 1;
                   if (distanceMap[opt.nextId] > maxDist) {
                     maxDist = distanceMap[opt.nextId];
-                  };
-                };
-              };
-            };
-          };
+                  }
+                }
+              }
+            }
+          }
           finalDistanceMap[question.id] = maxDist;
-        };
+        }
         setAllQuestions(questionMap);
         setAllDistances(finalDistanceMap);
         setInvalidId(false);
@@ -87,10 +87,10 @@ const ChatNavigator = (props) => {
   }, [router.isReady]);
 
   const numQs = Object.keys(allQuestions).length;
-  const tempQuestionStack = [];
+  let tempQuestionStack = [];
 
   const progressBars = [];
-  for (let i = 0; i < Object.values(allDistances)[0] + 1; i++){
+  for (let i = 0; i < Object.values(allDistances)[0] + 1; i++) {
     progressBars.push(i);
   }
 
@@ -118,38 +118,36 @@ const ChatNavigator = (props) => {
     const currentQuestion = allQuestions[currentQuestionIndex];
 
     return (
-      <Flex
-        width="100%"
-        height="100%"
-        backgroundColor="#F9F8FA"
-      >
-        <Stack
-          direction="column"
-          width="100%"
-        >
+      <Flex width="100%" height="100%" backgroundColor="#F9F8FA">
+        <Stack direction="column" width="100%">
           <Stack
-            direction="row" 
+            direction="row"
             width="100%"
-            backgroundColor="#F9F8FA" 
+            backgroundColor="#F9F8FA"
             justifyContent="center"
             alignItems="center"
             paddingTop={5}
             paddingBottom={5}
           >
-            <Stack  direction="row" width="33%" paddingLeft={20}>
-              <Flex 
+            <Stack direction="row" width="33%" paddingLeft={20}>
+              <Flex
                 backgroundColor="#343A40"
                 alignItems="center"
                 justifyContent="center"
                 borderRadius={2}
                 height={26}
                 width={26}
-                onClick={() => {setCurrentQuestionIndex(1); setQuestionStack([]); setVisibleOptionsStart(0); setVisibleOptionsEnd(5)}}
+                onClick={() => {
+                  setCurrentQuestionIndex(1);
+                  setQuestionStack([]);
+                  setVisibleOptionsStart(0);
+                  setVisibleOptionsEnd(5);
+                }}
                 cursor="pointer"
               >
-                <MdHome size={15} color="white"/>
+                <MdHome size={15} color="white" />
               </Flex>
-              <Flex 
+              <Flex
                 backgroundColor="#343A40"
                 alignItems="center"
                 justifyContent="center"
@@ -159,48 +157,55 @@ const ChatNavigator = (props) => {
                 onClick={() => {
                   tempQuestionStack = questionStack;
                   setCurrentQuestionIndex(tempQuestionStack.pop());
-                  setQuestionStack(tempQuestionStack); 
-                  setQuestionStack(questionStack); 
-                  setVisibleOptionsStart(0); 
+                  setQuestionStack(tempQuestionStack);
+                  setQuestionStack(questionStack);
+                  setVisibleOptionsStart(0);
                   setVisibleOptionsEnd(5);
                 }}
                 cursor="pointer"
               >
-                <IoChevronBackOutline size={15} color="white"/>
+                <IoChevronBackOutline size={15} color="white" />
               </Flex>
             </Stack>
             <Flex width="33%" justifyContent="center">
               <Text
-                textAlign= "center"
+                textAlign="center"
                 marginBottom={0}
-                color= "#343A40"
-                fontSize= "28px"
-                fontWeight= {600}
+                color="#343A40"
+                fontSize="28px"
+                fontWeight={600}
                 fontFamily="sans-serif"
               >
-                {currentQuestion.type == "question" && (
-                    currentQuestion.question
-                )}
-                {currentQuestion.type == "url" && (
-                  "We have found a resource for you!"
-                )}
-                {currentQuestion.type == "error" && (
-                  "Unfortunately, we cannot find a resource for you!"
-                )}
+                {currentQuestion.type == "question" && currentQuestion.question}
+                {currentQuestion.type == "url" &&
+                  "We have found a resource for you!"}
+                {currentQuestion.type == "error" &&
+                  "Unfortunately, we cannot find a resource for you!"}
               </Text>
             </Flex>
             <Flex width="33%" justifyContent="flex-end" paddingRight={20}>
               <Stack direction="row" width="25%">
                 {progressBars.map((index) => {
                   return (
-                    <Flex 
-                      key={index} 
-                      backgroundColor={( Object.values(allDistances)[0] - allDistances[currentQuestion.id] >= index) ? "#58794E" : "#343A40"} 
-                      opacity={Object.values(allDistances)[0] - allDistances[currentQuestion.id] >= index ? 1 : .25} 
-                      width="25px" 
+                    <Flex
+                      key={index}
+                      backgroundColor={
+                        Object.values(allDistances)[0] -
+                          allDistances[currentQuestion.id] >=
+                        index
+                          ? "#58794E"
+                          : "#343A40"
+                      }
+                      opacity={
+                        Object.values(allDistances)[0] -
+                          allDistances[currentQuestion.id] >=
+                        index
+                          ? 1
+                          : 0.25
+                      }
+                      width="25px"
                       height="6px"
-                    >
-                    </Flex>
+                    ></Flex>
                   );
                 })}
               </Stack>
@@ -208,18 +213,21 @@ const ChatNavigator = (props) => {
           </Stack>
           <Stack direction="row" justifyContent="center" alignItems="center">
             {visibleOptionsStart > 0 ? (
-              <Flex 
-                cursor="pointer" 
-                paddingTop={10} 
-                width="50px" 
-                height="250px" 
-                onClick={() => {setVisibleOptionsEnd(visibleOptionsEnd -= 1); setVisibleOptionsStart(visibleOptionsStart -= 1)}}
+              <Flex
+                cursor="pointer"
+                paddingTop={10}
+                width="50px"
+                height="250px"
+                onClick={() => {
+                  setVisibleOptionsEnd((visibleOptionsEnd -= 1));
+                  setVisibleOptionsStart((visibleOptionsStart -= 1));
+                }}
               >
-                <BsChevronLeft color="#343A40" size={50}/>
+                <BsChevronLeft color="#343A40" size={50} />
               </Flex>
             ) : (
               <Flex>
-                <BsChevronLeft color="#F8F9FA" size={50}/>
+                <BsChevronLeft color="#F8F9FA" size={50} />
               </Flex>
             )}
             <Flex>
@@ -234,7 +242,6 @@ const ChatNavigator = (props) => {
                     answer: option.option,
                     triggerNext: () => {
                       if (option.nextId) {
-                        
                         setCurrentQuestionIndex(option.nextId);
                         setVisibleOptionsStart(0);
                         setVisibleOptionsEnd(5);
@@ -245,22 +252,25 @@ const ChatNavigator = (props) => {
                     },
                   };
                 })}
-              >
-              </QuestionTemplate>
+              ></QuestionTemplate>
             </Flex>
-            {visibleOptionsEnd < Object.values(currentQuestion.options).length ? (
-              <Flex 
-                cursor="pointer" 
-                paddingTop={10} 
-                width="50px" 
-                height="250px" 
-                onClick={() => {setVisibleOptionsEnd(visibleOptionsEnd += 1); setVisibleOptionsStart(visibleOptionsStart += 1)}}
+            {visibleOptionsEnd <
+            Object.values(currentQuestion.options).length ? (
+              <Flex
+                cursor="pointer"
+                paddingTop={10}
+                width="50px"
+                height="250px"
+                onClick={() => {
+                  setVisibleOptionsEnd((visibleOptionsEnd += 1));
+                  setVisibleOptionsStart((visibleOptionsStart += 1));
+                }}
               >
-              <BsChevronRight color="#343A40" size={50}/>
+                <BsChevronRight color="#343A40" size={50} />
               </Flex>
             ) : (
               <Flex>
-                <BsChevronRight color="#F8F9FA" size={50}/>
+                <BsChevronRight color="#F8F9FA" size={50} />
               </Flex>
             )}
           </Stack>

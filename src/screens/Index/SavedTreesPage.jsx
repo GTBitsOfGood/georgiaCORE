@@ -1,9 +1,34 @@
 import React, { useState, useRef, useReducer, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-import { getAllQuestionTrees, updateQuestionTree, addQuestionTree, removeQuestionTreeById } from "src/actions/Tree";
+import {
+  getAllQuestionTrees,
+  updateQuestionTree,
+  addQuestionTree,
+  removeQuestionTreeById,
+} from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
-import { Text, Button, Divider, VStack, HStack, Box, Center, Heading, SimpleGrid, Flex, Wrap, WrapItem, InputLeftElement, Input, InputGroup, Spacer, extendTheme, ChakraProvider, filter } from "@chakra-ui/react";
+import {
+  Text,
+  Button,
+  Divider,
+  VStack,
+  HStack,
+  Box,
+  Center,
+  Heading,
+  SimpleGrid,
+  Flex,
+  Wrap,
+  WrapItem,
+  InputLeftElement,
+  Input,
+  InputGroup,
+  Spacer,
+  extendTheme,
+  ChakraProvider,
+  filter,
+} from "@chakra-ui/react";
 import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCard";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import { AddIcon, SearchIcon, EditIcon } from "@chakra-ui/icons";
@@ -23,23 +48,23 @@ import {
   FormLabel,
   FormErrorMessage,
   FormHelperText,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 
 const theme = extendTheme({
   colors: {
-    'georgia-core-green': {
-      50: '#edf7e8',
-      100: '#d3e2cd',
-      200: '#b8cdb0',
-      300: '#9db992',
-      400: '#82a574',
-      500: '#698c5b',
-      600: '#516d46',
-      700: '#394e31',
-      800: '#212f1c',
-      900: '#071201',
-    }
-  }
+    "georgia-core-green": {
+      50: "#edf7e8",
+      100: "#d3e2cd",
+      200: "#b8cdb0",
+      300: "#9db992",
+      400: "#82a574",
+      500: "#698c5b",
+      600: "#516d46",
+      700: "#394e31",
+      800: "#212f1c",
+      900: "#071201",
+    },
+  },
 });
 
 const SavedTreesPage = () => {
@@ -47,14 +72,18 @@ const SavedTreesPage = () => {
 
   const { data: session, status } = useSession();
 
-  const { isOpen: isOpenCreate, onOpen: onOpenCreate, onClose: onCloseCreate } = useDisclosure();
+  const {
+    isOpen: isOpenCreate,
+    onOpen: onOpenCreate,
+    onClose: onCloseCreate,
+  } = useDisclosure();
 
-  const [title, setTitle] = useState('');
-  const [ searchQuery, setSearchQuery ] = useState('');
-  const [ sortByName, setSortByName ] = useState(0);
-  const [ sortByDateCreated, setSortByDateCreated ] = useState(0);
-  const [ sortByLastActive, setSortByLastActive ] = useState(0);
-  const [ sortByAuthor, setSortByAuthor ] = useState(0);
+  const [title, setTitle] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortByName, setSortByName] = useState(0);
+  const [sortByDateCreated, setSortByDateCreated] = useState(0);
+  const [sortByLastActive, setSortByLastActive] = useState(0);
+  const [sortByAuthor, setSortByAuthor] = useState(0);
 
   async function initializeTrees() {
     var initTrees = await getAllQuestionTrees();
@@ -62,8 +91,7 @@ const SavedTreesPage = () => {
       // temporary initial tree for debugging
       if (session && session.user && session.user.name) {
         await addQuestionTree(testTree, session.user?.name);
-      }
-      else {
+      } else {
         await addQuestionTree(testTree, "Anonymous");
       }
 
@@ -76,49 +104,53 @@ const SavedTreesPage = () => {
     initializeTrees();
   }, []);
 
-  const activeTrees = trees.filter(tree => tree.active);
-  const inactiveTrees = trees.filter(tree => !tree.active);
+  const activeTrees = trees.filter((tree) => tree.active);
+  const inactiveTrees = trees.filter((tree) => !tree.active);
 
   const handeActiveSwitch = async (newActive, id) => {
     if (newActive) {
       // set cur active to inactive
       if (activeTrees.length > 0) {
         const curActiveId = activeTrees[0]._id;
-        const curActiveTreeInd = trees.findIndex(tree => tree._id == curActiveId);
-        const newCurActiveTree = {...trees[curActiveTreeInd]};
+        const curActiveTreeInd = trees.findIndex(
+          (tree) => tree._id == curActiveId
+        );
+        const newCurActiveTree = { ...trees[curActiveTreeInd] };
         newCurActiveTree.active = false;
         trees[curActiveTreeInd] = newCurActiveTree;
         await updateQuestionTree(newCurActiveTree, session.user?.name);
       }
     }
-    const curTreeInd = trees.findIndex(tree => tree._id == id);
-    const newCurTree = {...trees[curTreeInd]};
+    const curTreeInd = trees.findIndex((tree) => tree._id == id);
+    const newCurTree = { ...trees[curTreeInd] };
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
-    await updateQuestionTree(newCurTree, session.user?.name)
+    await updateQuestionTree(newCurTree, session.user?.name);
     await initializeTrees();
   };
 
   const handleDeleteClick = async (e, id) => {
-    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTreeInd = trees.findIndex((tree) => tree._id == id);
     const curTree = trees[curTreeInd];
     if (curTree.active) {
       return;
     }
-    
+
     await removeQuestionTreeById(id);
     await initializeTrees();
   };
 
   const handleCloneClick = async (e, id) => {
-    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTreeInd = trees.findIndex((tree) => tree._id == id);
     const curTree = trees[curTreeInd];
 
     const newTree = {
       ...curTree,
-      questions: curTree.questions.map(q => NavigationTree.copyQuestionSameEverything(q))
+      questions: curTree.questions.map((q) =>
+        NavigationTree.copyQuestionSameEverything(q)
+      ),
     };
-    newTree.title += ' Copy';
+    newTree.title += " Copy";
     newTree.active = false;
     delete newTree._id;
     delete newTree.__v;
@@ -128,7 +160,7 @@ const SavedTreesPage = () => {
   };
 
   const handleTitleEdit = async (title, id) => {
-    const curTreeInd = trees.findIndex(tree => tree._id == id);
+    const curTreeInd = trees.findIndex((tree) => tree._id == id);
     const curTree = trees[curTreeInd];
 
     const newTree = {
@@ -142,7 +174,7 @@ const SavedTreesPage = () => {
 
   if (status === "loading") {
     return <></>;
-  } 
+  }
 
   if (status == "unauthenticated") {
     return (
@@ -157,7 +189,7 @@ const SavedTreesPage = () => {
   };
 
   const onTitleClick = async () => {
-    if (title.trim() == '') {
+    if (title.trim() == "") {
       return;
     }
 
@@ -165,28 +197,36 @@ const SavedTreesPage = () => {
       active: false,
       title: title,
       thumbnailImage: null,
-      questions: [
-        NavigationTree.createInitialQuestion()
-      ],
+      questions: [NavigationTree.createInitialQuestion()],
     };
 
     await addQuestionTree(basicTree, session.user?.name);
     await initializeTrees();
     onCloseCreate();
-    setTitle('');
+    setTitle("");
   };
 
-  const filteredInactiveTrees = inactiveTrees.filter(t => t.title.match(new RegExp(searchQuery, "i")));
+  const filteredInactiveTrees = inactiveTrees.filter((t) =>
+    t.title.match(new RegExp(searchQuery, "i"))
+  );
 
   var sortedFilteredInactiveTrees;
   if (sortByName) {
-    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort((a, b) => sortByName * ('' + a.title).localeCompare(b.title));
+    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort(
+      (a, b) => sortByName * ("" + a.title).localeCompare(b.title)
+    );
   } else if (sortByDateCreated) {
-    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort((a, b) => sortByDateCreated * (a.editedOn - b.editedOn));
+    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort(
+      (a, b) => sortByDateCreated * (a.editedOn - b.editedOn)
+    );
   } else if (sortByLastActive) {
-    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort((a, b) => sortByLastActive * (a.lastActive - b.lastActive));
+    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort(
+      (a, b) => sortByLastActive * (a.lastActive - b.lastActive)
+    );
   } else if (sortByAuthor) {
-    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort((a, b) => sortByAuthor * ('' + a.author).localeCompare(b.author));
+    sortedFilteredInactiveTrees = [...filteredInactiveTrees].sort(
+      (a, b) => sortByAuthor * ("" + a.author).localeCompare(b.author)
+    );
   } else {
     sortedFilteredInactiveTrees = [...filteredInactiveTrees];
   }
@@ -194,51 +234,61 @@ const SavedTreesPage = () => {
   return (
     <ChakraProvider theme={theme}>
       {/* <Center> */}
-      <Box boxShadow='xs' w='100%' padding='46.5' bg='#F8F8FA' >
-        <VStack spacing='40px'>
-          <VStack w='100%'>
-            <Heading w='100%' as='h4' size='lg' justifyContent='left'>
+      <Box boxShadow="xs" w="100%" padding="46.5" bg="#F8F8FA">
+        <VStack spacing="40px">
+          <VStack w="100%">
+            <Heading w="100%" as="h4" size="lg" justifyContent="left">
               Currently Active:
             </Heading>
-            <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
-              <Wrap spacing='20px'>
-                {activeTrees.map(tree => 
+            <Box boxShadow="xs" w="100%" padding="30" rounded="2xl" bg="white">
+              <Wrap spacing="20px">
+                {activeTrees.map((tree) => (
                   <WrapItem key={tree._id}>
-                    <TreeThumbnailCard 
-                      handeActiveSwitch={e => handeActiveSwitch(e, tree._id)} 
+                    <TreeThumbnailCard
+                      handeActiveSwitch={(e) => handeActiveSwitch(e, tree._id)}
                       tree={tree}
-                      onClick={() => router.push('/about')}
-                      handleDeleteClick={e => handleDeleteClick(e, tree._id)}
-                      handleCloneClick={e => handleCloneClick(e, tree._id)}
-                      handleTitleEdit={title => handleTitleEdit(title, tree._id)}
+                      handleDeleteClick={(e) => handleDeleteClick(e, tree._id)}
+                      handleCloneClick={(e) => handleCloneClick(e, tree._id)}
+                      handleTitleEdit={(title) =>
+                        handleTitleEdit(title, tree._id)
+                      }
                     />
                   </WrapItem>
-                )}
+                ))}
               </Wrap>
             </Box>
           </VStack>
 
-          <Divider borderColor='black' />
+          <Divider borderColor="black" />
 
-          <VStack w='100%'>
-            <Heading w='100%' as='h4' size='lg' justifyContent='left'>
+          <VStack w="100%">
+            <Heading w="100%" as="h4" size="lg" justifyContent="left">
               Inactive Trees:
             </Heading>
-            <Flex w='100%'>
-              <HStack w='50%'>
+            <Flex w="100%">
+              <HStack w="50%">
                 <InputGroup>
-                  <InputLeftElement
-                    pointerEvents='none'
-                    children={<SearchIcon color='gray' />}
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon color="gray" />
+                  </InputLeftElement>
+                  <Input
+                    rounded="2xl"
+                    type="text"
+                    focusBorderColor="georgia-core-green.500"
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <Input rounded='2xl' type='text' focusBorderColor='georgia-core-green.500' onChange={e => setSearchQuery(e.target.value)} />
                 </InputGroup>
-                <Button colorScheme='georgia-core-green' variant='solid'>
+                <Button colorScheme="georgia-core-green" variant="solid">
                   Search
                 </Button>
               </HStack>
               <Spacer />
-              <Button onClick={onOpenCreate} leftIcon={<AddIcon />} colorScheme='georgia-core-green' variant='solid'>
+              <Button
+                onClick={onOpenCreate}
+                leftIcon={<AddIcon />}
+                colorScheme="georgia-core-green"
+                variant="solid"
+              >
                 Create New Question List
               </Button>
               <>
@@ -250,65 +300,114 @@ const SavedTreesPage = () => {
 
                     <Divider />
                     <ModalBody>
-                    <FormControl isRequired>
-                      <FormLabel>Question List Title</FormLabel>
-                      <Input placeholder='Title' type='text' onChange={handleTitleChange} />
-                    </FormControl>
+                      <FormControl isRequired>
+                        <FormLabel>Question List Title</FormLabel>
+                        <Input
+                          placeholder="Title"
+                          type="text"
+                          onChange={handleTitleChange}
+                        />
+                      </FormControl>
                     </ModalBody>
                     <Divider />
 
                     <ModalFooter>
-                      <Button colorScheme='georgia-core-green' variant='ghost' mr={3} onClick={onCloseCreate}>
+                      <Button
+                        colorScheme="georgia-core-green"
+                        variant="ghost"
+                        mr={3}
+                        onClick={onCloseCreate}
+                      >
                         Close
                       </Button>
-                      <Button onClick={onTitleClick} colorScheme='georgia-core-green' variant='solid'>Create</Button>
+                      <Button
+                        onClick={onTitleClick}
+                        colorScheme="georgia-core-green"
+                        variant="solid"
+                      >
+                        Create
+                      </Button>
                     </ModalFooter>
                   </ModalContent>
                 </Modal>
               </>
             </Flex>
-            <Flex w='100%'>
-              <Wrap spacing='20px'>
+            <Flex w="100%">
+              <Wrap spacing="20px">
                 <Text>Sort by:</Text>
-                <Button onClick={e => {
-                  setSortByName(sortByName == 0 ? 1 : -sortByName);
-                  setSortByDateCreated(0);
-                  setSortByLastActive(0);
-                  setSortByAuthor(0);
-                }} colorScheme='black' variant='link' textDecoration='underline' >Name</Button>
-                <Button onClick={e => {
-                  setSortByName(0);
-                  setSortByDateCreated(sortByDateCreated == 0 ? 1 : -sortByDateCreated);
-                  setSortByLastActive(0);
-                  setSortByAuthor(0);
-                }} colorScheme='black' variant='link' textDecoration='underline' >Date Edited</Button>
-                <Button onClick={e => {
-                  setSortByName(0);
-                  setSortByDateCreated(0);
-                  setSortByLastActive(sortByLastActive == 0 ? 1 : -sortByLastActive);
-                  setSortByAuthor(0);
-                }} colorScheme='black' variant='link' textDecoration='underline' >Date Last Active</Button>
-                <Button onClick={e => {
-                  setSortByName(0);
-                  setSortByDateCreated(0);
-                  setSortByLastActive(0);
-                  setSortByAuthor(sortByAuthor == 0 ? 1 : -sortByAuthor);
-                }} colorScheme='black' variant='link' textDecoration='underline' >Author</Button>
+                <Button
+                  onClick={(e) => {
+                    setSortByName(sortByName == 0 ? 1 : -sortByName);
+                    setSortByDateCreated(0);
+                    setSortByLastActive(0);
+                    setSortByAuthor(0);
+                  }}
+                  colorScheme="black"
+                  variant="link"
+                  textDecoration="underline"
+                >
+                  Name
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    setSortByName(0);
+                    setSortByDateCreated(
+                      sortByDateCreated == 0 ? 1 : -sortByDateCreated
+                    );
+                    setSortByLastActive(0);
+                    setSortByAuthor(0);
+                  }}
+                  colorScheme="black"
+                  variant="link"
+                  textDecoration="underline"
+                >
+                  Date Edited
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    setSortByName(0);
+                    setSortByDateCreated(0);
+                    setSortByLastActive(
+                      sortByLastActive == 0 ? 1 : -sortByLastActive
+                    );
+                    setSortByAuthor(0);
+                  }}
+                  colorScheme="black"
+                  variant="link"
+                  textDecoration="underline"
+                >
+                  Date Last Active
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    setSortByName(0);
+                    setSortByDateCreated(0);
+                    setSortByLastActive(0);
+                    setSortByAuthor(sortByAuthor == 0 ? 1 : -sortByAuthor);
+                  }}
+                  colorScheme="black"
+                  variant="link"
+                  textDecoration="underline"
+                >
+                  Author
+                </Button>
               </Wrap>
             </Flex>
-            <Box boxShadow='xs' w='100%' padding='30' rounded='2xl' bg='white'>
-              <Wrap spacing='20px'>
-                {sortedFilteredInactiveTrees.map(tree => 
+            <Box boxShadow="xs" w="100%" padding="30" rounded="2xl" bg="white">
+              <Wrap spacing="20px">
+                {sortedFilteredInactiveTrees.map((tree) => (
                   <WrapItem key={tree._id}>
                     <TreeThumbnailCard
-                      handeActiveSwitch={e => handeActiveSwitch(e, tree._id)}
+                      handeActiveSwitch={(e) => handeActiveSwitch(e, tree._id)}
                       tree={tree}
-                      handleDeleteClick={e => handleDeleteClick(e, tree._id)}
-                      handleCloneClick={e => handleCloneClick(e, tree._id)}
-                      handleTitleEdit={title => handleTitleEdit(title, tree._id)}
+                      handleDeleteClick={(e) => handleDeleteClick(e, tree._id)}
+                      handleCloneClick={(e) => handleCloneClick(e, tree._id)}
+                      handleTitleEdit={(title) =>
+                        handleTitleEdit(title, tree._id)
+                      }
                     />
                   </WrapItem>
-                )}
+                ))}
               </Wrap>
             </Box>
           </VStack>

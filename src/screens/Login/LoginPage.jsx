@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Flex, Stack, Text, Image, Button, Center } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Stack,
+  Text,
+  Image,
+  Button,
+  Center,
+} from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 import PropTypes from "prop-types";
 

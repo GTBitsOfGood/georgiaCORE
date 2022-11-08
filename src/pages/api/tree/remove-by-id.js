@@ -2,7 +2,7 @@ import { withSessionRoute } from "src/utils/lib/session";
 import { removeQuestionTreeById } from "server/mongodb/actions/Tree";
 
 // @route   POST api/tree/remove-by-id
-// @desc    
+// @desc
 // @access  Public
 const handler = async (req, res) => {
   try {

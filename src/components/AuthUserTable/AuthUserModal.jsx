@@ -1,22 +1,23 @@
 import React from "react";
-import { 
-  Button, 
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
-  ModalOverlay, 
-  ModalCloseButton, 
-  ModalFooter, 
-  Input, 
-  useDisclosure, 
-  Text, 
-  Stack, 
-  RadioGroup, 
-  Radio 
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalOverlay,
+  ModalCloseButton,
+  ModalFooter,
+  Input,
+  useDisclosure,
+  Text,
+  Stack,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { insertAuthUser, updateAuthUser } from "src/actions/AuthUser";
 import { EditIcon } from "@chakra-ui/icons";
+import PropTypes from "prop-types";
 
 /**
  * Modal for adding and editing authUsers
@@ -26,105 +27,167 @@ import { EditIcon } from "@chakra-ui/icons";
  * Includes button to add a new authUser on click or to edit authUser in the row
  */
 
-const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) => {
+const AuthUserModal = ({
+  btnName,
+  modalTitle,
+  action,
+  currentEmail,
+  calculate,
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [inputValue, setInputValue] = React.useState("");
+  const [buttonRole, setButtonRole] = React.useState("1");
+  const handleChange = (event) => setInputValue(event.target.value);
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [inputValue, setInputValue] = React.useState('')
-  const [buttonRole, setButtonRole] = React.useState("1")
-  const handleChange = (event) => 
-    setInputValue(event.target.value)
-    
   return (
     <>
       {btnName == "Save Changes" && (
-        <Button 
-          w={5} 
-          h={5} 
-          bgColor="white" 
-          onClick={() => {setInputValue(""); onOpen()}}
+        <Button
+          w={5}
+          h={5}
+          bgColor="white"
+          onClick={() => {
+            setInputValue("");
+            onOpen();
+          }}
         >
           <EditIcon w={5} h={5} />
         </Button>
       )}
       {btnName == "Confirm" && (
-        <Button 
-          bgColor="#59784D" 
-          color="white" 
-          variant="solid" 
-          _hover={{backgroundColor: "rgba(89, 120, 77, 0.50)"}} 
-          _active={{backgroundColor: "rgba(89, 120, 77, 0.50)"}} 
-          onClick={() => {setInputValue(""); onOpen()}}
+        <Button
+          bgColor="#59784D"
+          color="white"
+          variant="solid"
+          _hover={{ backgroundColor: "rgba(89, 120, 77, 0.50)" }}
+          _active={{ backgroundColor: "rgba(89, 120, 77, 0.50)" }}
+          onClick={() => {
+            setInputValue("");
+            onOpen();
+          }}
         >
           Add an Employee
         </Button>
       )}
 
-      <Modal isOpen={isOpen} onClose={() => {setButtonRole("1"); onClose()}}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setButtonRole("1");
+          onClose();
+        }}
+      >
         <ModalOverlay />
         <ModalContent boxShadow="none" alignSelf="center" minWidth={600}>
-          <ModalHeader textAlign="center" fontFamily="initial" fontWeight="normal">{modalTitle}</ModalHeader>
-          <ModalCloseButton/>
+          <ModalHeader
+            textAlign="center"
+            fontFamily="initial"
+            fontWeight="normal"
+          >
+            {modalTitle}
+          </ModalHeader>
+          <ModalCloseButton />
           <ModalBody border="1px solid #E2E8F0" paddingBottom={5}>
-            <Text fontFamily="body" fontWeight="semibold" paddingBottom={2} paddingLeft={1}>
+            <Text
+              fontFamily="body"
+              fontWeight="semibold"
+              paddingBottom={2}
+              paddingLeft={1}
+            >
               Email
             </Text>
-            <Input 
-                value={inputValue}
-                onChange={handleChange}
-                placeholder= {currentEmail}
-                marginBottom={5}
+            <Input
+              value={inputValue}
+              onChange={handleChange}
+              placeholder={currentEmail}
+              marginBottom={5}
+            ></Input>
+            <Text
+              fontFamily="body"
+              fontWeight="semibold"
+              paddingBottom={2}
+              paddingLeft={1}
             >
-            </Input>
-            <Text fontFamily="body" fontWeight="semibold" paddingBottom={2} paddingLeft={1}>
               Role:
             </Text>
-            <RadioGroup onChange={setButtonRole} value={buttonRole} paddingLeft={1}>
+            <RadioGroup
+              onChange={setButtonRole}
+              value={buttonRole}
+              paddingLeft={1}
+            >
               <Stack direction="row">
-                <Radio value="1" _checked={{bgColor: "#59784D", padding: "2px"}} _focus={{boxShadow: "none"}}>Administrator</Radio>
-                <Radio value="2"  _checked={{bgColor: "#59784D", padding: "2px"}} _focus={{boxShadow:"none"}}>Staff</Radio>
+                <Radio
+                  value="1"
+                  _checked={{ bgColor: "#59784D", padding: "2px" }}
+                  _focus={{ boxShadow: "none" }}
+                >
+                  Administrator
+                </Radio>
+                <Radio
+                  value="2"
+                  _checked={{ bgColor: "#59784D", padding: "2px" }}
+                  _focus={{ boxShadow: "none" }}
+                >
+                  Staff
+                </Radio>
               </Stack>
             </RadioGroup>
           </ModalBody>
 
           <ModalFooter>
-            <Button 
-              bgColor="#59784D" 
-              color="#E2E8F0" 
-              variant="solid"  
-              _hover={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} 
-              _active={{backgroundColor: "rgba(89, 120, 77, 0.75)"}} 
+            <Button
+              bgColor="#59784D"
+              color="#E2E8F0"
+              variant="solid"
+              _hover={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
+              _active={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
               onClick={() => {
                 if (action == "insertAuthUser") {
-                    if (inputValue != null && inputValue != "") {
-                      if (buttonRole == "1") {
-                        insertAuthUser({email: inputValue, role: "Administrator"});
-                        calculate();
-                      } else if (buttonRole == "2") {
-                        insertAuthUser({email: inputValue, role: "Staff"});
-                        calculate();
-                      }
-                    } 
+                  if (inputValue != null && inputValue != "") {
+                    if (buttonRole == "1") {
+                      insertAuthUser({
+                        email: inputValue,
+                        role: "Administrator",
+                      });
+                      calculate();
+                    } else if (buttonRole == "2") {
+                      insertAuthUser({ email: inputValue, role: "Staff" });
+                      calculate();
+                    }
+                  }
                 } else if (action == "updateAuthUser") {
                   if (inputValue != null && inputValue != "") {
                     if (buttonRole == "1") {
-                      updateAuthUser(currentEmail, {email: inputValue, role: "Administrator"});
+                      updateAuthUser(currentEmail, {
+                        email: inputValue,
+                        role: "Administrator",
+                      });
                       calculate();
                     } else if (buttonRole == "2") {
-                      updateAuthUser(currentEmail, {email: inputValue, role: "Staff"});
+                      updateAuthUser(currentEmail, {
+                        email: inputValue,
+                        role: "Staff",
+                      });
                       calculate();
                     }
                   } else if (inputValue == "") {
                     if (buttonRole == "1") {
-                      updateAuthUser(currentEmail, {email: currentEmail, role: "Administrator"});
+                      updateAuthUser(currentEmail, {
+                        email: currentEmail,
+                        role: "Administrator",
+                      });
                       calculate();
                     } else if (buttonRole == "2") {
-                      updateAuthUser(currentEmail, {email: currentEmail, role: "Staff"});
+                      updateAuthUser(currentEmail, {
+                        email: currentEmail,
+                        role: "Staff",
+                      });
                       calculate();
                     }
                   }
-                }; 
-                onClose()
-                setButtonRole("1")
+                }
+                onClose();
+                setButtonRole("1");
               }}
             >
               {btnName}
@@ -134,6 +197,14 @@ const AuthUserModal = ({btnName, modalTitle, action, currentEmail, calculate}) =
       </Modal>
     </>
   );
+};
+
+AuthUserModal.propTypes = {
+  btnName: PropTypes.any,
+  modalTitle: PropTypes.any,
+  action: PropTypes.any,
+  currentEmail: PropTypes.any,
+  calculate: PropTypes.any,
 };
 
 export default AuthUserModal;
