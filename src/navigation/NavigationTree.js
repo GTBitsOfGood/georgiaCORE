@@ -97,8 +97,12 @@ export default class NavigationTree {
     this.tree.questions.splice(index, 1);
   }
 
-  static createQuestion(questionContent, type, options) {
-    const id = uuidv4();
+  static createQuestion(questionContent, type, options, initial=false) {
+    let id = uuidv4();
+
+    if (initial) {
+      id = '1';
+    }
 
     const question = {
       isRoot: false,
@@ -176,7 +180,7 @@ export default class NavigationTree {
         option: "No",
         nextId: null,
       },
-    ]);
+    ], true);
     question.isRoot = true;
     return question;
   }
