@@ -9,7 +9,6 @@
 }
 
 #question {
-    padding-top: 30px;
     padding-bottom: 27px;
     text-align: center;
     margin-bottom: 0px;
@@ -71,6 +70,19 @@
     justify-content: center;
     color: white;
     margin-bottom: 10px;
+}
+
+.redo {
+    margin-right: 100px;
+    background-color: green;
+}
+
+#flexRow {
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (max-width: 500px) {

@@ -4,11 +4,16 @@ import styles from "./QuestionTemplate.module.css";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import { PhoneIcon } from "@chakra-ui/icons";
+import UndoRedo from "../ChatNavigator/UndoRedo";
+
+//        <UndoRedo className={styles.redo}></UndoRedo>
 
 const QuestionTemplate = (props) => {
   return (
     <div style={styles} id={styles.container} >
-      <h2 id={styles.question}>{props.question}</h2>
+      <div id={styles.flexRow}>
+        <h2 id={styles.question}>{props.question}</h2>
+      </div>
       <div id={styles.optionContainer}>
         {props.options.map((option, index) => {
           return (
