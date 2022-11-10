@@ -14,12 +14,29 @@ const ChatNavigator = (props) => {
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
   const [undoStack, setUndoStack] = useState([]);
+  const [progessMap, setProgressMap] = useState({});
 
   const router = useRouter();
   const { query } = router;
 
   useEffect(() => {
     const setup = async () => {
+      let tempProgressMap = {};
+
+      const buildProgressMap = (questionMap, curr = "1", count = 0) => {  
+        if (!curr) { return 0; }
+        let depth = 0;
+
+        for (const index in questionMap[curr].options) {
+          const nextId = questionMap[curr].options[index].nextId;
+          depth = Math.max(depth, buildProgressMap(questionMap, nextId, count + 1));
+        }
+
+        tempProgressMap[curr] = depth;        
+        return depth + 1;
+      };
+
+  
       try {
         const questionsTree =
           props.isActive === true
@@ -30,9 +47,16 @@ const ChatNavigator = (props) => {
         for (const question of questions) {
           questionMap[question.id] = question;
         }
-        console.log(questionMap);
         setAllQuestions(questionMap);
         setInvalidId(false);
+        buildProgressMap(questionMap);
+
+        let mDepth = tempProgressMap['1'];
+        for (let key in tempProgressMap) {
+          tempProgressMap[key] = (mDepth - tempProgressMap[key]) / mDepth;
+        }
+        setProgressMap(tempProgressMap);
+
       } catch {
         setInvalidId(true);
         console.log("Unable to get questions at this time.");
