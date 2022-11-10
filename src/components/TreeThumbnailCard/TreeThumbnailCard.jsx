@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import styles from "./TreeThumbnailCard.module.css";
 import PropTypes from "prop-types";
 import {
   IconButton,
@@ -8,22 +7,17 @@ import {
   VStack,
   Divider,
   Button,
-  InputLeftElement,
   Input,
-  InputGroup,
   HStack,
   Heading,
   Image,
   Text,
   Flex,
   Switch,
-  extendTheme,
-  ChakraProvider,
   Center,
-  Spacer,
   ButtonGroup,
 } from "@chakra-ui/react";
-import { FaTrash, FaRegClone } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { CopyIcon, EditIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import {
@@ -35,11 +29,8 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  useModalContext,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
 } from "@chakra-ui/react";
 
 const TreeThumbnailCard = (props) => {
@@ -101,17 +92,20 @@ const TreeThumbnailCard = (props) => {
           {/* Header */}
           <Flex flexDirection="row" w="100%" justifyContent="space-between">
             {/* Title */}
-            <ButtonGroup>
-              <Heading
-                as="h4"
-                size="lg"
-                onClick={() =>
-                  router.push("/navigation-editor?id=" + props.tree._id)
-                }
-                cursor="pointer"
-              >
-                {props.tree.title ?? "N/A"}
-              </Heading>
+            <ButtonGroup w='70%'>
+              {/* <Flex w='100%'> */}
+                <Heading
+                  noOfLines={2}
+                  as="h4"
+                  size="lg"
+                  onClick={() =>
+                    router.push("/navigation-editor?id=" + props.tree._id)
+                  }
+                  cursor="pointer"
+                >
+                  <Text>{props.tree.title ?? "N/A"}</Text>
+                </Heading>
+              {/* </Flex> */}
               <IconButton
                 colorScheme="georgia-core-green"
                 aria-label="edit-title"
@@ -121,47 +115,6 @@ const TreeThumbnailCard = (props) => {
                 icon={<EditIcon />}
               />
             </ButtonGroup>
-            <>
-              <Modal isOpen={isOpenTitle} onClose={onCloseTitle} isCentered>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Change Title</ModalHeader>
-                  <ModalCloseButton />
-
-                  <Divider />
-                  <ModalBody>
-                    <FormControl isRequired>
-                      <FormLabel>Question List Title</FormLabel>
-                      <Input
-                        placeholder="Title"
-                        type="text"
-                        onChange={(e) => setTitle(e.target.value)}
-                      />
-                    </FormControl>
-                  </ModalBody>
-                  <Divider />
-
-                  <ModalFooter>
-                    <Button
-                      colorScheme="georgia-core-green"
-                      variant="ghost"
-                      mr={3}
-                      onClick={onCloseTitle}
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      onClick={(e) => props.handleTitleEdit(title)}
-                      colorScheme="georgia-core-green"
-                      variant="solid"
-                    >
-                      Create
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </>
-
             {/* Active */}
             <HStack spacing="5px" p="5px" h="100%">
               <Text>Active</Text>
@@ -176,6 +129,46 @@ const TreeThumbnailCard = (props) => {
               />
             </HStack>
           </Flex>
+          <>
+            <Modal isOpen={isOpenTitle} onClose={onCloseTitle} isCentered>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Change Title</ModalHeader>
+                <ModalCloseButton />
+
+                <Divider />
+                <ModalBody>
+                  <FormControl isRequired>
+                    <FormLabel>Question List Title</FormLabel>
+                    <Input
+                      placeholder="Title"
+                      type="text"
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </FormControl>
+                </ModalBody>
+                <Divider />
+
+                <ModalFooter>
+                  <Button
+                    colorScheme="georgia-core-green"
+                    variant="ghost"
+                    mr={3}
+                    onClick={onCloseTitle}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={(e) => props.handleTitleEdit(title)}
+                    colorScheme="georgia-core-green"
+                    variant="solid"
+                  >
+                    Create
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </>
           <>
             <Modal isOpen={isOpenActive} onClose={onCloseActive} isCentered>
               <ModalOverlay />
@@ -232,11 +225,9 @@ const TreeThumbnailCard = (props) => {
           </>
           {/* Details */}
           <Text w="100%" lineHeight={"100%"} justifyContent="left">
-            Edited on: {editedOnString}
-            <br />
-            Last active on: {lastActiveDateString}
-            <br />
-            Author: {props.tree.author ?? "N/A"}
+            <Text noOfLines={1}>Edited on: {editedOnString}</Text>
+            <Text noOfLines={1}>Last active on: {lastActiveDateString}</Text>
+            <Text noOfLines={1}>Author: {props.tree.author ?? "N/A"}</Text>
           </Text>
           {/* Buttons */}
           <Flex w="100%" justifyContent="flex-end">
