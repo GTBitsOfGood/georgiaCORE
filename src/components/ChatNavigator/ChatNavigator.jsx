@@ -95,6 +95,7 @@ const ChatNavigator = (props) => {
         <QuestionTemplate
           question={currentQuestion.question}
           setCurrentQuestionIndex={setCurrentQuestionIndex}
+          progess={progessMap[currentQuestion.id]}
           undoStack={undoStack}
           setUndoStack={setUndoStack}
           options={currentQuestion.options.map((option) => {

@@ -83,6 +83,12 @@
     margin-bottom: 20px;
 }
 
+#progress {
+    position: absolute;
+    right: 50px;
+    margin-bottom: 20px;
+}
+
 #flexRow {
     display: flex;
     flex-direction: row;

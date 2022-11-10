@@ -5,12 +5,17 @@ import Image from "next/image";
 import PropTypes from "prop-types";
 import { PhoneIcon } from "@chakra-ui/icons";
 import UndoRedo from "../ChatNavigator/UndoRedo";
+import ProgressBar from "../ChatNavigator/ProgessBar";
 
 
 const QuestionTemplate = (props) => {
+
   return (
     <div style={styles} id={styles.container} >
       <div id={styles.flexRow}>
+        <div id={styles.progress}>
+          <ProgressBar bgcolor={"#F6893C"} completed={props.progess * 100} width="200"/>
+        </div>
         <div id={styles.redo}>
           <UndoRedo
               question={props.question}
