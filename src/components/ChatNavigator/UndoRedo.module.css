@@ -18,6 +18,18 @@
     cursor: pointer;
 }
 
+#disabled {
+    height: 26px;
+    width: 26px;
+    background-color: #A0A0A0;
+    margin-left: 3px;
+    margin-right: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
 #box:hover {
     background-color: #F6893C;
 }

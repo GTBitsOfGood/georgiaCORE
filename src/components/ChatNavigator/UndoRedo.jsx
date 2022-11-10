@@ -42,12 +42,21 @@ const UndoRedo = (props) => {
                 >
                     <RiArrowGoBackLine size={15} color="white"/>
             </div>
-            <div 
-                id={styles.box}
-                onClick={goBack}
-            >
-                    <BsChevronLeft  size={15} color="white"/>
-            </div>
+            {undoStack.length != 0 && 
+                <div 
+                    id={styles.box}
+                    onClick={goBack}
+                >
+                        <BsChevronLeft  size={15} color="white"/>
+                </div>
+            }
+            {undoStack.length == 0 && 
+                <div 
+                    id={styles.disabled}
+                >
+                        <BsChevronLeft  size={15} color="white"/>
+                </div>
+            }
         </div>
     );
 }
