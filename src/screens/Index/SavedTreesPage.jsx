@@ -1,4 +1,4 @@
-import React, { useState, useRef, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 import {
@@ -15,9 +15,7 @@ import {
   VStack,
   HStack,
   Box,
-  Center,
   Heading,
-  SimpleGrid,
   Flex,
   Wrap,
   WrapItem,
@@ -27,11 +25,9 @@ import {
   Spacer,
   extendTheme,
   ChakraProvider,
-  filter,
 } from "@chakra-ui/react";
 import TreeThumbnailCard from "src/components/TreeThumbnailCard/TreeThumbnailCard";
-import { FaSearch, FaPlus } from "react-icons/fa";
-import { AddIcon, SearchIcon, EditIcon } from "@chakra-ui/icons";
+import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { testTree } from "../NavigatorEditor/testQuestions";
 import ErrorPage from "src/components/ErrorPage";
 import {
@@ -43,11 +39,8 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  useModalContext,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
 } from "@chakra-ui/react";
 
 const theme = extendTheme({
@@ -233,7 +226,6 @@ const SavedTreesPage = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      {/* <Center> */}
       <Box boxShadow="xs" w="100%" padding="46.5" bg="#F8F8FA">
         <VStack spacing="40px">
           <VStack w="100%">
@@ -278,9 +270,6 @@ const SavedTreesPage = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
-                <Button colorScheme="georgia-core-green" variant="solid">
-                  Search
-                </Button>
               </HStack>
               <Spacer />
               <Button
@@ -413,7 +402,6 @@ const SavedTreesPage = () => {
           </VStack>
         </VStack>
       </Box>
-      {/* </Center> */}
     </ChakraProvider>
   );
 };
