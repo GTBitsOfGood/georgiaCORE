@@ -9,10 +9,11 @@ import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
 
 const ChatNavigator = (props) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState("1");
   const [allQuestions, setAllQuestions] = useState({});
   const [invalidID, setInvalidId] = useState(false);
   const { data: session, status } = useSession();
+  const [undoStack, setUndoStack] = useState([]);
 
   const router = useRouter();
   const { query } = router;
@@ -64,18 +65,21 @@ const ChatNavigator = (props) => {
 
   if (numQs > 0) {
     const currentQuestion = allQuestions[currentQuestionIndex];
-    console.log(currentQuestion.question)
 
     return (
       <div style={styles} id={styles.main}>
         <QuestionTemplate
           question={currentQuestion.question}
+          setCurrentQuestionIndex={setCurrentQuestionIndex}
+          undoStack={undoStack}
+          setUndoStack={setUndoStack}
           options={currentQuestion.options.map((option) => {
             return {
               answer: option.option,
               triggerNext: () => {
                 if (option.nextId) {
                   setCurrentQuestionIndex(option.nextId);
+                  setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
                 }
               },
             };

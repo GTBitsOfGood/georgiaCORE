@@ -13,17 +13,33 @@ import {RiArrowGoBackLine} from "react-icons/ri";
 
 
 const UndoRedo = (props) => {
+    const handler = props.setCurrentQuestionIndex;
+    const undoStack = props.undoStack;
+    const setUndoStack = props.setUndoStack; // can destructure for future reference
+
+    const goHome = () => {
+        handler(1);
+        setUndoStack(undoStack => []);
+    }
+
+    const goBack = () => {
+        if (undoStack.length == 0) { return; }
+        console.log(undoStack);
+        handler(undoStack[undoStack.length - 1])
+        setUndoStack(undoStack => undoStack.slice(0, -1)); // pop
+    }
+
     return (
         <div id={styles.container}>
             <div 
                 id={styles.box}
-                onClick={props.handleHome}
+                onClick={goHome}
                 >
                     <RiArrowGoBackLine size={15} color="white"/>
             </div>
             <div 
                 id={styles.box}
-                onClick={props.handleHome}
+                onClick={goBack}
                 >
                     <BsChevronLeft  size={15} color="white"/>
             </div>
