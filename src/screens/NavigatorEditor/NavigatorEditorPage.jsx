@@ -105,7 +105,6 @@ const reducer = (state, action) => {
       };
     }
     case "selection_change":
-      console.log(action);
       return {
         ...state,
         selectedNode: action.nodes[0],
@@ -628,7 +627,7 @@ const TreeEditor = () => {
                     dispatch({ type: "save" });
                     updateQuestionTree(
                       state.navigationTree.getTree(),
-                      session.user?.name
+                      session?.user?.name
                     );
                   }}
                 >

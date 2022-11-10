@@ -101,7 +101,7 @@ const AuthUserTable = ({ authUsers, roleSort, emailSort, calculate }) => {
                     currentEmail={authUser.email}
                     calculate={calculate}
                   ></AuthUserModal>
-                  {session.user.email != authUser.email && (
+                  {session?.user.email != authUser.email && (
                     <AuthUsersDeleteAlert
                       calculate={calculate}
                       email={authUser.email}

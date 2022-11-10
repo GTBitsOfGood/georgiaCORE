@@ -15,7 +15,7 @@ const handler = async (req, res) => {
     });
   }
 
-  const id = req.session.user?.id;
+  const id = req.session?.user?.id;
   try {
     const user = await getUserFromId(id);
     await req.session.save();

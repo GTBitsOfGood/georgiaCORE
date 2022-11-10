@@ -2,7 +2,7 @@ import { withSessionRoute } from "src/utils/lib/session";
 import { getActiveQuestionTree } from "server/mongodb/actions/Tree";
 
 // @route   GET api/tree/get-active
-// @desc
+// @desc    Unprotected, anyone can access
 // @access  Public
 const handler = async (req, res) => {
   try {

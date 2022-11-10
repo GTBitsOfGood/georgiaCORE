@@ -61,9 +61,9 @@ const theme = extendTheme({
 });
 
 const SavedTreesPage = () => {
-  const [trees, setTrees] = useState([]);
-
   const { data: session, status } = useSession();
+
+  const [trees, setTrees] = useState([]);
 
   const {
     isOpen: isOpenCreate,
@@ -83,7 +83,7 @@ const SavedTreesPage = () => {
     if (initTrees.length == 0) {
       // temporary initial tree for debugging
       if (session && session.user && session.user.name) {
-        await addQuestionTree(testTree, session.user?.name);
+        await addQuestionTree(testTree, session?.user?.name);
       } else {
         await addQuestionTree(testTree, "Anonymous");
       }
@@ -96,6 +96,18 @@ const SavedTreesPage = () => {
   useEffect(() => {
     initializeTrees();
   }, []);
+
+  if (status === "loading") {
+    return <></>;
+  }
+
+  if (status == "unauthenticated") {
+    return (
+      <>
+        <ErrorPage message="User is not logged in." />
+      </>
+    );
+  }
 
   const activeTrees = trees.filter((tree) => tree.active);
   const inactiveTrees = trees.filter((tree) => !tree.active);
@@ -111,14 +123,14 @@ const SavedTreesPage = () => {
         const newCurActiveTree = { ...trees[curActiveTreeInd] };
         newCurActiveTree.active = false;
         trees[curActiveTreeInd] = newCurActiveTree;
-        await updateQuestionTree(newCurActiveTree, session.user?.name);
+        await updateQuestionTree(newCurActiveTree, session?.user?.name);
       }
     }
     const curTreeInd = trees.findIndex((tree) => tree._id == id);
     const newCurTree = { ...trees[curTreeInd] };
     newCurTree.active = newActive;
     trees[curTreeInd] = newCurTree;
-    await updateQuestionTree(newCurTree, session.user?.name);
+    await updateQuestionTree(newCurTree, session?.user?.name);
     await initializeTrees();
   };
 
@@ -148,7 +160,7 @@ const SavedTreesPage = () => {
     delete newTree._id;
     delete newTree.__v;
 
-    await addQuestionTree(newTree, session.user?.name);
+    await addQuestionTree(newTree, session?.user?.name);
     await initializeTrees();
   };
 
@@ -161,21 +173,9 @@ const SavedTreesPage = () => {
       title,
     };
 
-    await updateQuestionTree(newTree, session.user?.name);
+    await updateQuestionTree(newTree, session?.user?.name);
     await initializeTrees();
   };
-
-  if (status === "loading") {
-    return <></>;
-  }
-
-  if (status == "unauthenticated") {
-    return (
-      <>
-        <ErrorPage message="User is not logged in." />
-      </>
-    );
-  }
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -193,7 +193,7 @@ const SavedTreesPage = () => {
       questions: [NavigationTree.createInitialQuestion()],
     };
 
-    await addQuestionTree(basicTree, session.user?.name);
+    await addQuestionTree(basicTree, session?.user?.name);
     await initializeTrees();
     onCloseCreate();
     setTitle("");

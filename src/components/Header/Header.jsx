@@ -183,14 +183,14 @@ const Header = () => {
                     alignItems="center"
                   >
                     <Image
-                      src={session.user.image}
+                      src={session?.user.image}
                       fallbackSrc="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
                       boxSize="32px"
                       rounded="100%"
                       marginRight="15px"
                       alt="Logo"
                     />
-                    {session.user.name}
+                    {session?.user.name}
                   </Flex>
                 </MenuButton>
                 <MenuList

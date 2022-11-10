@@ -302,20 +302,20 @@ const AdminPage = () => {
     setIsRolesSort(true);
   }
 
-  if (status === "loading") {
-    return <></>;
-  }
+  // if (status === "loading") {
+  //   return <></>;
+  // }
 
-  if (status == "unauthenticated") {
-    return (
-      <>
-        <ErrorPage message="User is not Logged In" />
-      </>
-    );
-  }
+  // if (status == "unauthenticated") {
+  //   return (
+  //     <>
+  //       <ErrorPage message="User is not Logged In" />
+  //     </>
+  //   );
+  // }
 
-  if (status === "authenticated") {
-    if (authUserRole == "Administrator") {
+  if (true) {
+    if (true) {
       return (
         <Flex
           height="100%"
