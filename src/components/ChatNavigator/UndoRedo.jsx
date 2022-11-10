@@ -29,6 +29,11 @@ const UndoRedo = (props) => {
         setUndoStack(undoStack => undoStack.slice(0, -1)); // pop
     }
 
+    const getRestartColor = () => {
+        if (undoStack.length == 0) return "#A0A0A0";
+        return 'black';
+    }
+
     return (
         <div id={styles.container}>
             <div 
@@ -40,7 +45,7 @@ const UndoRedo = (props) => {
             <div 
                 id={styles.box}
                 onClick={goBack}
-                >
+            >
                     <BsChevronLeft  size={15} color="white"/>
             </div>
         </div>
