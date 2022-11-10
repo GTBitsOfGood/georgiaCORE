@@ -104,6 +104,7 @@ const ChatNavigator = (props) => {
             options={currentQuestion.options.map((option) => {
               return {
                 answer: option.option,
+                icon: option.icon,
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);
@@ -116,7 +117,7 @@ const ChatNavigator = (props) => {
         }
 
         {/* URL TEMPLATE */}
-        {currentQuestion.type == "question" && 
+        {currentQuestion.type == "url" && 
           <QuestionTemplate
             question={currentQuestion.question}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
