@@ -72,15 +72,16 @@
     margin-bottom: 10px;
 }
 
-.redo {
-    margin-right: 100px;
-    background-color: green;
+#redo {
+    position: absolute;
+    left: 50px;
+    margin-bottom: 20px;
 }
 
 #flexRow {
     display: flex;
     flex-direction: row;
-    padding-top: 30px;
+    padding-top: 20px;
     justify-content: center;
     align-items: center;
 }

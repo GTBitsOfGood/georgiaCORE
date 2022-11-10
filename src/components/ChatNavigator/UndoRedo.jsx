@@ -27,13 +27,6 @@ const UndoRedo = (props) => {
                 >
                     <BsChevronLeft  size={15} color="white"/>
             </div>
-            <div 
-                id={styles.box}
-                onClick={props.handleHome}
-                >
-                    <BsChevronRight  size={15} color="white"/>
-            </div>
-            
         </div>
     );
 }
