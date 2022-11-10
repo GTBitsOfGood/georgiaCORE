@@ -92,24 +92,53 @@ const ChatNavigator = (props) => {
 
     return (
       <div style={styles} id={styles.main}>
-        <QuestionTemplate
-          question={currentQuestion.question}
-          setCurrentQuestionIndex={setCurrentQuestionIndex}
-          progess={progessMap[currentQuestion.id]}
-          undoStack={undoStack}
-          setUndoStack={setUndoStack}
-          options={currentQuestion.options.map((option) => {
-            return {
-              answer: option.option,
-              triggerNext: () => {
-                if (option.nextId) {
-                  setCurrentQuestionIndex(option.nextId);
-                  setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
-                }
-              },
-            };
-          })}
-        ></QuestionTemplate>
+
+        {/* QUESTION TEMPLATE */}
+        {currentQuestion.type == "question" && 
+          <QuestionTemplate
+            question={currentQuestion.question}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            progess={progessMap[currentQuestion.id]}
+            undoStack={undoStack}
+            setUndoStack={setUndoStack}
+            options={currentQuestion.options.map((option) => {
+              return {
+                answer: option.option,
+                triggerNext: () => {
+                  if (option.nextId) {
+                    setCurrentQuestionIndex(option.nextId);
+                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
+                  }
+                },
+              };
+            })}
+          />
+        }
+
+        {/* URL TEMPLATE */}
+        {currentQuestion.type == "question" && 
+          <QuestionTemplate
+            question={currentQuestion.question}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            progess={progessMap[currentQuestion.id]}
+            undoStack={undoStack}
+            setUndoStack={setUndoStack}
+            options={currentQuestion.options.map((option) => {
+              return {
+                answer: option.option,
+                triggerNext: () => {
+                  if (option.nextId) {
+                    setCurrentQuestionIndex(option.nextId);
+                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
+                  }
+                },
+              };
+            })}
+          />
+        }
+
+
+
       </div>
     );
   }
