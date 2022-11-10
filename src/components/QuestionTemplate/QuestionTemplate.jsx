@@ -27,28 +27,29 @@ const QuestionTemplate = (props) => {
         <h2 id={styles.question}>{props.question}</h2>
       </div>
       <div id={styles.optionContainer}>
-        {props.options.map((option, index) => {
-          return (
-            <div
-              key={index}
-              id={styles.optionStack}
-              onClick={option.triggerNext ? option.triggerNext : () => {}}
-            >
-              {props.options.image ? (
-                <div id={styles.greenCircle}>
-                  <PhoneIcon></PhoneIcon>
-                </div>
-              ) : (
-                <div id={styles.greenCircle}>
-                   <PhoneIcon height={50} width={50}></PhoneIcon>
-                </div>
-              )}
-              <h4 id={styles.optionAnswer}>{option.answer}</h4>
-              <p id={styles.optionInfo}>professional medical resources that may help</p> 
-              <div />
-            </div>
-          );
-        })}
+          {props.options.map((option, index) => {
+            return (
+              <div
+                itemId={index}
+                key={index}
+                id={styles.optionStack}
+                onClick={option.triggerNext ? option.triggerNext : () => {}}
+              >
+                {props.options.image ? (
+                  <div id={styles.greenCircle}>
+                    <PhoneIcon></PhoneIcon>
+                  </div>
+                ) : (
+                  <div id={styles.greenCircle}>
+                    <PhoneIcon height={50} width={50}></PhoneIcon>
+                  </div>
+                )}
+                <h4 id={styles.optionAnswer}>{option.answer}</h4>
+                <p id={styles.optionInfo}>professional medical resources that may help</p> 
+                <div />
+              </div>
+            );
+          })}
       </div>
     </div>
   );
