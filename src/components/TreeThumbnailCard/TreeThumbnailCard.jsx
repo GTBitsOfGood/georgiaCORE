@@ -74,8 +74,8 @@ const TreeThumbnailCard = (props) => {
       boxShadow="xs"
       border="1px"
       borderColor="gray"
-      w={372}
-      h={405}
+      maxW={372}
+      maxH={405}
       padding="29.5"
       rounded="2xl"
       bg="#E0E2DA"
