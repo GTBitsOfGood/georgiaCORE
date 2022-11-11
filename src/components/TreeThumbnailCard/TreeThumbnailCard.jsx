@@ -90,7 +90,7 @@ const TreeThumbnailCard = (props) => {
           alt={"tree-preview"}
           borderRadius="20px"
           overflow='hidden'
-          w='60%'
+          w='50%'
         />
         {/* </View> */}
 
