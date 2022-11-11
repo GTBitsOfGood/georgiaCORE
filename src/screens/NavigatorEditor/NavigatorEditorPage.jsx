@@ -21,12 +21,10 @@ import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAuthUsers } from "src/actions/AuthUser";
 import {
-  getActiveQuestionTree,
   getQuestionTreeById,
   updateQuestionTree,
 } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
-import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
@@ -36,6 +34,7 @@ import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
 import URLNode from "src/components/Nodes/URLNode";
 import { LockIcon, QuestionIcon } from "@chakra-ui/icons";
+import { toPng } from 'html-to-image';
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -625,10 +624,38 @@ const TreeEditor = () => {
                     }
 
                     dispatch({ type: "save" });
-                    updateQuestionTree(
-                      state.navigationTree.getTree(),
-                      session?.user?.name
-                    );
+
+                    toPng(document.querySelector('.react-flow'), {
+                      filter: (node) => {
+                        // we don't want to add the minimap and the controls to the image
+                        if (
+                          node?.classList?.contains('react-flow__minimap') ||
+                          node?.classList?.contains('react-flow__controls')
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      },
+                      canvasWidth: 500,
+                      canvasHeight: 500,
+                      backgroundColor: 'white',
+
+                    }).then(screenshot => {
+                      screenshot = screenshot.split(',')[1]; // get rid of mime metadata
+                      const base64Image = new Buffer.from(screenshot, 'base64');                      ;
+                      state.navigationTree.tree.thumbnailImage = base64Image;
+                      updateQuestionTree(
+                        state.navigationTree.getTree(),
+                        session?.user?.name
+                      );
+                    }).catch(e => {
+                      // even if image doesnt save, just update the rest
+                      updateQuestionTree(
+                        state.navigationTree.getTree(),
+                        session?.user?.name
+                      );
+                    });
+                    
                   }}
                 >
                   Save

@@ -16,6 +16,7 @@ import {
   Switch,
   Center,
   ButtonGroup,
+  AspectRatio,
 } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 import { CopyIcon, EditIcon } from "@chakra-ui/icons";
@@ -82,10 +83,16 @@ const TreeThumbnailCard = (props) => {
       <VStack>
         {/* Thumbnail */}
         <Image
-          src={"/static/images/georgiacore_navbar_logo.png"}
+          src={props.tree.thumbnailImage ? 
+            `data:image/png;base64,${btoa(String.fromCharCode(...new Uint8Array(props.tree.thumbnailImage.data)))}` :
+            "/static/images/georgiacore_navbar_logo.png"
+          }
           alt={"tree-preview"}
           borderRadius="20px"
+          overflow='hidden'
+          w='60%'
         />
+        {/* </View> */}
 
         {/* Info */}
         <VStack w="100%">
