@@ -33,6 +33,11 @@ function RootNode({ data, selected }) {
             padding: 8,
             backgroundColor: "#F3E2D6",
             borderRadius: "10px 10px 0px 0px",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            display: "-webkit-box",
+            "-webkit-box-orient": "vertical",
+            WebkitLineClamp: 2,
           }}
         >
           {data.label}

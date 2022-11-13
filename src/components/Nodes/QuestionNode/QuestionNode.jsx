@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { Handle, Position } from "reactflow";
+import { Text } from "@chakra-ui/react";
 
 export default memo(QuestionNode);
 
@@ -17,7 +18,7 @@ function QuestionNode({ data, selected }) {
       >
         <div
           style={{
-            height: 35,
+            height: 50,
             padding: 8,
             backgroundColor: "#E0E2DA",
             borderRadius: "10px 10px 0px 0px",
@@ -25,7 +26,17 @@ function QuestionNode({ data, selected }) {
           }}
         >
           <Handle type="target" position={Position.Left} />
-          {data.label}
+          <Text
+            style={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              display: "-webkit-box",
+              "-webkit-box-orient": "vertical",
+              WebkitLineClamp: 2,
+            }}
+          >
+            {data.label}
+          </Text>
         </div>
       </div>
     </>
