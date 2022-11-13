@@ -65,6 +65,8 @@ const EditOption = ({
     );
   };
 
+  const SelectIcon = icons[optionIcon] || icons.QuestionMark;
+
   return (
     <HStack w="100%">
       <Select
@@ -73,7 +75,7 @@ const EditOption = ({
         size="sm"
         value={optionIcon || "QuestionMark"}
         onChange={handleIconChange}
-        icon={icons[optionIcon] || icons["QuestionMark"]}
+        icon={<SelectIcon />}
       >
         {Object.keys(icons).map((icon) => (
           <option key={icon} value={icon}>

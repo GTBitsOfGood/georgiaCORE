@@ -8,6 +8,7 @@ import { Box, HStack, Text } from "@chakra-ui/react";
 export default memo(OptionNode);
 
 function OptionNode({ data, selected }) {
+  const Icon = icons[data.icon];
   return (
     <>
       <HStack
@@ -24,7 +25,9 @@ function OptionNode({ data, selected }) {
         >
           {data.label}
         </Text>
-        <Box style={{ marginLeft: "auto" }}>{icons[data.icon]}</Box>
+        <Box style={{ marginLeft: "auto" }}>
+          <Icon />
+        </Box>
       </HStack>
       <Handle type="source" position={Position.Right} />
     </>
