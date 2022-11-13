@@ -141,17 +141,20 @@ const AuthUserModal = ({
               variant="solid"
               _hover={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
               _active={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
-              onClick={() => {
+              onClick={async () => {
                 if (action == "insertAuthUser") {
                   if (inputValue != null && inputValue != "") {
                     if (buttonRole == "1") {
-                      insertAuthUser({
+                      await insertAuthUser({
                         email: inputValue,
                         role: "Administrator",
                       });
                       calculate();
                     } else if (buttonRole == "2") {
-                      insertAuthUser({ email: inputValue, role: "Staff" });
+                      await insertAuthUser({
+                        email: inputValue,
+                        role: "Staff",
+                      });
                       calculate();
                     }
                   }
