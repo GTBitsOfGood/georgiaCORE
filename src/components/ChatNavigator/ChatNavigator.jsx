@@ -105,6 +105,7 @@ const ChatNavigator = (props) => {
               return {
                 answer: option.option,
                 icon: option.icon,
+                supportingText: option.supportingText,
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);

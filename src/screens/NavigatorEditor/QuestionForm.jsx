@@ -93,6 +93,9 @@ const EditOption = ({
             {icon}
           </option>
         ))}
+        <option key={-1} value="None">
+          None (No Icon)
+        </option>
       </Select>
       <VStack w='90%'>
       <Input variant="flushed" placeholder="Name" value={optionText} onChange={handleTextChange} />
