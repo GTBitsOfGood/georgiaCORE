@@ -31,10 +31,11 @@ const LeafTemplate = (props) => {
       <div id={styles.result}>
         <AiOutlineGlobal id={styles.internet} font-size={70}/>
         <h2 id={styles.text}>Others found this page useful:</h2>
-        <a target="_blank" href={props.question.url} id={styles.url}>
+        <a target={props.question.openNewTab ? "_blank": "_self"} href={props.question.url} id={styles.url}>
             {props.question.linkName ? props.question.linkName : "Resource"}
-            <BiLinkExternal font-size={25}/>
+            {props.question.openNewTab && <BiLinkExternal font-size={25}/>}
         </a>
+        {props.question.openNewTab && <p id={styles.warning}>(Resource opens in new tab)</p>}
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ const TreeSchema = new Schema({
       bodyText: String,
       linkName: { type: String, default: null },
       url: { type: String, default: null },
+      openNewTab: { type: Boolean, default: false}, 
       options: [
         {
           id: String,
