@@ -19,20 +19,6 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       position: { x, y },
       type: "url",
     });
-  } else if (question.type == "error") {
-    nodes.push({
-      id: question.id,
-      targetPosition: "left",
-      data: {
-        label: "Error Node",
-      },
-      style: {
-        width: 160,
-        height: 70,
-      },
-      position: { x, y },
-      type: "error",
-    });
   } else if (question.type == "text") {
     nodes.push({
       id: question.id,

@@ -10,7 +10,6 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   Background,
-  MiniMap,
   Controls,
 } from "reactflow";
 
@@ -20,18 +19,12 @@ import EditQuestionModal from "./EditQuestionModal";
 import ErrorPage from "src/components/ErrorPage";
 import { createNode, generateInitialNodes } from "./reactflow";
 import { getAuthUsers } from "src/actions/AuthUser";
-import {
-  getActiveQuestionTree,
-  getQuestionTreeById,
-  updateQuestionTree,
-} from "src/actions/Tree";
+import { getQuestionTreeById, updateQuestionTree } from "src/actions/Tree";
 import NavigationTree from "src/navigation/NavigationTree";
-import testQuestions from "./testQuestions";
 import InstructionsModal from "./InstructionsModal";
 import RootNode from "src/components/Nodes/RootNode";
 import OptionNode from "src/components/Nodes/OptionNode";
 import QuestionNode from "src/components/Nodes/QuestionNode";
-import ErrorNode from "src/components/Nodes/ErrorNode";
 import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
 import URLNode from "src/components/Nodes/URLNode";
@@ -476,7 +469,6 @@ const TreeEditor = () => {
       text: TextNode,
       option: OptionNode,
       question: QuestionNode,
-      error: ErrorNode,
       url: URLNode,
     }),
     []
