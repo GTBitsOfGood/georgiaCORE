@@ -16,6 +16,7 @@ const TreeSchema = new Schema({
       type: { type: String, enum: QUESTION_TYPES },
       heading: String,
       bodyText: String,
+      linkName: { type: String, default: null },
       url: { type: String, default: null },
       options: [
         {
@@ -23,6 +24,7 @@ const TreeSchema = new Schema({
           option: String,
           icon: String,
           nextId: String,
+          supportingText: String,
         },
       ],
     },

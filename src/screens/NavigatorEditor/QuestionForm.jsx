@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import icons from "src/utils/icons";
 
-const editOption = ({ question, optionId, text, icon }) => {
+const editOption = ({ question, optionId, text, icon, supportingText }) => {
   return {
     ...question,
     options: question.options.map((o) => {
@@ -24,6 +24,7 @@ const editOption = ({ question, optionId, text, icon }) => {
           ...o,
           option: text || o.option,
           icon: icon || o.icon,
+          supportingText: supportingText || o.supportingText,
         };
       }
       return o;
@@ -41,6 +42,7 @@ const removeOption = (question, optionId) => {
 const EditOption = ({
   optionId,
   optionText,
+  optionSupportingText,
   optionIcon,
   question,
   setQuestion,
@@ -65,6 +67,17 @@ const EditOption = ({
     );
   };
 
+  const handleSupportingTextChange = (event) => {
+    setQuestion(
+      editOption({
+        question,
+        optionId,
+        supportingText: event.target.value,
+      })
+    );
+  };
+
+
   return (
     <HStack w="100%">
       <Select
@@ -81,7 +94,10 @@ const EditOption = ({
           </option>
         ))}
       </Select>
-      <Input variant="flushed" value={optionText} onChange={handleTextChange} />
+      <VStack w='90%'>
+      <Input variant="flushed" placeholder="Name" value={optionText} onChange={handleTextChange} />
+      <Input variant="flushed" placeholder="Supporting Text" value={optionSupportingText} onChange={handleSupportingTextChange} />
+      </VStack>
       <Button onClick={() => setQuestion(removeOption(question, optionId))}>
         <SmallCloseIcon color="teal" />
       </Button>
@@ -107,6 +123,7 @@ const addOption = (question) => {
         option: "Option " + (question.options.length + 1),
         icon: "QuestionMark",
         nextId: null,
+        supportingText: null,
       },
     ],
   };
@@ -147,12 +164,14 @@ const QuestionForm = ({ question, setQuestion }) => {
               {question.type === "url" && (
                 <Input
                   w="70%"
-                  value={question.url}
+                  value={question.linkName}
+                  placeholder="Link Name"
                   onChange={(e) =>
-                    setQuestion({ ...question, url: e.target.value })
+                    setQuestion({ ...question, linkName: e.target.value })
                   }
                 />
               )}
+              
               {question.type === "text" && (
                 <Input
                   w="70%"
@@ -172,6 +191,7 @@ const QuestionForm = ({ question, setQuestion }) => {
                     key={option.id}
                     optionId={option.id}
                     optionText={option.option}
+                    optionSupportingText={option.supportingText}
                     optionIcon={option.icon}
                     question={question}
                     setQuestion={setQuestion}
@@ -187,6 +207,16 @@ const QuestionForm = ({ question, setQuestion }) => {
                   </Button>
                 </HStack>
               </>
+            )}
+
+            {question.type === "url" && (
+              <Input
+                value={question.url}
+                placeholder="URL"
+                onChange={(e) =>
+                  setQuestion({ ...question, url: e.target.value })
+                }
+              />
             )}
 
             {question.type === "text" && (

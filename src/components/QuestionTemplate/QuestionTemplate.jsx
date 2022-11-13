@@ -10,6 +10,7 @@ import ProgressBar from "../ChatNavigator/ProgessBar";
 
 const QuestionTemplate = (props) => {
 
+
   return (
     <div style={styles} id={styles.container} >
       <div id={styles.flexRow}>
@@ -50,7 +51,7 @@ const QuestionTemplate = (props) => {
               </div>
             );
           })}
-      </div>
+        </div>
     </div>
   );
 };
