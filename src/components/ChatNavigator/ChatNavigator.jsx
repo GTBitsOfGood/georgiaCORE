@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import styles from "./ChatNavigator.module.css";
 import { getActiveQuestionTree, getQuestionTreeById } from "../../actions/Tree";
 import Image from "next/image";
 import PropTypes from "prop-types";
-import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
+import ItemTemplate from "../QuestionTemplate/QuestionTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
@@ -23,20 +24,24 @@ const ChatNavigator = (props) => {
     const setup = async () => {
       let tempProgressMap = {};
 
-      const buildProgressMap = (questionMap, curr = "1", count = 0) => {  
-        if (!curr) { return 0; }
+      const buildProgressMap = (questionMap, curr = "1", count = 0) => {
+        if (!curr) {
+          return 0;
+        }
         let depth = 0;
 
         for (const index in questionMap[curr].options) {
           const nextId = questionMap[curr].options[index].nextId;
-          depth = Math.max(depth, buildProgressMap(questionMap, nextId, count + 1));
+          depth = Math.max(
+            depth,
+            buildProgressMap(questionMap, nextId, count + 1)
+          );
         }
 
-        tempProgressMap[curr] = depth;        
+        tempProgressMap[curr] = depth;
         return depth + 1;
       };
 
-  
       try {
         const questionsTree =
           props.isActive === true
@@ -51,12 +56,11 @@ const ChatNavigator = (props) => {
         setInvalidId(false);
         buildProgressMap(questionMap);
 
-        let mDepth = tempProgressMap['1'];
+        let mDepth = tempProgressMap["1"];
         for (let key in tempProgressMap) {
           tempProgressMap[key] = (mDepth - tempProgressMap[key]) / mDepth;
         }
         setProgressMap(tempProgressMap);
-
       } catch {
         setInvalidId(true);
         console.log("Unable to get questions at this time.");
@@ -92,10 +96,10 @@ const ChatNavigator = (props) => {
 
     return (
       <div style={styles} id={styles.main}>
-
         {/* QUESTION TEMPLATE */}
-        {currentQuestion.type == "question" && 
-          <QuestionTemplate
+        {currentQuestion.type == "question" && (
+          <ItemTemplate
+            type={currentQuestion.type}
             question={currentQuestion.question}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
             progess={progessMap[currentQuestion.id]}
@@ -108,18 +112,22 @@ const ChatNavigator = (props) => {
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);
-                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
+                    setUndoStack((undoStack) => [
+                      ...undoStack,
+                      currentQuestion.id,
+                    ]);
                   }
                 },
               };
             })}
           />
-        }
+        )}
 
         {/* URL TEMPLATE */}
-        {currentQuestion.type == "url" && 
-          <QuestionTemplate
-            question={currentQuestion.question}
+        {currentQuestion.type == "url" && (
+          <ItemTemplate
+            type={currentQuestion.type}
+            url={currentQuestion.url}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
             progess={progessMap[currentQuestion.id]}
             undoStack={undoStack}
@@ -130,16 +138,27 @@ const ChatNavigator = (props) => {
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);
-                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
+                    setUndoStack((undoStack) => [
+                      ...undoStack,
+                      currentQuestion.id,
+                    ]);
                   }
                 },
               };
             })}
           />
-        }
+        )}
 
-
-
+        {/* TEXT TEMPLATE */}
+        {currentQuestion.type === "text" && (
+          <ItemTemplate
+            type={currentQuestion.type}
+            undoStack={undoStack}
+            setUndoStack={setUndoStack}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            text={currentQuestion.text}
+          ></ItemTemplate>
+        )}
       </div>
     );
   }
@@ -154,4 +173,3 @@ const ChatNavigator = (props) => {
 ChatNavigator.propTypes = {};
 
 export default ChatNavigator;
-

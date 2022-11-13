@@ -1,4 +1,4 @@
-import QuestionTemplate from "src/components/QuestionTemplate/QuestionTemplate";
+import ItemTemplate from "src/components/QuestionTemplate/QuestionTemplate";
 import React from "react";
 import ChatNavigator from "src/components/ChatNavigator/ChatNavigator";
 

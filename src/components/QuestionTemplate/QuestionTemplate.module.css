@@ -43,6 +43,20 @@
     cursor: pointer;
 }
 
+#bigTextContainer {
+    padding: 10px;
+    width: 250px;
+    min-height: 250px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 50px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #optionAnswer {
     color: black;
     font-size: 24px;
@@ -97,6 +111,35 @@
     align-items: center;
 }
 
+#globe {
+    font-size: 30pt;
+    color: #5B794E;
+    margin-bottom: 15px;
+}
+
+#urlLink {
+    color: #1C355E;
+}
+
+#linkIcon {
+    display: inline-block;
+    position: relative;
+    top: 3px;
+    left: 3px;
+}
+
+#textContainer {
+    border: 2px solid black;
+    width: 65vw;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: left;
+}
+
+#copyContainer {
+    margin-top: 20px;
+}
+
 @media (max-width: 500px) {
     #optionContainer {
         display: flex;
@@ -104,5 +147,9 @@
         align-items: center;
         text-align: center;
         overflow-x: scroll;
+    }
+
+    #textContainer {
+        width: 90vw;
     }
 }
