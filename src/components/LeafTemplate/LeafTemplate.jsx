@@ -2,8 +2,8 @@
 import React from "react";
 import styles from "./LeafTemplate.module.css";
 import PropTypes from "prop-types";
-import UndoRedo from "../../ChatNavigator/UndoRedo";
-import ProgressBar from "../../ChatNavigator/ProgessBar";
+import UndoRedo from "../ChatNavigator/UndoRedo";
+import ProgressBar from "../ChatNavigator/ProgessBar";
 import { AiOutlineGlobal } from "react-icons/ai";
 import { getStackStyles } from "@chakra-ui/react";
 import { BiLinkExternal } from "react-icons/bi";

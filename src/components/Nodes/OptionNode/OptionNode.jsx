@@ -15,8 +15,18 @@ function OptionNode({ data, selected }) {
           border: selected ? "2px solid #FF8A00" : "",
         }}
       >
-        <Text>{data.label}</Text>
-        <Box style={{ marginLeft: "auto" }}>{icons[data.icon]}</Box>
+        <Text
+          style={{
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {data.label}
+        </Text>
+        <Box style={{ marginLeft: "auto" }}>
+          {data.icon == "None" ? <></> : icons[data.icon]}
+        </Box>
       </HStack>
       <Handle type="source" position={Position.Right} />
     </>
