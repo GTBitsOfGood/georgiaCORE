@@ -8,6 +8,7 @@ import LeafTemplate from "../LeafTemplate/LeafTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
+import InfoTemplate from "../InfoTemplate/InfoTemplate";
 
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState("1");
@@ -127,6 +128,16 @@ const ChatNavigator = (props) => {
             undoStack={undoStack}
             setUndoStack={setUndoStack}
           />
+        }
+
+        {currentQuestion.type == "text" && 
+            <InfoTemplate
+              question={currentQuestion}
+              setCurrentQuestionIndex={setCurrentQuestionIndex}
+              progess={progessMap[currentQuestion.id]}
+              undoStack={undoStack}
+              setUndoStack={setUndoStack}
+            />
         }
 
 
