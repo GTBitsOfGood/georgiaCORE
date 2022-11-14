@@ -28,6 +28,7 @@ const MyApp = ({ Component, pageProps, session }) => {
     >
       <Head>
         <title>GeorgiaCORE Tool</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <SessionProvider session={session}>
         <div className="App">

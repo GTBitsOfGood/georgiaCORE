@@ -16,13 +16,16 @@ const TreeSchema = new Schema({
       type: { type: String, enum: QUESTION_TYPES },
       heading: String,
       bodyText: String,
+      linkName: { type: String, default: null },
       url: { type: String, default: null },
+      openNewTab: { type: Boolean, default: false}, 
       options: [
         {
           id: String,
           option: String,
           icon: String,
           nextId: String,
+          supportingText: String,
         },
       ],
     },

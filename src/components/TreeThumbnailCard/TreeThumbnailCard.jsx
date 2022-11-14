@@ -101,14 +101,16 @@ const TreeThumbnailCard = (props) => {
           {/* Header */}
           <Flex flexDirection="row" w="100%" justifyContent="space-between">
             {/* Title */}
-            <ButtonGroup>
+            <ButtonGroup w="100%">
               <Heading
+                noOfLines={2}
                 as="h4"
                 size="lg"
                 onClick={() =>
                   router.push("/navigation-editor?id=" + props.tree._id)
                 }
                 cursor="pointer"
+                textOverflow={"ellipsis"}
               >
                 {props.tree.title ?? "N/A"}
               </Heading>
@@ -232,11 +234,9 @@ const TreeThumbnailCard = (props) => {
           </>
           {/* Details */}
           <Text w="100%" lineHeight={"100%"} justifyContent="left">
-            Edited on: {editedOnString}
-            <br />
-            Last active on: {lastActiveDateString}
-            <br />
-            Author: {props.tree.author ?? "N/A"}
+            <Text noOfLines={1}>Edited on: {editedOnString}</Text>
+            <Text noOfLines={1}>Last active on: {lastActiveDateString}</Text>
+            <Text noOfLines={1}>Author: {props.tree.author ?? "N/A"}</Text>
           </Text>
           {/* Buttons */}
           <Flex w="100%" justifyContent="flex-end">
