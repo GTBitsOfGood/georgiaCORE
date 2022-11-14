@@ -12,8 +12,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
+import styles from "./Header.module.css";
 import { useRouter } from "next/router";
 import NavLink from "../NavLink";
+
 
 const Header = () => {
   /**
@@ -81,74 +83,79 @@ const Header = () => {
       <Flex bgColor="#59784D" zIndex={100}>
         <Stack direction="row" width="100%" justifyContent="space-between">
           <Stack direction="row" justifyContent="space-between">
-            <Flex bgColor="gray" margin="10px">
-              <Image
-                src="/static/images/georgiacore_navbar_logo.png/"
-                alt="Logo"
-                backgroundColor="lightgreen"
-                height="60px"
-                padding="0px"
-                marginTop="-5px"
-              />
-            </Flex>
-            <Stack direction="row" justifyContent="space-evenly" width="50%">
-              <NavLink href="/saved-trees">
+            <div style={styles} id={styles.logo} >
+              <Flex bgColor="gray" margin="10px">
+                <Image
+                  src="/static/images/georgiacore_navbar_logo.png/"
+                  alt="Logo"
+                  backgroundColor="lightgreen"
+                  height="60px"
+                  
+                  padding="0px"
+                  marginTop="-5px"
+                />
+              </Flex>
+            </div>
+            <div style={styles} id={styles.container} >
+              <Stack direction="row" justifyContent="space-evenly" width="50%">
+                <NavLink href="/saved-trees">
+                  <Stack>
+                    {(router.pathname == "/saved-trees" || active1) && (
+                      <Flex bgColor="#F6893C" padding="2px"></Flex>
+                    )}
+                    {!(router.pathname == "/saved-trees" || active1) && (
+                      <Flex bgColor="#59784D" padding="2px"></Flex>
+                    )}
+                    <Text
+                      color="white"
+                      fontFamily="sans-serif"
+                      fontSize="20px"
+                      paddingLeft="20px"
+                      paddingRight="20px"
+                      paddingTop="10px"
+                      onClick={() => {
+                        createHoverEffect(1);
+                      }}
+                      onMouseEnter={() => {
+                        createHoverEffect(1);
+                      }}
+                      onMouseLeave={() => {
+                        killAllHovers();
+                      }}
+                    >
+                      <NavLink backgroundColor="red" color="red" href="/">
+                        Home
+                      </NavLink>
+                    </Text>
+                  </Stack>
+                </NavLink>
                 <Stack>
-                  {(router.pathname == "/saved-trees" || active1) && (
+                  {(router.pathname == "/admin" || active4) && (
                     <Flex bgColor="#F6893C" padding="2px"></Flex>
                   )}
-                  {!(router.pathname == "/saved-trees" || active1) && (
+                  {!(router.pathname == "/admin" || active4) && (
                     <Flex bgColor="#59784D" padding="2px"></Flex>
                   )}
                   <Text
                     color="white"
                     fontFamily="sans-serif"
                     fontSize="20px"
-                    paddingLeft="20px"
                     paddingRight="20px"
+                    paddingLeft="20px"
                     paddingTop="10px"
                     onClick={() => {
-                      createHoverEffect(1);
+                      createHoverEffect(4);
                     }}
                     onMouseEnter={() => {
-                      createHoverEffect(1);
+                      createHoverEffect(4);
                     }}
-                    onMouseLeave={() => {
-                      killAllHovers();
-                    }}
+                    onMouseLeave={killAllHovers}
                   >
-                    <NavLink backgroundColor="red" color="red" href="/">
-                      Home
-                    </NavLink>
+                    <NavLink href="/admin">Employees</NavLink>
                   </Text>
                 </Stack>
-              </NavLink>
-              <Stack>
-                {(router.pathname == "/admin" || active4) && (
-                  <Flex bgColor="#F6893C" padding="2px"></Flex>
-                )}
-                {!(router.pathname == "/admin" || active4) && (
-                  <Flex bgColor="#59784D" padding="2px"></Flex>
-                )}
-                <Text
-                  color="white"
-                  fontFamily="sans-serif"
-                  fontSize="20px"
-                  paddingRight="20px"
-                  paddingLeft="20px"
-                  paddingTop="10px"
-                  onClick={() => {
-                    createHoverEffect(4);
-                  }}
-                  onMouseEnter={() => {
-                    createHoverEffect(4);
-                  }}
-                  onMouseLeave={killAllHovers}
-                >
-                  <NavLink href="/admin">Employees</NavLink>
-                </Text>
               </Stack>
-            </Stack>
+            </div>
           </Stack>
           <Stack width="15%">
             <Flex direction="row-reverse" width="100%">
@@ -190,16 +197,40 @@ const Header = () => {
                       marginRight="15px"
                       alt="Logo"
                     />
+                    
                     {session.user.name}
                   </Flex>
                 </MenuButton>
                 <MenuList
-                  onClick={() =>
-                    signOut({
-                      callbackUrl: `${window.location.origin}/login`,
-                    })
-                  }
                 >
+                  <div style={styles} id={styles.menu} >
+                    <NavLink href="/saved-trees">
+                      <MenuItem
+                        bgColor="#59784D"
+                        color="white"
+                        paddingRight="100px"
+                        paddingLeft="100px"
+                        paddingTop="10px"
+                        paddingBottom="10px"
+                      >
+                        Home
+                      </MenuItem>
+                    </NavLink>
+                  </div>
+                  <div>
+                    <NavLink href="/admin">
+                      <MenuItem
+                        bgColor="#59784D"
+                        color="white"
+                        paddingRight="100px"
+                        paddingLeft="100px"
+                        paddingTop="10px"
+                        paddingBottom="10px"
+                      >
+                        Employees
+                      </MenuItem>
+                    </NavLink>
+                  </div>
                   <MenuItem
                     onClick={() =>
                       signOut({

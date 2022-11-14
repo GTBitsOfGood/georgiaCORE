@@ -23,3 +23,23 @@
 .endRoute {
     margin-left: auto;
 }
+
+#menu {
+    display: none;
+}
+
+
+@media (max-width: 500px) {
+    #sessionContainer {
+        display:none;
+    }
+    #container {
+        display: none;
+    }
+    #menu {
+        display: flex;
+    }
+    #logo {
+        width: 75%;
+    }
+}
