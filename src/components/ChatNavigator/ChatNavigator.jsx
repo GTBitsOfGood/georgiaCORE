@@ -4,7 +4,7 @@ import { getActiveQuestionTree, getQuestionTreeById } from "../../actions/Tree";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
-import LeafTemplate from "../Nodes/LeafTemplate/LeafTemplate";
+import LeafTemplate from "../LeafTemplate/LeafTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
