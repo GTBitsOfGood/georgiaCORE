@@ -43,7 +43,7 @@ function TextNode({ data, isConnectable, selected }) {
           display: "-webkit-box",
           "-webkit-box-orient": "vertical",
           WebkitLineClamp: 2,
-          }}
+        }}
       >
         {data.bodyText}
       </p>

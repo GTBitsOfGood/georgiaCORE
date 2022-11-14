@@ -8,30 +8,44 @@ import { AiOutlineGlobal } from "react-icons/ai";
 import { getStackStyles } from "@chakra-ui/react";
 import { BiLinkExternal } from "react-icons/bi";
 
-
-const InfoTemplate = (props) => { 
+const InfoTemplate = (props) => {
   return (
-    <div style={styles} id={styles.container} >
+    <div style={styles} id={styles.container}>
       <div id={styles.flexRow}>
         <div id={styles.progress}>
-          <ProgressBar bgcolor={"#F6893C"} completed={props.progess * 100} width="100"/>
+          <ProgressBar
+            bgcolor={"#F6893C"}
+            completed={props.progess * 100}
+            width="100"
+          />
         </div>
         <div id={styles.redo}>
           <UndoRedo
-              question={props.question}
-              setCurrentQuestionIndex={props.setCurrentQuestionIndex}
-              undoStack={props.undoStack}
-              setUndoStack={props.setUndoStack}
+            question={props.question}
+            setCurrentQuestionIndex={props.setCurrentQuestionIndex}
+            undoStack={props.undoStack}
+            setUndoStack={props.setUndoStack}
           />
         </div>
-        <h2 id={styles.question}>{props.question.heading ? props.question.heading : "Information"}</h2>
+        <h2 id={styles.question}>
+          {props.question.heading ? props.question.heading : "Information"}
+        </h2>
       </div>
       <div id={styles.result}>
-        <p id={styles.bodyText}>{props.question.bodyText ? props.question.bodyText : ""}</p>
+        <p id={styles.bodyText}>
+          {props.question.bodyText ? props.question.bodyText : ""}
+        </p>
       </div>
     </div>
   );
 };
 
+InfoTemplate.propTypes = {
+  setUndoStack: PropTypes.any,
+  question: PropTypes.any,
+  setCurrentQuestionIndex: PropTypes.any,
+  undoStack: PropTypes.any,
+  progess: PropTypes.any,
+};
 
 export default InfoTemplate;

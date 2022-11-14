@@ -26,7 +26,8 @@ function QuestionNode({ data, selected }) {
           }}
         >
           <Handle type="target" position={Position.Left} />
-          <Text style={{
+          <Text
+            style={{
               textOverflow: "ellipsis",
               overflow: "hidden",
               display: "-webkit-box",
@@ -35,7 +36,7 @@ function QuestionNode({ data, selected }) {
             }}
           >
             {data.label}
-          </Text>        
+          </Text>
         </div>
       </div>
     </>

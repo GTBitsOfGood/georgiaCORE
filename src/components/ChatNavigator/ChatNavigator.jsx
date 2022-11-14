@@ -28,20 +28,24 @@ const ChatNavigator = (props) => {
     const setup = async () => {
       let tempProgressMap = {};
 
-      const buildProgressMap = (questionMap, curr = "1", count = 0) => {  
-        if (!curr) { return 0; }
+      const buildProgressMap = (questionMap, curr = "1", count = 0) => {
+        if (!curr) {
+          return 0;
+        }
         let depth = 0;
 
         for (const index in questionMap[curr].options) {
           const nextId = questionMap[curr].options[index].nextId;
-          depth = Math.max(depth, buildProgressMap(questionMap, nextId, count + 1));
+          depth = Math.max(
+            depth,
+            buildProgressMap(questionMap, nextId, count + 1)
+          );
         }
 
-        tempProgressMap[curr] = depth;        
+        tempProgressMap[curr] = depth;
         return depth + 1;
       };
 
-  
       try {
         const questionsTree =
           props.isActive === true
@@ -56,12 +60,11 @@ const ChatNavigator = (props) => {
         setInvalidId(false);
         buildProgressMap(questionMap);
 
-        let mDepth = tempProgressMap['1'];
+        let mDepth = tempProgressMap["1"];
         for (let key in tempProgressMap) {
           tempProgressMap[key] = (mDepth - tempProgressMap[key]) / mDepth;
         }
         setProgressMap(tempProgressMap);
-
       } catch {
         setInvalidId(true);
         console.log("Unable to get questions at this time.");
@@ -97,9 +100,8 @@ const ChatNavigator = (props) => {
 
     return (
       <div style={styles} id={styles.main}>
-
         {/* QUESTION TEMPLATE */}
-        {currentQuestion.type == "question" && 
+        {currentQuestion.type == "question" && (
           <QuestionTemplate
             question={currentQuestion.question}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
@@ -114,16 +116,19 @@ const ChatNavigator = (props) => {
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);
-                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
+                    setUndoStack((undoStack) => [
+                      ...undoStack,
+                      currentQuestion.id,
+                    ]);
                   }
                 },
               };
             })}
           />
-        }
+        )}
 
         {/* URL TEMPLATE */}
-        {currentQuestion.type == "url" && 
+        {currentQuestion.type == "url" && (
           <LeafTemplate
             question={currentQuestion}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
@@ -131,19 +136,19 @@ const ChatNavigator = (props) => {
             undoStack={undoStack}
             setUndoStack={setUndoStack}
           />
-        }
+        )}
 
-        {currentQuestion.type == "text" && 
-            <InfoTemplate
-              question={currentQuestion}
-              setCurrentQuestionIndex={setCurrentQuestionIndex}
-              progess={progessMap[currentQuestion.id]}
-              undoStack={undoStack}
-              setUndoStack={setUndoStack}
-            />
-        }
+        {currentQuestion.type == "text" && (
+          <InfoTemplate
+            question={currentQuestion}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            progess={progessMap[currentQuestion.id]}
+            undoStack={undoStack}
+            setUndoStack={setUndoStack}
+          />
+        )}
 
-        {currentQuestion.type == "error" &&
+        {currentQuestion.type == "error" && (
           <ErrorTemplate
             question={currentQuestion}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
@@ -151,10 +156,7 @@ const ChatNavigator = (props) => {
             undoStack={undoStack}
             setUndoStack={setUndoStack}
           />
-        }
-
-
-
+        )}
       </div>
     );
   }
@@ -166,7 +168,8 @@ const ChatNavigator = (props) => {
   );
 };
 
-ChatNavigator.propTypes = {};
+ChatNavigator.propTypes = {
+  isActive: PropTypes.any,
+};
 
 export default ChatNavigator;
-
