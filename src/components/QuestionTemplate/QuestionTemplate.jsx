@@ -7,6 +7,7 @@ import { PhoneIcon } from "@chakra-ui/icons";
 import UndoRedo from "../ChatNavigator/UndoRedo";
 import ProgressBar from "../ChatNavigator/ProgessBar";
 import icons from "src/utils/icons";
+import Slider from "../Slider/Slider";
 
 const QuestionTemplate = (props) => {
 
@@ -50,39 +51,41 @@ const QuestionTemplate = (props) => {
         <h2 id={styles.question}>{props.question}</h2>
       </div>
       <div id={styles.optionContainer}>
-          {props.options.map((option, index) => {
-            return (
-              <div
-                itemId={index}
-                key={index}
-                id={styles.optionStack}
-                onClick={option.triggerNext ? option.triggerNext : () => {}}
-              >
-                {renderIcons ? (
-                  <>
-                    <div id={styles.greenCircle}>
-                      {getIcon(option.icon)}
-                    </div>
-                    <h4 id={styles.optionAnswer}>{option.answer}</h4>
-                    {renderSupport && 
-                      <p id={styles.optionInfo}>{option.supportingText}</p> 
-                    }
-                  </>
-                ) : (
-                  <>
-                    <div id={styles.greenCircle}>
-                       {option.answer}
-                    </div>
-                    {renderSupport && 
-                      <p id={styles.optionInfo}>{option.supportingText}</p> 
-                    }                  
-                 </>
-                )}
-                <div />
-              </div>
-            );
-          })}
-        </div>
+          <Slider>
+              {props.options.map((option, index) => {
+                return (
+                  <div
+                    itemId={index}
+                    key={index}
+                    id={styles.optionStack}
+                    onClick={option.triggerNext ? option.triggerNext : () => {}}
+                  >
+                    {renderIcons ? (
+                      <>
+                        <div id={styles.greenCircle}>
+                          {getIcon(option.icon)}
+                        </div>
+                        <h4 id={styles.optionAnswer}>{option.answer}</h4>
+                        {renderSupport && 
+                          <p id={styles.optionInfo}>{option.supportingText}</p> 
+                        }
+                      </>
+                    ) : (
+                      <>
+                        <div id={styles.greenCircle}>
+                          {option.answer}
+                        </div>
+                        {renderSupport && 
+                          <p id={styles.optionInfo}>{option.supportingText}</p> 
+                        }                  
+                    </>
+                    )}
+                    <div />
+                  </div>
+                );
+              })}
+            </Slider>
+          </div>
     </div>
   );
 };
