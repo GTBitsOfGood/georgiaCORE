@@ -22,13 +22,15 @@ const Slider = (props) => {
 
     const ref = useRef(null);
     const [el, setEl] = useState(3);
+    let elGroups;
 
     useLayoutEffect(() => {
-        let numElements = Math.min(5, parseInt(ref.current.offsetWidth/250));
+        let numElements = Math.min(5, parseInt(ref.current.offsetWidth/300));
         setEl(numElements);
+        elGroups = buildElGroups();
     }, []);
 
-    let elGroups = buildElGroups();
+    elGroups = buildElGroups();
 
     return (
         <div id={styles.sliderContainer} ref={ref}>

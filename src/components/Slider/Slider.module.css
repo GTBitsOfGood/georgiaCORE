@@ -16,7 +16,7 @@
     align-items: center;
     width: 100vw;
     height: 300px;
-    transition: 0.8s;
+    transition: transform 0.8s;
     overflow: hidden;
 }
 
@@ -34,4 +34,24 @@
     position: absolute;
     left: 60px;
     margin-top: 60px;
+}
+
+@media screen and (max-width: 450px) {
+    #rightIcon {
+        right: 20px;
+    }
+    
+    #leftIcon {
+        left: 20px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    #rightIcon {
+        right: 0px;
+    }
+    
+    #leftIcon {
+        left: 0px;
+    }
 }

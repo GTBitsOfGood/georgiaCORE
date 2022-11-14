@@ -11,7 +11,7 @@
     background-color: #F8F9FA;
     margin:0;
     padding: 0;
-    height: 400px;
+    height: 450px;
 }
 
 #question {
@@ -20,8 +20,12 @@
     margin-bottom: 0px;
     color: black;
     font-size: 28px;
+    width: 900px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #optionContainer {
@@ -63,6 +67,7 @@
     font-size: 16px;
     line-height: 1.2;
     font-weight: 500;
+    height: 30px;
     width: 200px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 400;
@@ -79,7 +84,7 @@
     justify-content: center;
     color: white;
     margin-bottom: 10px;
-    transition: 0.1s;
+    transition: background-color 0.1s;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-size: 20px;
     font-weight: 700
@@ -90,6 +95,7 @@
     background-color: #F6893C;
 }
 
+
 #redo {
     position: absolute;
     left: 50px;
@@ -98,7 +104,7 @@
 
 #progress {
     position: absolute;
-    right: 50px;
+    right: 20px;
     margin-bottom: 20px;
 }
 
@@ -110,12 +116,42 @@
     align-items: center;
 }
 
-@media (max-width: 500px) {
-    #optionContainer {
-        display: flex;
-        justify-content: left;
-        align-items: center;
-        text-align: center;
-        overflow-x: scroll;
+@media screen and (max-width: 1220px) {
+    #progress {
+        display: none;
     }
+
+}
+
+@media screen and (max-width: 1086px) {
+    #redo {
+        display: none;
+    }
+
+}
+
+@media screen and (max-width: 900px) {
+    #question {
+        width: 80%;
+        white-space:unset;
+        max-height: 80px;
+        margin-bottom: 10px;
+    }
+
+}
+
+@media screen and (max-width: 600px) {
+    #question {
+        font-size: 22px;
+        max-height: 70px;
+    }
+
+}
+
+@media screen and (max-width: 450px) {
+    #question {
+        font-size: 22px;
+        max-height: 70px;
+    }
+
 }

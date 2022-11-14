@@ -16,7 +16,7 @@ const LeafTemplate = (props) => {
     <div style={styles} id={styles.container} >
       <div id={styles.flexRow}>
         <div id={styles.progress}>
-          <ProgressBar bgcolor={"#F6893C"} completed={props.progess * 100} width="150"/>
+          <ProgressBar bgcolor={"#F6893C"} completed={props.progess * 100} width="100"/>
         </div>
         <div id={styles.redo}>
           <UndoRedo
