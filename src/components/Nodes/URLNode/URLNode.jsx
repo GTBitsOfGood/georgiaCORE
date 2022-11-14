@@ -41,6 +41,7 @@ function URLNode({ data, isConnectable, selected }) {
           textOverflow: "ellipsis",
           overflow: "hidden",
           whiteSpace: "nowrap",
+          textDecorationLine: "underline",
         }}
       >
         {data.label}

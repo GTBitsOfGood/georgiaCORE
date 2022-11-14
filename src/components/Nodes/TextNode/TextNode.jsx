@@ -40,8 +40,10 @@ function TextNode({ data, isConnectable, selected }) {
           padding: 4,
           textOverflow: "ellipsis",
           overflow: "hidden",
-          whiteSpace: "nowrap",
-        }}
+          display: "-webkit-box",
+          "-webkit-box-orient": "vertical",
+          WebkitLineClamp: 2,
+          }}
       >
         {data.bodyText}
       </p>

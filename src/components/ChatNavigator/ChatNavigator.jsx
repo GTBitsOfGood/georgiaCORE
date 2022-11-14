@@ -4,6 +4,7 @@ import { getActiveQuestionTree, getQuestionTreeById } from "../../actions/Tree";
 import Image from "next/image";
 import PropTypes from "prop-types";
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
+import LeafTemplate from "../LeafTemplate/LeafTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
@@ -105,6 +106,7 @@ const ChatNavigator = (props) => {
               return {
                 answer: option.option,
                 icon: option.icon,
+                supportingText: option.supportingText,
                 triggerNext: () => {
                   if (option.nextId) {
                     setCurrentQuestionIndex(option.nextId);
@@ -118,23 +120,12 @@ const ChatNavigator = (props) => {
 
         {/* URL TEMPLATE */}
         {currentQuestion.type == "url" && 
-          <QuestionTemplate
-            question={currentQuestion.question}
+          <LeafTemplate
+            question={currentQuestion}
             setCurrentQuestionIndex={setCurrentQuestionIndex}
             progess={progessMap[currentQuestion.id]}
             undoStack={undoStack}
             setUndoStack={setUndoStack}
-            options={currentQuestion.options.map((option) => {
-              return {
-                answer: option.option,
-                triggerNext: () => {
-                  if (option.nextId) {
-                    setCurrentQuestionIndex(option.nextId);
-                    setUndoStack(undoStack => [...undoStack, currentQuestion.id]);
-                  }
-                },
-              };
-            })}
           />
         }
 

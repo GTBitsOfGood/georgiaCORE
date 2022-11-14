@@ -6,9 +6,32 @@ import PropTypes from "prop-types";
 import { PhoneIcon } from "@chakra-ui/icons";
 import UndoRedo from "../ChatNavigator/UndoRedo";
 import ProgressBar from "../ChatNavigator/ProgessBar";
-
+import icons from "src/utils/icons";
 
 const QuestionTemplate = (props) => {
+
+  const shouldRenderIcons = () => {
+    let invalidIcons = props.options.some((option) => {
+      return !option.icon || option.icon == "None"
+    })
+    return !invalidIcons;
+  };
+
+  const shouldRenderSupportingText = () => {
+    console.log(props.options);
+    let invalidText = props.options.some((option) => {
+      return !option.supportingText || option.supportingText == ""
+    })
+    return !invalidText;
+  }
+
+  let renderIcons = shouldRenderIcons();
+  let renderSupport = shouldRenderSupportingText();
+
+  const getIcon = (icon) => {
+    let Element = icons[icon];
+    return <Element.type font-size={60} className={styles.white}></Element.type>;
+  }
 
   return (
     <div style={styles} id={styles.container} >
@@ -35,22 +58,31 @@ const QuestionTemplate = (props) => {
                 id={styles.optionStack}
                 onClick={option.triggerNext ? option.triggerNext : () => {}}
               >
-                {props.options.image ? (
-                  <div id={styles.greenCircle}>
-                    <PhoneIcon></PhoneIcon>
-                  </div>
+                {renderIcons ? (
+                  <>
+                    <div id={styles.greenCircle}>
+                      {getIcon(option.icon)}
+                    </div>
+                    <h4 id={styles.optionAnswer}>{option.answer}</h4>
+                    {renderSupport && 
+                      <p id={styles.optionInfo}>{option.supportingText}</p> 
+                    }
+                  </>
                 ) : (
-                  <div id={styles.greenCircle}>
-                    <PhoneIcon height={50} width={50}></PhoneIcon>
-                  </div>
+                  <>
+                    <div id={styles.greenCircle}>
+                       {option.answer}
+                    </div>
+                    {renderSupport && 
+                      <p id={styles.optionInfo}>{option.supportingText}</p> 
+                    }                  
+                 </>
                 )}
-                <h4 id={styles.optionAnswer}>{option.answer}</h4>
-                <p id={styles.optionInfo}>professional medical resources that may help</p> 
                 <div />
               </div>
             );
           })}
-      </div>
+        </div>
     </div>
   );
 };
