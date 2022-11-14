@@ -37,7 +37,7 @@ const LoginPage = ({ providers }) => {
       margin="auto"
       padding="0px"
     >
-      <Box bgColor="#ffffff" width="50%" height="60%" rounded="3xl">
+      <Box justifyContent="center" alignItems="center" display= "flex" bgColor="#ffffff" width={{base:"80%", md: "50%", xl: "50%"}} height={{base: "40%", md:"60%", xl: "60%"}} rounded="3xl">
         <Stack direction="column" alignItems="center" padding={28} spacing={4}>
           <Box fontWeight="bold" fontSize="3xl" fontFamily="sans-serif">
             Sign In
@@ -69,14 +69,16 @@ const LoginPage = ({ providers }) => {
                     spacing={4}
                     paddingLeft={4}
                     paddingRight={4}
+                    border="1px solid red"
                   >
-                    <Box bgColor="#ffffff" rounded="100%" width="%">
+                    <Box bgColor="#ffffff" rounded="100%" width="25px">
                       <Flex justifyContent="center" padding={0.5}>
                         <Image
                           src="https://freesvg.org/img/1534129544.png"
                           alt="Google Image"
                           borderRadius="100%"
                           height="20px"
+                          width="25px"
                         />
                       </Flex>
                     </Box>
@@ -91,9 +93,10 @@ const LoginPage = ({ providers }) => {
               </Text>
             )}
           </Stack>
-          <Flex justifyContent="center" padding={20}>
+          <Flex justifyContent="center" width="100%">
             <Image
-              boxSize="40%"
+              marginTop={5}
+              height="50px"
               src="https://d15yi9gnq6oxdl.cloudfront.net/assets/images/gacore-logo-2020-md.png"
               alt="Logo"
             />
