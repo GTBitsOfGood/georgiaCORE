@@ -1,7 +1,18 @@
 /* eslint-disable no-unused-vars */
-import React, {useState, useLayoutEffect, useRef} from "react";
+import React, {useState, useLayoutEffect, useEffect, useRef} from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import styles from "./Slider.module.css";
+
+function debounce(fn, ms) {
+    let timer
+    return _ => {
+      clearTimeout(timer)
+      timer = setTimeout(_ => {
+        timer = null
+        fn.apply(this, arguments)
+      }, ms)
+    };
+  }
 
 const Slider = (props) => {
 
@@ -21,17 +32,32 @@ const Slider = (props) => {
 
 
     const ref = useRef(null);
-    const [el, setEl] = useState(3);
-    let elGroups;
+    const [el, setEl] = useState(Math.min(5,window.innerWidth / 275));
+    const [elGroups, setElGroups] = useState(buildElGroups());
 
-    useLayoutEffect(() => {
-        let numElements = Math.min(5, parseInt(ref.current.offsetWidth/300));
+    useEffect(() => {
+        let numElements = Math.min(5, parseInt(window.innerWidth/275));
         numElements = Math.max(numElements, 1);
         setEl(numElements);
-        elGroups = buildElGroups();
-    }, []);
+        setElGroups(buildElGroups());
+    }, [props]);
 
-    elGroups = buildElGroups();
+    useEffect(() => {
+        const debouncedHandleResize = debounce(() => {
+            let numElements = Math.min(5, parseInt(window.innerWidth /275));
+            numElements = Math.max(numElements, 1);
+            setEl(numElements);
+            setElGroups(buildElGroups());
+
+        }, 40)
+    
+        window.addEventListener('resize', debouncedHandleResize)
+    
+        return _ => {
+          window.removeEventListener('resize', debouncedHandleResize)
+        }
+    })
+
 
     return (
         <div id={styles.sliderContainer} ref={ref}>
