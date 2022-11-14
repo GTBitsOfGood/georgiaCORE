@@ -9,7 +9,6 @@ import { getStackStyles } from "@chakra-ui/react";
 import { BiLinkExternal } from "react-icons/bi";
 
 const LeafTemplate = (props) => {
-
   return (
     <div style={styles} id={styles.container}>
       <div id={styles.flexRow}>
