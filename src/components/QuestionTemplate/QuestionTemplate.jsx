@@ -18,7 +18,6 @@ const QuestionTemplate = (props) => {
   };
 
   const shouldRenderSupportingText = () => {
-    console.log(props.options);
     let invalidText = props.options.some((option) => {
       return !option.supportingText || option.supportingText == "";
     });

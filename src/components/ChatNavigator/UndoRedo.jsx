@@ -25,7 +25,6 @@ const UndoRedo = (props) => {
     if (undoStack.length == 0) {
       return;
     }
-    console.log(undoStack);
     handler(undoStack[undoStack.length - 1]);
     setUndoStack((undoStack) => undoStack.slice(0, -1)); // pop
   };

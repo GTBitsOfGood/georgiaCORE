@@ -9,7 +9,6 @@ import { getStackStyles } from "@chakra-ui/react";
 import { BiLinkExternal } from "react-icons/bi";
 
 const LeafTemplate = (props) => {
-  console.log(props.question);
 
   return (
     <div style={styles} id={styles.container}>
