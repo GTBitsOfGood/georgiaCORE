@@ -3,12 +3,15 @@ import styles from "./ChatNavigator.module.css";
 import { getActiveQuestionTree, getQuestionTreeById } from "../../actions/Tree";
 import Image from "next/image";
 import PropTypes from "prop-types";
-import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
-import LeafTemplate from "../LeafTemplate/LeafTemplate";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
+
+/* IMPORT TEMPLATES */
+import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
+import LeafTemplate from "../LeafTemplate/LeafTemplate";
 import InfoTemplate from "../InfoTemplate/InfoTemplate";
+import ErrorTemplate from "../ErrorTemplate/ErrorTemplate";
 
 const ChatNavigator = (props) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState("1");
@@ -138,6 +141,16 @@ const ChatNavigator = (props) => {
               undoStack={undoStack}
               setUndoStack={setUndoStack}
             />
+        }
+
+        {currentQuestion.type == "error" &&
+          <ErrorTemplate
+            question={currentQuestion}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            progess={progessMap[currentQuestion.id]}
+            undoStack={undoStack}
+            setUndoStack={setUndoStack}
+          />
         }
 
 
