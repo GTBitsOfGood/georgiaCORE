@@ -11,7 +11,7 @@
     background-color: #F8F9FA;
     margin:0;
     padding: 0;
-    height: 450px;
+    height: 420px;
 }
 
 #question {
@@ -61,6 +61,10 @@
     font-weight: 700;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 600;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #optionInfo {
@@ -71,6 +75,7 @@
     width: 200px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 400;
+    text-overflow: ellipsis;
 }
 
 #greenCircle {
@@ -148,10 +153,10 @@
 
 }
 
-@media screen and (max-width: 450px) {
-    #question {
-        font-size: 22px;
-        max-height: 70px;
+@media screen and (max-width: 300px) {
+    #optionAnswer {
+        max-width: 90%;
     }
 
 }
+

@@ -26,6 +26,7 @@ const Slider = (props) => {
 
     useLayoutEffect(() => {
         let numElements = Math.min(5, parseInt(ref.current.offsetWidth/300));
+        numElements = Math.max(numElements, 1);
         setEl(numElements);
         elGroups = buildElGroups();
     }, []);
