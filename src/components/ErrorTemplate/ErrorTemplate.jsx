@@ -1,14 +1,17 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import styles from "./InfoTemplate.module.css";
+import styles from "./ErrorTemplate.module.css";
 import PropTypes from "prop-types";
 import UndoRedo from "../ChatNavigator/UndoRedo";
 import ProgressBar from "../ChatNavigator/ProgessBar";
-import { AiOutlineGlobal } from "react-icons/ai";
-import { getStackStyles } from "@chakra-ui/react";
-import { BiLinkExternal } from "react-icons/bi";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
 
-const InfoTemplate = (props) => {
+const ErrorTemplate = (props) => {
+  const goHome = () => {
+    props.setCurrentQuestionIndex(1);
+    props.setUndoStack((undoStack) => []);
+  };
+
   return (
     <div style={styles} id={styles.container}>
       <div id={styles.flexRow}>
@@ -27,20 +30,20 @@ const InfoTemplate = (props) => {
             setUndoStack={props.setUndoStack}
           />
         </div>
-        <h2 id={styles.question}>
-          {props.question.heading ? props.question.heading : "Information"}
-        </h2>
+        <h2 id={styles.question}>Sorry...</h2>
       </div>
       <div id={styles.result}>
-        <p id={styles.bodyText}>
-          {props.question.bodyText ? props.question.bodyText : ""}
-        </p>
+        <AiOutlineQuestionCircle id={styles.internet} font-size={70} />
+        <h2 id={styles.text}>We don&apos;t think we can help you right now</h2>
+        <div onClick={goHome} id={styles.url}>
+          Back
+        </div>
       </div>
     </div>
   );
 };
 
-InfoTemplate.propTypes = {
+ErrorTemplate.propTypes = {
   setUndoStack: PropTypes.any,
   question: PropTypes.any,
   setCurrentQuestionIndex: PropTypes.any,
@@ -48,4 +51,4 @@ InfoTemplate.propTypes = {
   progess: PropTypes.any,
 };
 
-export default InfoTemplate;
+export default ErrorTemplate;

@@ -101,7 +101,7 @@ const TreeThumbnailCard = (props) => {
           {/* Header */}
           <Flex flexDirection="row" w="100%" justifyContent="space-between">
             {/* Title */}
-            <ButtonGroup w='100%'>
+            <ButtonGroup w="100%">
               <Heading
                 noOfLines={2}
                 as="h4"
@@ -234,7 +234,7 @@ const TreeThumbnailCard = (props) => {
           </>
           {/* Details */}
           <Text w="100%" lineHeight={"100%"} justifyContent="left">
-          <Text noOfLines={1}>Edited on: {editedOnString}</Text>
+            <Text noOfLines={1}>Edited on: {editedOnString}</Text>
             <Text noOfLines={1}>Last active on: {lastActiveDateString}</Text>
             <Text noOfLines={1}>Author: {props.tree.author ?? "N/A"}</Text>
           </Text>

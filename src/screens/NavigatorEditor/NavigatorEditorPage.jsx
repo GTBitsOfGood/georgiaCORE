@@ -105,7 +105,6 @@ const reducer = (state, action) => {
       };
     }
     case "selection_change":
-      console.log(action);
       return {
         ...state,
         selectedNode: action.nodes[0],

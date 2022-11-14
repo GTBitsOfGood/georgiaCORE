@@ -77,7 +77,6 @@ const EditOption = ({
     );
   };
 
-
   return (
     <HStack w="100%">
       <Select
@@ -97,9 +96,19 @@ const EditOption = ({
           None (No Icon)
         </option>
       </Select>
-      <VStack w='90%'>
-      <Input variant="flushed" placeholder="Name" value={optionText} onChange={handleTextChange} />
-      <Input variant="flushed" placeholder="Supporting Text" value={optionSupportingText} onChange={handleSupportingTextChange} />
+      <VStack w="90%">
+        <Input
+          variant="flushed"
+          placeholder="Name"
+          value={optionText}
+          onChange={handleTextChange}
+        />
+        <Input
+          variant="flushed"
+          placeholder="Supporting Text"
+          value={optionSupportingText}
+          onChange={handleSupportingTextChange}
+        />
       </VStack>
       <Button onClick={() => setQuestion(removeOption(question, optionId))}>
         <SmallCloseIcon color="teal" />
@@ -114,6 +123,7 @@ EditOption.propTypes = {
   optionIcon: PropTypes.string,
   question: PropTypes.object,
   setQuestion: PropTypes.func,
+  optionSupportingText: PropTypes.any,
 };
 
 const addOption = (question) => {
@@ -174,7 +184,7 @@ const QuestionForm = ({ question, setQuestion }) => {
                   }
                 />
               )}
-              
+
               {question.type === "text" && (
                 <Input
                   w="70%"
