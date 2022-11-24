@@ -5,6 +5,8 @@ import { getAllQuestionTrees } from "server/mongodb/actions/Tree";
 // @desc
 // @access  Public
 const handler = async (req, res) => {
+  console.log(process.env);
+
   try {
     const treesRes = await getAllQuestionTrees();
 
