@@ -1,5 +1,5 @@
 const urls = {
-  baseUrl: process.env.BASE_URL ?? "https://georgia-core.vercel.app",
+  baseUrl: process.env.VERCEL_URL ?? "http://localhost:3000",
   pages: {
     index: "/",
     ssr: "/ssr",
