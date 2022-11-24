@@ -1,5 +1,5 @@
 const urls = {
-  baseUrl: process.env.NEXT_PUBLIC_VERCEL_URL ?? "http://localhost:3000",
+  baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
   pages: {
     index: "/",
     ssr: "/ssr",
