@@ -1,3 +1,4 @@
+console.log(process.env.BASE_URL);
 const urls = {
   baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
   pages: {
