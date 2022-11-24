@@ -1,6 +1,5 @@
-console.log(process.env.BASE_URL);
 const urls = {
-  baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
+  baseUrl: process.env.BASE_URL ?? "https://georgia-core.vercel.app/",
   pages: {
     index: "/",
     ssr: "/ssr",
