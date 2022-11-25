@@ -4,6 +4,7 @@ import Head from "next/head";
 import { SWRConfig } from "swr";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
+import { useRouter } from 'next/router'
 
 import Header from "src/components/Header";
 import fetchJson from "src/utils/lib/fetchJson";
@@ -16,8 +17,10 @@ import "src/components/Nodes/OptionNode/OptionNode.css";
 import "src/components/Nodes/TextNode/TextNode.css";
 
 const MyApp = ({ Component, pageProps, session }) => {
-  const PAGES_WITH_NO_HEADER = new Set(["Login", "RenderPage"]);
-  const renderHeader = !PAGES_WITH_NO_HEADER.has(Component.name);
+  const router = useRouter();
+
+  const PAGES_WITH_NO_HEADER = new Set(["/login", "/render"]);
+  const renderHeader = !PAGES_WITH_NO_HEADER.has(router.pathname);
 
   return (
     <SWRConfig
