@@ -75,24 +75,26 @@ const ChatNavigator = (props) => {
 
   const numQs = Object.keys(allQuestions).length;
 
-  if (status === "loading") {
-    return <></>;
-  }
+  if (!isActive) {
+    if (status === "loading") {
+      return <></>;
+    }
 
-  if (status == "unauthenticated" && props.isActive !== true) {
-    return (
-      <>
-        <ErrorPage message="User is not logged in." />
-      </>
-    );
-  }
+    if (status == "unauthenticated" && props.isActive !== true) {
+      return (
+        <>
+          <ErrorPage message="User is not logged in." />
+        </>
+      );
+    }
 
-  if (invalidID) {
-    return (
-      <>
-        <ErrorPage message="This tree does not exist." />
-      </>
-    );
+    if (invalidID) {
+      return (
+        <>
+          <ErrorPage message="This tree does not exist." />
+        </>
+      );
+    }
   }
 
   if (numQs > 0) {
