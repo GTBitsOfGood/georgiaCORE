@@ -58,12 +58,7 @@ const AuthUserTable = ({ authUsers, roleSort, emailSort, calculate }) => {
               _hover={{ bgColor: "white" }}
               _active={{ bgColor: "white" }}
               paddingLeft={1}
-              onClick={() => {
-                roleSort();
-              }}
-            >
-              <ArrowUpDownIcon w={4} h={4} />
-            </Button>
+            ></Button>
           </Th>
         </Tr>
       </Thead>

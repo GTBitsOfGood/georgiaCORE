@@ -151,7 +151,10 @@ const AuthUserModal = ({
                       });
                       calculate();
                     } else if (buttonRole == "2") {
-                      await insertAuthUser({ email: inputValue, role: "Staff" });
+                      await insertAuthUser({
+                        email: inputValue,
+                        role: "Staff",
+                      });
                       calculate();
                     }
                   }
