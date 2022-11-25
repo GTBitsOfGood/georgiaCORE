@@ -161,13 +161,13 @@ const AuthUserModal = ({
                 } else if (action == "updateAuthUser") {
                   if (inputValue != null && inputValue != "") {
                     if (buttonRole == "1") {
-                      updateAuthUser(currentEmail, {
+                      await updateAuthUser(currentEmail, {
                         email: inputValue,
                         role: "Administrator",
                       });
                       calculate();
                     } else if (buttonRole == "2") {
-                      updateAuthUser(currentEmail, {
+                      await updateAuthUser(currentEmail, {
                         email: inputValue,
                         role: "Staff",
                       });
@@ -175,13 +175,13 @@ const AuthUserModal = ({
                     }
                   } else if (inputValue == "") {
                     if (buttonRole == "1") {
-                      updateAuthUser(currentEmail, {
+                      await updateAuthUser(currentEmail, {
                         email: currentEmail,
                         role: "Administrator",
                       });
                       calculate();
                     } else if (buttonRole == "2") {
-                      updateAuthUser(currentEmail, {
+                      await updateAuthUser(currentEmail, {
                         email: currentEmail,
                         role: "Staff",
                       });

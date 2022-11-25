@@ -66,8 +66,8 @@ const AuthUsersDeleteAlert = ({ calculate, email }) => {
               variant="solid"
               _hover={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
               _active={{ backgroundColor: "rgba(89, 120, 77, 0.75)" }}
-              onClick={() => {
-                deleteAuthUser({ email: email });
+              onClick={async () => {
+                await deleteAuthUser({ email: email });
                 calculate();
               }}
             >
