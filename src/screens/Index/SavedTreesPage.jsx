@@ -278,9 +278,6 @@ const SavedTreesPage = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </InputGroup>
-                <Button colorScheme="georgia-core-green" variant="solid">
-                  Search
-                </Button>
               </HStack>
               <Spacer />
               <Button
