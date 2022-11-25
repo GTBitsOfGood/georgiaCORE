@@ -193,7 +193,7 @@ const AdminPage = () => {
           deleteAuthUser({ email: tempUsersArray[i].email });
         }
         for (let i = 0; i < tempUsersArray.length; i++) {
-          insertAuthUser({
+          await insertAuthUser({
             email: tempUsersArray[i].email,
             role: tempUsersArray[i].role,
           });
@@ -215,7 +215,7 @@ const AdminPage = () => {
           deleteAuthUser({ email: tempUsersArray[i].email });
         }
         for (let i = 0; i < tempUsersArray.length; i++) {
-          insertAuthUser({
+          await insertAuthUser({
             email: tempUsersArray[i].email,
             role: tempUsersArray[i].role,
           });
