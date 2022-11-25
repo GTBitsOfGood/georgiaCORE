@@ -75,7 +75,7 @@ const ChatNavigator = (props) => {
 
   const numQs = Object.keys(allQuestions).length;
 
-  if (!isActive) {
+  if (!props.isActive) {
     if (status === "loading") {
       return <></>;
     }

@@ -9,18 +9,19 @@ import { GiPersonInBed } from "react-icons/gi";
 import React from "react";
 
 const icons = {
-  Instagram: <FaInstagram />,
+  Calendar: <AiOutlineCalendar />,
+  Cancel: <MdCancel />,
+  Doctor: <MdPersonPin />,
   Facebook: <FaFacebook />,
-  QuestionMark: <FaQuestion />,
-  Resources: <GrResources />,
-  MedicalPlus: <BiPlusMedical />,
-  Thermometer: <GiMedicalThermometer />,
+  Instagram: <FaInstagram />,
   Mask: <CiMedicalMask />,
   MedicalForm: <BsFileMedical />,
-  Cancel: <MdCancel />,
-  Calendar: <AiOutlineCalendar />,
-  Doctor: <MdPersonPin />,
+  MedicalPlus: <BiPlusMedical />,
   PersonInBed: <GiPersonInBed />,
+  QuestionMark: <FaQuestion />,
+  Resources: <GrResources />,
+  Thermometer: <GiMedicalThermometer />,
+  
 };
 
 export default icons;
