@@ -2,7 +2,7 @@ import { withSessionRoute } from "src/utils/lib/session";
 import { getActiveQuestionTree } from "server/mongodb/actions/Tree";
 
 // @route   GET api/tree/get-active
-// @desc
+// @desc    Unprotected, anyone can access
 // @access  Public
 const handler = async (req, res) => {
   try {
@@ -16,7 +16,7 @@ const handler = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      message: error.message,
+      message: "Error occurred while processing request.",
     });
   }
 };
