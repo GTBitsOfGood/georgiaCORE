@@ -9,13 +9,11 @@ import {
 } from "react-icons/fa";
 import {
   GrResources,
-  GiMedicalThermometer,
   GrNavigate,
-  GiCaduceus,
 } from "react-icons/gr";
 import { BiPlusMedical, BiNavigation } from "react-icons/bi";
 import { CiMedicalMask } from "react-icons/ci";
-import { IoBandage } from "react-icons/io";
+import { IoBandage } from "react-icons/io5";
 import { BsFileMedical, BsSearch } from "react-icons/bs";
 import { MdCancel, MdPersonPin } from "react-icons/md";
 import {
@@ -43,6 +41,8 @@ import {
   GiBandageRoll,
   GiLungs,
   GiKidneys,
+  GiCaduceus,
+  GiMedicalThermometer,
 } from "react-icons/gi";
 import { TbVaccine } from "react-icons/tb";
 import React from "react";
