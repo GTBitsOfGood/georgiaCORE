@@ -7,10 +7,7 @@ import {
   FaStethoscope,
   FaBrain,
 } from "react-icons/fa";
-import {
-  GrResources,
-  GrNavigate,
-} from "react-icons/gr";
+import { GrResources, GrNavigate } from "react-icons/gr";
 import { BiPlusMedical, BiNavigation } from "react-icons/bi";
 import { CiMedicalMask } from "react-icons/ci";
 import { IoBandage } from "react-icons/io5";

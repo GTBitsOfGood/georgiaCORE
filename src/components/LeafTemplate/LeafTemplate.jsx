@@ -33,7 +33,7 @@ const LeafTemplate = (props) => {
         <AiOutlineGlobal id={styles.internet} font-size={70} />
         <h2 id={styles.text}>Others found this page useful:</h2>
         <a
-          target={props.question.openNewTab ? "_blank" : "_self"}
+          target={props.question.openNewTab ? "_blank" : "_parent"}
           href={props.question.url}
           id={styles.url}
           rel="noreferrer"
