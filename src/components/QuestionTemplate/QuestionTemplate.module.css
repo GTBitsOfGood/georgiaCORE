@@ -128,7 +128,7 @@
 
 }
 
-@media screen and (max-width: 1086px) {
+@media screen and (max-width: 950px) {
     #redo {
         display: none;
     }
@@ -157,6 +157,5 @@
     #optionAnswer {
         max-width: 90%;
     }
-
 }
 

@@ -34,22 +34,31 @@ const Slider = (props) => {
     return tempGroup;
   };
 
+  const getElementNumber = () => {
+    let numElements = parseInt(Math.floor(document.body.clientWidth / 300));
+    numElements = Math.min(numElements, 5); // MAX
+    numElements = Math.max(numElements, 1); // MIN
+    return numElements;
+  };
+
   const ref = useRef(null);
-  const [el, setEl] = useState(Math.min(5, window.innerWidth / 275));
+  const [el, setEl] = useState(getElementNumber());
   const [elGroups, setElGroups] = useState(buildElGroups());
 
   useEffect(() => {
-    let numElements = Math.min(5, parseInt(window.innerWidth / 275));
-    numElements = Math.max(numElements, 1);
-    setEl(numElements);
+    setEl(getElementNumber());
+    setElGroups(buildElGroups());
+  }, []);
+
+  useEffect(() => {
+    setX(0);
+    setEl(getElementNumber());
     setElGroups(buildElGroups());
   }, [props]);
 
   useEffect(() => {
     const debouncedHandleResize = debounce(() => {
-      let numElements = Math.min(5, parseInt(window.innerWidth / 275));
-      numElements = Math.max(numElements, 1);
-      setEl(numElements);
+      setEl(getElementNumber());
       setElGroups(buildElGroups());
     }, 40);
 
