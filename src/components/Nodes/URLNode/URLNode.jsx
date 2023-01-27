@@ -31,7 +31,7 @@ function URLNode({ data, isConnectable, selected }) {
           whiteSpace: "nowrap",
         }}
       >
-        URL Node
+        {data.linkName}
       </h1>
 
       <p
