@@ -11,7 +11,7 @@ export const createNode = ({ question, x, y, connectingNodeId = null }) => {
       targetPosition: "left",
       data: {
         label: question.url,
-        linkName: question.linkName
+        linkName: question.linkName,
       },
       style: {
         background: "#fff",
