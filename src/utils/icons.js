@@ -7,6 +7,23 @@ import { MdCancel, MdPersonPin } from "react-icons/md";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { GiPersonInBed } from "react-icons/gi";
 import React from "react";
+import {
+  BsNewspaper,
+  GiStrong,
+  TbLayersDifference,
+  BsFillPersonFill,
+  GrUserWorker,
+  FcReading,
+  AiOutlineMail,
+  BiMoney,
+  FcDonate,
+  BsFillPeopleFill,
+  MdEmojiPeople,
+  BsBuilding,
+  MdOutlineFamilyRestroom,
+  MdRecordVoiceOver,
+  MdGroups,
+} from "react-icons";
 
 const icons = {
   Instagram: <FaInstagram />,
@@ -21,6 +38,21 @@ const icons = {
   Calendar: <AiOutlineCalendar />,
   Doctor: <MdPersonPin />,
   PersonInBed: <GiPersonInBed />,
+  arm: <GiStrong />,
+  Difference: <TbLayersDifference />,
+  Person: <BsFillPersonFill />,
+  Worker: <GrUserWorker />,
+  Reading: <FcReading />,
+  Mail: <AiOutlineMail />,
+  Money: <BiMoney />,
+  Donate: <FcDonate />,
+  Group: <BsFillPeopleFill />,
+  news: <BsNewspaper />,
+  Volunteer: <MdEmojiPeople />,
+  Building: <BsBuilding />,
+  Family: <MdOutlineFamilyRestroom />,
+  speaking: <MdRecordVoiceOver />,
+  leader: <MdGroups />,
 };
 
 export default icons;
