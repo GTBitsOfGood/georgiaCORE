@@ -1,29 +1,28 @@
 import { FaInstagram, FaFacebook, FaQuestion } from "react-icons/fa";
-import { GrResources, GiMedicalThermometer } from "react-icons/gr";
-import { BiPlusMedical } from "react-icons/bi";
+import { GrResources, GrUserWorker } from "react-icons/gr";
+import { BiPlusMedical, BiMoney } from "react-icons/bi";
 import { CiMedicalMask } from "react-icons/ci";
-import { BsFileMedical } from "react-icons/bs";
-import { MdCancel, MdPersonPin } from "react-icons/md";
-import { AiOutlineCalendar } from "react-icons/ai";
-import { GiPersonInBed } from "react-icons/gi";
-import React from "react";
 import {
+  BsFileMedical,
   BsNewspaper,
-  GiStrong,
-  TbLayersDifference,
   BsFillPersonFill,
-  GrUserWorker,
-  FcReading,
-  AiOutlineMail,
-  BiMoney,
-  FcDonate,
   BsFillPeopleFill,
-  MdEmojiPeople,
   BsBuilding,
+} from "react-icons/bs";
+import {
+  MdCancel,
+  MdPersonPin,
+  MdEmojiPeople,
   MdOutlineFamilyRestroom,
   MdRecordVoiceOver,
   MdGroups,
-} from "react-icons";
+} from "react-icons/md";
+import { AiOutlineCalendar } from "react-icons/ai";
+import { GiPersonInBed, GiMedicalThermometer, GiStrong } from "react-icons/gi";
+import { FcReading, FcDonate } from "react-icons/fc";
+import { AiOutlineMail } from "react-icons/ai";
+import { TbLayersDifference } from "react-icons/tb";
+import React from "react";
 
 const icons = {
   Instagram: <FaInstagram />,
