@@ -454,7 +454,6 @@ const TreeEditor = () => {
       if (newAuthUsers[0] && session) {
         let emailsArray = [];
         for (let i = 0; i < Object.values(newAuthUsers[0]).length; i++) {
-          console.log(newAuthUsers[0][i])
           emailsArray.push(newAuthUsers[0][i].email);
         }
         if (emailsArray.includes(session.user.email)) {
