@@ -196,11 +196,19 @@ const reducer = (state, action) => {
     case "close_edit_modal":
       return { ...state, editModalOpen: false };
     case "node_change":
-      return {
-        ...state,
-        nodes: applyNodeChanges(action.changes, state.nodes),
-        unsavedChanges: true,
-      };
+      if (!state.firstRun) {
+        return {
+          ...state,
+          nodes: applyNodeChanges(action.changes, state.nodes),
+          firstRun: true,
+        };
+      } else {
+        return {
+          ...state,
+          nodes: applyNodeChanges(action.changes, state.nodes),
+          unsavedChanges: true,
+        };
+      }
     case "edge_change":
       return {
         ...state,
@@ -495,6 +503,13 @@ const TreeEditor = () => {
     }
   }, [openInstructions]);
 
+  // Set unsaved changes to false when page first loads
+  useEffect(() => {
+    state.unsavedChanges = false;
+    console.log(state.unsavedChanges);
+
+  }, []);
+
   // prompt the user if they try and leave with unsaved changes
   useEffect(() => {
     const warningText =
@@ -672,13 +687,13 @@ const TreeEditor = () => {
               nodeTypes={nodeTypes}
               nodes={state.nodes}
               edges={state.edges}
-              onInit={(reactFlowInstance) =>
+              onInit={(reactFlowInstance) => 
                 dispatch({ type: "set_react_flow_instance", reactFlowInstance })
               }
               onNodesChange={(changes) =>
                 dispatch({ type: "node_change", changes })
               }
-              onEdgesChange={(changes) =>
+              onEdgesChange={(changes) => 
                 dispatch({ type: "edge_change", changes })
               }
               onEdgesDelete={(edges) =>
