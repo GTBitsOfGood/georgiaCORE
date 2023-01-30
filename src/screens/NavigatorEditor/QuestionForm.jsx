@@ -25,7 +25,8 @@ const editOption = ({ question, optionId, text, icon, supportingText }) => {
           ...o,
           option: text !== undefined ? text : o.option,
           icon: icon || o.icon,
-          supportingText: supportingText !== undefined ? supportingText : o.supportingText,
+          supportingText:
+            supportingText !== undefined ? supportingText : o.supportingText,
         };
       }
       return o;
