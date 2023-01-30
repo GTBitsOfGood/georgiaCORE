@@ -594,11 +594,20 @@ const TreeEditor = () => {
               <Button
                 size="md"
                 style={{ margin: "10px", backgroundColor: "#59784D" }}
-                onClick={() => dispatch({ type: "toggle_lock"})}
+                onClick={() => dispatch({ type: "toggle_lock" })}
               >
-                  <UnlockIcon color="white" size="lg" position="absolute" visibility= {state.locked ? "hidden" : "visible"}/>
-                  <LockIcon color="white" size="lg" position="absolute" visibility= {state.locked ? "visible" : "hidden"}/> 
-                
+                <UnlockIcon
+                  color="white"
+                  size="lg"
+                  position="absolute"
+                  visibility={state.locked ? "hidden" : "visible"}
+                />
+                <LockIcon
+                  color="white"
+                  size="lg"
+                  position="absolute"
+                  visibility={state.locked ? "visible" : "hidden"}
+                />
               </Button>
               <Button
                 backgroundColor="#AFB9A5"
