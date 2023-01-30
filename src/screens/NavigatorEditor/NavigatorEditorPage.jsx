@@ -196,19 +196,11 @@ const reducer = (state, action) => {
     case "close_edit_modal":
       return { ...state, editModalOpen: false };
     case "node_change":
-      if (!state.firstRun) {
-        return {
-          ...state,
-          nodes: applyNodeChanges(action.changes, state.nodes),
-          firstRun: true,
-        };
-      } else {
-        return {
-          ...state,
-          nodes: applyNodeChanges(action.changes, state.nodes),
-          unsavedChanges: true,
-        };
-      }
+      return {
+        ...state,
+        nodes: applyNodeChanges(action.changes, state.nodes),
+        // unsavedChanges: true, // disabled so dragging doesn't cause unsaved changes popup
+      };
     case "edge_change":
       return {
         ...state,
@@ -506,8 +498,6 @@ const TreeEditor = () => {
   // Set unsaved changes to false when page first loads
   useEffect(() => {
     state.unsavedChanges = false;
-    console.log(state.unsavedChanges);
-
   }, []);
 
   // prompt the user if they try and leave with unsaved changes
