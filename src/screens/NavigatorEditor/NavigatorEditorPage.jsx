@@ -199,7 +199,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         nodes: applyNodeChanges(action.changes, state.nodes),
-        unsavedChanges: true,
+        // unsavedChanges: true, // disabled so dragging doesn't cause unsaved changes popup
       };
     case "edge_change":
       return {
@@ -494,6 +494,11 @@ const TreeEditor = () => {
       openInstructions();
     }
   }, [openInstructions]);
+
+  // Set unsaved changes to false when page first loads
+  useEffect(() => {
+    state.unsavedChanges = false;
+  }, []);
 
   // prompt the user if they try and leave with unsaved changes
   useEffect(() => {
