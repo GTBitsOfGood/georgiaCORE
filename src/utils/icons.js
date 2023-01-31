@@ -46,12 +46,12 @@ const icons = {
   Money: <BiMoney />,
   Donate: <FcDonate />,
   Group: <BsFillPeopleFill />,
-  news: <BsNewspaper />,
+  News: <BsNewspaper />,
   Volunteer: <MdEmojiPeople />,
   Building: <BsBuilding />,
   Family: <MdOutlineFamilyRestroom />,
-  speaking: <MdRecordVoiceOver />,
-  leader: <MdGroups />,
+  Speaking: <MdRecordVoiceOver />,
+  Leader: <MdGroups />,
 };
 
 export default icons;
