@@ -109,6 +109,7 @@ export default class NavigationTree {
       id,
       question: questionContent,
       type,
+      openNewTab: true,
       options: options.map((o) => {
         return {
           id: uuidv4(),
@@ -158,7 +159,11 @@ export default class NavigationTree {
 
   static createUntitledQuestion() {
     return this.createQuestion("Untitled Question", "question", [
-      { option: "Option 1", icon: "QuestionMark", nextId: null },
+      {
+        option: "Option 1",
+        icon: "QuestionMark",
+        nextId: null,
+      },
     ]);
   }
 

@@ -244,7 +244,6 @@ const QuestionForm = ({ question, setQuestion }) => {
 
             {question.type === "url" && (
               <Checkbox
-                defaultChecked
                 style={{ marginLeft: "auto" }}
                 isChecked={question.openNewTab}
                 onChange={(e) =>
