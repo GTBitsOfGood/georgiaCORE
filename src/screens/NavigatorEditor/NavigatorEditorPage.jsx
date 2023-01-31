@@ -642,7 +642,7 @@ const TreeEditor = () => {
                   backgroundColor="#AFB9A5"
                   style={{ margin: "10px" }}
                   size="lg"
-                  onClick={() => router.push("/navigator?id=" + treeID)}
+                  onClick={() => window.open("/navigator?id=" + treeID)}
                 >
                   Preview
                 </Button>

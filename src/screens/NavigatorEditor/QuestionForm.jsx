@@ -22,11 +22,13 @@ const editOption = ({ question, optionId, text, icon, supportingText }) => {
     ...question,
     options: question.options.map((o) => {
       if (o.id === optionId) {
+        // check if undefined to differentiate from empty string for text fields
         return {
           ...o,
-          option: text || o.option,
+          option: text !== undefined ? text : o.option,
           icon: icon || o.icon,
-          supportingText: supportingText || o.supportingText,
+          supportingText:
+            supportingText !== undefined ? supportingText : o.supportingText,
         };
       }
       return o;

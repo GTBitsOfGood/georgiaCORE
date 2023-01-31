@@ -26,6 +26,7 @@ const EditQuestionModal = ({ isOpen, dispatch, question: q }) => {
 
   const onClose = () => {
     dispatch({ type: "close_edit_modal" });
+    setQuestion(q);
   };
 
   return (
