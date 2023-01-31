@@ -7,7 +7,8 @@
 
 #container {
     width: 100%;
-    overflow-x: scroll;
+    position: relative;
+    overflow-x: hidden;
     background-color: #F8F9FA;
     margin:0;
     padding: 0;
@@ -51,7 +52,6 @@
     margin-right: 10px;
     margin-left: 10px;
     margin-bottom: 50px;
-
     cursor: pointer;
 }
 
