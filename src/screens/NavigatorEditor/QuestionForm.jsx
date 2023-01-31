@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   FormControl,
@@ -8,12 +8,14 @@ import {
   Input,
   Button,
   Checkbox,
+  Flex,
 } from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
+import { SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 import PropTypes from "prop-types";
 
 import { v4 as uuidv4 } from "uuid";
 import icons from "src/utils/icons";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 const editOption = ({ question, optionId, text, icon, supportingText }) => {
   return {
@@ -42,6 +44,7 @@ const removeOption = (question, optionId) => {
 };
 
 const EditOption = ({
+  optionIndex,
   optionId,
   optionText,
   optionSupportingText,
@@ -80,46 +83,63 @@ const EditOption = ({
   };
 
   return (
-    <HStack w="100%">
-      <Select
-        variant="filled"
-        w="23%"
-        size="sm"
-        value={optionIcon || "QuestionMark"}
-        onChange={handleIconChange}
-        icon={icons[optionIcon] || icons["QuestionMark"]}
-      >
-        {Object.keys(icons).map((icon) => (
-          <option key={icon} value={icon}>
-            {icon}
-          </option>
-        ))}
-        <option key={-1} value="None">
-          None (No Icon)
-        </option>
-      </Select>
-      <VStack w="90%">
-        <Input
-          variant="flushed"
-          placeholder="Name"
-          value={optionText}
-          onChange={handleTextChange}
-        />
-        <Input
-          variant="flushed"
-          placeholder="Supporting Text"
-          value={optionSupportingText}
-          onChange={handleSupportingTextChange}
-        />
-      </VStack>
-      <Button onClick={() => setQuestion(removeOption(question, optionId))}>
-        <SmallCloseIcon color="teal" />
-      </Button>
-    </HStack>
+    <Draggable key={optionId} draggableId={optionId} index={optionIndex}>
+      {(provided, snapshot) => (
+        <Flex
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          bgColor="white"
+          rounded="md"
+        >
+          <HStack w="100%">
+            <Select
+              variant="filled"
+              w="21%"
+              size="sm"
+              value={optionIcon || "QuestionMark"}
+              onChange={handleIconChange}
+              icon={icons[optionIcon] || icons["QuestionMark"]}
+            >
+              {Object.keys(icons).map((icon) => (
+                <option key={icon} value={icon}>
+                  {icon}
+                </option>
+              ))}
+              <option key={-1} value="None">
+                None (No Icon)
+              </option>
+            </Select>
+            <VStack w="90%">
+              <Input
+                variant="flushed"
+                placeholder="Name"
+                value={optionText}
+                onChange={handleTextChange}
+              />
+              <Input
+                variant="flushed"
+                placeholder="Supporting Text"
+                value={optionSupportingText}
+                onChange={handleSupportingTextChange}
+              />
+            </VStack>
+            <Button
+              onClick={() => setQuestion(removeOption(question, optionId))}
+            >
+              <SmallCloseIcon color="teal" />
+            </Button>
+            <Box {...provided.dragHandleProps}>
+              <DragHandleIcon />
+            </Box>
+          </HStack>
+        </Flex>
+      )}
+    </Draggable>
   );
 };
 
 EditOption.propTypes = {
+  optionIndex: PropTypes.number,
   optionId: PropTypes.string,
   optionText: PropTypes.string,
   optionIcon: PropTypes.string,
@@ -144,7 +164,32 @@ const addOption = (question) => {
   };
 };
 
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
 const QuestionForm = ({ question, setQuestion }) => {
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      question.options,
+      result.source.index,
+      result.destination.index
+    );
+
+    setQuestion({
+      ...question,
+      options: [...items],
+    });
+  };
+
   return (
     <Box w="container.md">
       <Box p="3">
@@ -200,28 +245,42 @@ const QuestionForm = ({ question, setQuestion }) => {
             </HStack>
 
             {question.type === "question" && (
-              <>
-                {question.options.map((option) => (
-                  <EditOption
-                    key={option.id}
-                    optionId={option.id}
-                    optionText={option.option}
-                    optionSupportingText={option.supportingText}
-                    optionIcon={option.icon}
-                    question={question}
-                    setQuestion={setQuestion}
-                  />
-                ))}
-                <HStack w="100%">
-                  <Button
-                    variant="link"
-                    color="teal"
-                    onClick={() => setQuestion(addOption(question))}
-                  >
-                    New Option
-                  </Button>
-                </HStack>
-              </>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="droppable">
+                  {(provided, snapshot) => (
+                    <Flex
+                      direction="column"
+                      w="full"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      // style={getListStyle(snapshot.isDraggingOver)}
+                    >
+                      {question.options.map((option, index) => (
+                        <EditOption
+                          optionIndex={index}
+                          key={option.id}
+                          optionId={option.id}
+                          optionText={option.option}
+                          optionSupportingText={option.supportingText}
+                          optionIcon={option.icon}
+                          question={question}
+                          setQuestion={setQuestion}
+                        />
+                      ))}
+                      {provided.placeholder}
+                      <HStack w="100%">
+                        <Button
+                          variant="link"
+                          color="teal"
+                          onClick={() => setQuestion(addOption(question))}
+                        >
+                          New Option
+                        </Button>
+                      </HStack>
+                    </Flex>
+                  )}
+                </Droppable>
+              </DragDropContext>
             )}
 
             {question.type === "url" && (
