@@ -35,7 +35,7 @@ import ErrorNode from "src/components/Nodes/ErrorNode";
 import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
 import URLNode from "src/components/Nodes/URLNode";
-import { LockIcon, QuestionIcon } from "@chakra-ui/icons";
+import { LockIcon, QuestionIcon, UnlockIcon } from "@chakra-ui/icons";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -583,7 +583,7 @@ const TreeEditor = () => {
             zIndex={2}
             cursor="pointer"
           />
-          <Text right="10%" top="170px" position="absolute">
+          <Text right="10%" top="170px" position="absolute" zIndex={999}>
             Last Saved: {lastUpdated}
           </Text>
           <Box
@@ -599,10 +599,20 @@ const TreeEditor = () => {
               <Button
                 size="md"
                 style={{ margin: "10px", backgroundColor: "#59784D" }}
-                border={state.locked ? "2px solid #F6893C" : ""}
                 onClick={() => dispatch({ type: "toggle_lock" })}
               >
-                <LockIcon color="white" size="lg" />
+                <UnlockIcon
+                  color="white"
+                  size="lg"
+                  position="absolute"
+                  visibility={state.locked ? "hidden" : "visible"}
+                />
+                <LockIcon
+                  color="white"
+                  size="lg"
+                  position="absolute"
+                  visibility={state.locked ? "visible" : "hidden"}
+                />
               </Button>
               <Button
                 backgroundColor="#AFB9A5"
