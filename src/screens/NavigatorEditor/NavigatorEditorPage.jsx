@@ -677,13 +677,13 @@ const TreeEditor = () => {
               nodeTypes={nodeTypes}
               nodes={state.nodes}
               edges={state.edges}
-              onInit={(reactFlowInstance) => 
+              onInit={(reactFlowInstance) =>
                 dispatch({ type: "set_react_flow_instance", reactFlowInstance })
               }
               onNodesChange={(changes) =>
                 dispatch({ type: "node_change", changes })
               }
-              onEdgesChange={(changes) => 
+              onEdgesChange={(changes) =>
                 dispatch({ type: "edge_change", changes })
               }
               onEdgesDelete={(edges) =>
