@@ -37,7 +37,7 @@ const icons = {
   Calendar: <AiOutlineCalendar />,
   Doctor: <MdPersonPin />,
   PersonInBed: <GiPersonInBed />,
-  arm: <GiStrong />,
+  Arm: <GiStrong />,
   Difference: <TbLayersDifference />,
   Person: <BsFillPersonFill />,
   Worker: <GrUserWorker />,
