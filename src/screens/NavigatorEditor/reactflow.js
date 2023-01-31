@@ -1,15 +1,17 @@
+import { systemProps } from "@chakra-ui/react";
+
 const OPTION_HEIGHT = 50;
 
 export const createNode = ({ question, x, y, connectingNodeId = null }) => {
   let nodes = [];
   let edges = [];
-
   if (question.type == "url") {
     nodes.push({
       id: question.id,
       targetPosition: "left",
       data: {
         label: question.url,
+        linkName: question.linkName,
       },
       style: {
         background: "#fff",
