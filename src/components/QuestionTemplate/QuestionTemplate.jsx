@@ -36,24 +36,6 @@ const QuestionTemplate = (props) => {
 
   return (
     <div style={styles} id={styles.container}>
-      <div id={styles.flexRow}>
-        <div id={styles.progress}>
-          <ProgressBar
-            bgcolor={"#F6893C"}
-            completed={props.progess * 100}
-            width="100"
-          />
-        </div>
-        <div id={styles.redo}>
-          <UndoRedo
-            question={props.question}
-            setCurrentQuestionIndex={props.setCurrentQuestionIndex}
-            undoStack={props.undoStack}
-            setUndoStack={props.setUndoStack}
-          />
-        </div>
-        <h2 id={styles.question}>{props.question}</h2>
-      </div>
       <div id={styles.optionContainer}>
         <Slider>
           {props.options.map((option, index) => {

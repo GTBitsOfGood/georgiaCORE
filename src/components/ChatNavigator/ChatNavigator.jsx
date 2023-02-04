@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { useRouter } from "next/router";
 import ErrorPage from "../ErrorPage";
 import { useSession } from "next-auth/react";
+import NavigatorHeader from "./NavigatorHeader";
 
 /* IMPORT TEMPLATES */
 import QuestionTemplate from "../QuestionTemplate/QuestionTemplate";
@@ -100,6 +101,14 @@ const ChatNavigator = (props) => {
 
     return (
       <div style={styles} id={styles.main}>
+        <NavigatorHeader
+          progress={progessMap[currentQuestion.id]}
+          question={currentQuestion}
+          setCurrentQuestionIndex={setCurrentQuestionIndex}
+          undoStack={undoStack}
+          setUndoStack={setUndoStack}
+        />
+
         {/* QUESTION TEMPLATE */}
         {currentQuestion.type == "question" && (
           <QuestionTemplate
@@ -129,13 +138,15 @@ const ChatNavigator = (props) => {
 
         {/* URL TEMPLATE */}
         {currentQuestion.type == "url" && (
-          <LeafTemplate
-            question={currentQuestion}
-            setCurrentQuestionIndex={setCurrentQuestionIndex}
-            progess={progessMap[currentQuestion.id]}
-            undoStack={undoStack}
-            setUndoStack={setUndoStack}
-          />
+          <div>
+            <LeafTemplate
+              question={currentQuestion}
+              setCurrentQuestionIndex={setCurrentQuestionIndex}
+              progess={progessMap[currentQuestion.id]}
+              undoStack={undoStack}
+              setUndoStack={setUndoStack}
+            />
+          </div>
         )}
 
         {currentQuestion.type == "text" && (

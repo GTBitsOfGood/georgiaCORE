@@ -153,11 +153,11 @@ const TreeThumbnailCard = (props) => {
                       Close
                     </Button>
                     <Button
-                      onClick={(e) => props.handleTitleEdit(title)}
+                      onClick={(e) => {props.handleTitleEdit(title); onCloseTitle() }}
                       colorScheme="georgia-core-green"
                       variant="solid"
                     >
-                      Create
+                      Save
                     </Button>
                   </ModalFooter>
                 </ModalContent>
