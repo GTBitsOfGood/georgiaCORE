@@ -153,7 +153,10 @@ const TreeThumbnailCard = (props) => {
                       Close
                     </Button>
                     <Button
-                      onClick={(e) => {props.handleTitleEdit(title); onCloseTitle() }}
+                      onClick={(e) => {
+                        props.handleTitleEdit(title);
+                        onCloseTitle();
+                      }}
                       colorScheme="georgia-core-green"
                       variant="solid"
                     >
