@@ -14,7 +14,7 @@ const ErrorTemplate = (props) => {
 
   return (
     <div style={styles} id={styles.container}>
-      <div id={styles.flexRow}>
+      <div id={styles.utilsRow}>
         <div id={styles.progress}>
           <ProgressBar
             bgcolor={"#F6893C"}
@@ -30,6 +30,8 @@ const ErrorTemplate = (props) => {
             setUndoStack={props.setUndoStack}
           />
         </div>
+      </div>
+      <div id={styles.flexRow}>
         <h2 id={styles.question}>Sorry...</h2>
       </div>
       <div id={styles.result}>

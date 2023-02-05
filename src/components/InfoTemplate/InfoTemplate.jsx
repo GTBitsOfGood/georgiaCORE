@@ -11,7 +11,7 @@ import { BiLinkExternal } from "react-icons/bi";
 const InfoTemplate = (props) => {
   return (
     <div style={styles} id={styles.container}>
-      <div id={styles.flexRow}>
+      <div id={styles.utilsRow}>
         <div id={styles.progress}>
           <ProgressBar
             bgcolor={"#F6893C"}
@@ -27,6 +27,8 @@ const InfoTemplate = (props) => {
             setUndoStack={props.setUndoStack}
           />
         </div>
+      </div>
+      <div id={styles.flexRow}>
         <h2 id={styles.question}>
           {props.question.heading ? props.question.heading : "Information"}
         </h2>
