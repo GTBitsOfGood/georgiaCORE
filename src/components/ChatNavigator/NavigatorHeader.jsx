@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import ProgressBar from "./ProgessBar";
 import UndoRedo from "./UndoRedo";
 import styles from "./NavigatorHeader.module.css";
@@ -40,6 +41,14 @@ const NavigatorHeader = (props) => {
       <h2 id={styles.question}>{title}</h2>
     </div>
   );
+};
+
+NavigatorHeader.propTypes = {
+  question: PropTypes.any,
+  progress: PropTypes.number,
+  setCurrentQuestionIndex: PropTypes.func,
+  setUndoStack: PropTypes.func,
+  undoStack: PropTypes.any,
 };
 
 export default NavigatorHeader;
