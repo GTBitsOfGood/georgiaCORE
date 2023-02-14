@@ -15,7 +15,7 @@
 }
 
 #question {
-    padding-bottom: 27px;
+    padding-bottom: 22px;
     text-align: center;
     margin-bottom: 0px;
     color: black;
@@ -103,9 +103,16 @@
 #flexRow {
     display: flex;
     flex-direction: row;
-    padding-top: 20px;
+    padding-top: 15px;
     justify-content: center;
     align-items: center;
+}
+
+#utilsRow {
+    display: flex;
+    align-items: center;
+    padding-top: 20px;
+    margin-top: 20px;
 }
 
 #result {
@@ -160,21 +167,6 @@
     text-align: center;
     margin-top: -30px;
     text-overflow: ellipsis;
-}
-
-
-@media screen and (max-width: 1220px) {
-    #progress {
-        display: none;
-    }
-
-}
-
-@media screen and (max-width: 1086px) {
-    #redo {
-        display: none;
-    }
-
 }
 
 @media (max-width: 700px) {
