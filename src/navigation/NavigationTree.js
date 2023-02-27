@@ -158,9 +158,9 @@ export default class NavigationTree {
   }
 
   static createUntitledQuestion() {
-    return this.createQuestion("Untitled Question (max length: 55 chars)", "question", [
+    return this.createQuestion("Untitled Question", "question", [
       {
-        option: "Option 1 (max: 25)",
+        option: "Option 1",
         icon: "QuestionMark",
         nextId: null,
       },

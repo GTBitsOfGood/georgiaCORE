@@ -306,7 +306,7 @@ const reducer = (state, action) => {
           x: event.clientX - left,
           y: event.clientY - top,
         });
-
+        if (state.locked) return state;
         const question = NavigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
         const parentQuestion = state.navigationTree.getQuestionByOptionId(
@@ -380,7 +380,6 @@ const TreeEditor = () => {
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
   const [treeID, setTreeID] = React.useState(undefined);
-  const [rerender, setRerender] = React.useState(false);
 
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
@@ -565,7 +564,7 @@ const TreeEditor = () => {
       ("0" + d.getMinutes()).slice(-2) +
       ":" +
       ("0" + d.getSeconds()).slice(-2);
-  }
+  };
 
   if (state.navigationTree.getTree().editedOn) {
     const d = new Date(state.navigationTree.getTree().editedOn);
@@ -650,12 +649,7 @@ const TreeEditor = () => {
                       state.navigationTree.getTree(),
                       session.user?.name
                     );
-                    const d = new Date(state.navigationTree.getTree().editedOn);
-                    updateLastUpdated(d);
-                    setRerender(!rerender);
-                    alert("hello");
-                    
-                    
+                    state.navigationTree.getTree().editedOn = new Date();
                   }}
                 >
                   Save

@@ -4,12 +4,15 @@
     margin-bottom: 0px;
     color: black;
     font-size: 28px;
-    width: 900px;
+    width: 70%;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-weight: 600;
+    /*
+    This will cut off the question in the navigator if we enable it
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    */
 }
 
 #progress {
