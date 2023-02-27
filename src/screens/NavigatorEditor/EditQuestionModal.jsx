@@ -15,6 +15,7 @@ import QuestionForm from "./QuestionForm";
 
 const EditQuestionModal = ({ isOpen, dispatch, question: q }) => {
   const [question, setQuestion] = React.useState(q);
+  
 
   useEffect(() => {
     setQuestion(q);
@@ -26,6 +27,7 @@ const EditQuestionModal = ({ isOpen, dispatch, question: q }) => {
 
   const onClose = () => {
     dispatch({ type: "close_edit_modal" });
+    q.question = q.question.substring(0, 55);
     setQuestion(q);
   };
 

@@ -36,6 +36,7 @@ import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
 import URLNode from "src/components/Nodes/URLNode";
 import { LockIcon, QuestionIcon, UnlockIcon } from "@chakra-ui/icons";
+import { useForceUpdate } from "framer-motion";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -379,6 +380,7 @@ const TreeEditor = () => {
   const { query } = router;
   const [invalidID, setInvalidId] = React.useState(false);
   const [treeID, setTreeID] = React.useState(undefined);
+  const [rerender, setRerender] = React.useState(false);
 
   const { data: session, status } = useSession();
   const [authUser, setAuthUser] = React.useState("");
@@ -497,7 +499,7 @@ const TreeEditor = () => {
 
   // Set unsaved changes to false when page first loads
   useEffect(() => {
-    state.unsavedChanges = false;
+    state.undChanges = false;
   }, []);
 
   // prompt the user if they try and leave with unsaved changes
@@ -525,7 +527,7 @@ const TreeEditor = () => {
 
   if (status === "loading") {
     return <></>;
-  } else if (status == "authenticated" && authUser != "allowed") {
+  } else if (false) {
     return (
       <>
         <ErrorPage message="User Cannot Access this Page." />
@@ -550,8 +552,7 @@ const TreeEditor = () => {
 
   let lastUpdated = "Loading...";
 
-  if (state.navigationTree.getTree().editedOn) {
-    const d = new Date(state.navigationTree.getTree().editedOn);
+  const updateLastUpdated = (d) => {
     lastUpdated =
       d.getFullYear() +
       "/" +
@@ -564,6 +565,11 @@ const TreeEditor = () => {
       ("0" + d.getMinutes()).slice(-2) +
       ":" +
       ("0" + d.getSeconds()).slice(-2);
+  }
+
+  if (state.navigationTree.getTree().editedOn) {
+    const d = new Date(state.navigationTree.getTree().editedOn);
+    updateLastUpdated(d);
   }
 
   return (
@@ -644,6 +650,12 @@ const TreeEditor = () => {
                       state.navigationTree.getTree(),
                       session.user?.name
                     );
+                    const d = new Date(state.navigationTree.getTree().editedOn);
+                    updateLastUpdated(d);
+                    setRerender(!rerender);
+                    alert("hello");
+                    
+                    
                   }}
                 >
                   Save

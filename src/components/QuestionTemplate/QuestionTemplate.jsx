@@ -49,7 +49,7 @@ const QuestionTemplate = (props) => {
                 {renderIcons ? (
                   <>
                     <div id={styles.greenCircle}>{getIcon(option.icon)}</div>
-                    <h4 id={styles.optionAnswer}>{option.answer}</h4>
+                    <h4 id={styles.optionAnswer}>{option.answer.substring(0, 25)}</h4>
                     {renderSupport && (
                       <p id={styles.optionInfo}>{option.supportingText}</p>
                     )}
@@ -57,7 +57,7 @@ const QuestionTemplate = (props) => {
                 ) : (
                   <>
                     <div id={styles.greenCircle} style={{ marginBottom: 45 }}>
-                      {option.answer}
+                      {option.answer.substring(0, 25)}
                     </div>
                     {renderSupport && (
                       <p id={styles.optionInfo}>{option.supportingText}</p>

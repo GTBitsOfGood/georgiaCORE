@@ -155,7 +155,7 @@ const addOption = (question) => {
       ...question.options,
       {
         id: uuidv4(),
-        option: "Option " + (question.options.length + 1),
+        option: "Option " + (question.options.length + 1) + " (max: 25)",
         icon: "QuestionMark",
         nextId: null,
         supportingText: null,
