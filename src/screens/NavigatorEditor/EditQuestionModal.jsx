@@ -26,7 +26,6 @@ const EditQuestionModal = ({ isOpen, dispatch, question: q }) => {
 
   const onClose = () => {
     dispatch({ type: "close_edit_modal" });
-    q.question = q.question; //q.question.substring(0,55);
     setQuestion(q);
   };
 

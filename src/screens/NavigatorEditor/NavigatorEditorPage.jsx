@@ -498,7 +498,7 @@ const TreeEditor = () => {
 
   // Set unsaved changes to false when page first loads
   useEffect(() => {
-    state.undChanges = false;
+    state.undsavedChanges = false;
   }, []);
 
   // prompt the user if they try and leave with unsaved changes
@@ -526,7 +526,7 @@ const TreeEditor = () => {
 
   if (status === "loading") {
     return <></>;
-  } else if (false) {
+  } else if (status == "authenticated" && authUser != "allowed") {
     return (
       <>
         <ErrorPage message="User Cannot Access this Page." />

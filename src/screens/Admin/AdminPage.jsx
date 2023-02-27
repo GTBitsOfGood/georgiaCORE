@@ -315,8 +315,7 @@ const AdminPage = () => {
   }
 
   if (status === "authenticated") {
-    //if (authUserRole == "Administrator") {
-    if (true) {
+    if (authUserRole == "Administrator") {
       return (
         <Flex
           height="100%"
