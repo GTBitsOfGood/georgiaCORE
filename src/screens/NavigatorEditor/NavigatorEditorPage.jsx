@@ -36,6 +36,7 @@ import TextNode from "src/components/Nodes/TextNode";
 import { useRouter } from "next/router";
 import URLNode from "src/components/Nodes/URLNode";
 import { LockIcon, QuestionIcon, UnlockIcon } from "@chakra-ui/icons";
+import { useForceUpdate } from "framer-motion";
 
 const deleteNodesAndEdges = (nodes, edges, navigationTree, questionId) => {
   const newNodes = nodes.filter(
@@ -305,7 +306,7 @@ const reducer = (state, action) => {
           x: event.clientX - left,
           y: event.clientY - top,
         });
-
+        if (state.locked) return state;
         const question = NavigationTree.createUntitledQuestion();
         state.navigationTree.addQuestion(question);
         const parentQuestion = state.navigationTree.getQuestionByOptionId(
@@ -497,7 +498,7 @@ const TreeEditor = () => {
 
   // Set unsaved changes to false when page first loads
   useEffect(() => {
-    state.unsavedChanges = false;
+    state.undsavedChanges = false;
   }, []);
 
   // prompt the user if they try and leave with unsaved changes
@@ -550,8 +551,7 @@ const TreeEditor = () => {
 
   let lastUpdated = "Loading...";
 
-  if (state.navigationTree.getTree().editedOn) {
-    const d = new Date(state.navigationTree.getTree().editedOn);
+  const updateLastUpdated = (d) => {
     lastUpdated =
       d.getFullYear() +
       "/" +
@@ -564,6 +564,11 @@ const TreeEditor = () => {
       ("0" + d.getMinutes()).slice(-2) +
       ":" +
       ("0" + d.getSeconds()).slice(-2);
+  };
+
+  if (state.navigationTree.getTree().editedOn) {
+    const d = new Date(state.navigationTree.getTree().editedOn);
+    updateLastUpdated(d);
   }
 
   return (
@@ -644,6 +649,7 @@ const TreeEditor = () => {
                       state.navigationTree.getTree(),
                       session.user?.name
                     );
+                    state.navigationTree.getTree().editedOn = new Date();
                   }}
                 >
                   Save
