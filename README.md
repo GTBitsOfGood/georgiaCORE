@@ -89,3 +89,14 @@ Once the repository has been deployed for the first time, three secrets must be 
 Having configured these values, this repository will generate a Vercel deployment for every PR/push into the `main` or `production` branches. Three GitHub deployment environments are used: Production (for pushes to `production`), Preview (for pushes to open PRs into `main` or `production`), and Development (for pushes to `main`).
 
 There exists a more detailed guide regarding deployment on the [Bits of Good Notion](https://www.notion.so/gtbitsofgood/General-Deployment-Pointers-Vercel-763e769ef0074ff8b12c85c3d4809ba9) (must be a member of BoG to access).
+
+### Running Development Build with Docker
+
+1. Ensure Docker and Docker Compose are installed on your machine.
+2. Build and run the containers using the following command:
+    ```sh
+    docker-compose up --build
+    ```
+3. Access the application via [http://localhost:3000](http://localhost:3000) in your browser.
+
+Note: MongoDB is also spun up and can be accessed on port 27017.

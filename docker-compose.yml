@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - DB_URL=mongodb://mongodb:27017
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - georgiacore-net
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - georgiacore-net
+
+volumes:
+  mongodb_data:
+
+networks:
+  georgiacore-net:
+    driver: bridge
