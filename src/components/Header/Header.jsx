@@ -14,6 +14,7 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import NavLink from "../NavLink";
+import Link from "next/link";
 
 const Header = () => {
   /**
@@ -234,6 +235,18 @@ const Header = () => {
               marginTop="-5px"
               height="60px"
             />
+          </Flex>
+          <Flex bgColor="clear" margin="10px">
+            <Link
+              href="https://www.netlify.com"
+              position="absolute"
+              display={{ base: "none", lg: "initial" }}
+            >
+              <Image
+                src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
+                alt="Deploys by Netlify"
+              />
+            </Link>
           </Flex>
         </Stack>
         <Stack
