@@ -5,17 +5,21 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - bitwarden.env
     volumes:
       - ./:/app
       - /app/node_modules
-    environment:
-      - DB_URL=mongodb://mongodb:27017
+    # environment:
+    #   - DB_URL=mongodb://mongodb:27017
     ports:
       - "3000:3000"
+    entrypoint: ./entrypoint.sh
     depends_on:
       - mongodb
     networks:
       - georgiacore-net
+    
 
   mongodb:
     image: mongo:latest

@@ -1,17 +1,18 @@
-# Use an official Node runtime as the parent image
+# Use an official Node runtime as a parent image
 FROM node:16
 
-# Set the working directory in the container
+# Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy the package.json and yarn.lock files to the container
+# Copy package.json and yarn.lock to /app
 COPY package.json yarn.lock ./
 
-# Install application dependencies
-RUN yarn install --frozen-lockfile
+# Install dependencies
+RUN yarn config set network-timeout 600000 -g
+RUN yarn install --legacy-peer-deps
 
-# Copy the rest of the application to the container (not necessary for dev, but a good practice)
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# The command to run the application in development mode
-CMD ["yarn", "dev"]
+# Make port 3000 available to the world outside this container
+EXPOSE 3000

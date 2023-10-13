@@ -90,13 +90,20 @@ Having configured these values, this repository will generate a Vercel deploymen
 
 There exists a more detailed guide regarding deployment on the [Bits of Good Notion](https://www.notion.so/gtbitsofgood/General-Deployment-Pointers-Vercel-763e769ef0074ff8b12c85c3d4809ba9) (must be a member of BoG to access).
 
-### Running Development Build with Docker
+### Run With Docker
 
-1. Ensure Docker and Docker Compose are installed on your machine.
-2. Build and run the containers using the following command:
-    ```sh
-    docker-compose up --build
-    ```
-3. Access the application via [http://localhost:3000](http://localhost:3000) in your browser.
+1. Install [Docker](https://docs.docker.com/engine/install/)
+2. Obtain the Bitwarden password from your EM. Create a `bitwarden.env` file and fill it in with the following contents:
+   ```
+   BW_PASSWORD=<your bitwarden password>
+   ```
+   This only needs to be done on your first run. After that, you should delete the file from your repository to avoid pushing it to Github.
+3. Start the application with Docker Compose: `docker compose up`
 
-Note: MongoDB is also spun up and can be accessed on port 27017.
+If you make any changes to the packages, you may need to rebuild the images. To do this, append --build to the above docker compose up command.
+
+The Dockerized application will have live-reloading of changes made on the host machine.
+
+Note: On linux-based operating systems, if you come across an entrypoint permission error (i.e. `process: exec: "./entrypoint.sh": permission denied: unknown`), run `chmod +x ./entrypoint.sh` to make the shell file an executable.
+
+Windows Users: If you come across this error `exec ./entrypoint.sh: no such file or directory` when running the docker compose command, please follow this [Stackoverflow thread](https://stackoverflow.com/questions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
